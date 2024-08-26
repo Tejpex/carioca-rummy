@@ -8,6 +8,9 @@ const CariocaContext = createContext()
 export const CariocaProvider = ({ children }) => {
   const [playersHand, setPlayersHand] = useState([])
   const [computersHand, setComputersHand] = useState([])
+  const [playersTable, setPlayersTable] = useState([])
+  const [computersTable, setComputersTable] = useState([])
+  const [stage, setStage] = useState([])
   const [discardPile, setDiscardPile] = useState([])
   const [stock, setStock] = useState([])
   const contracts = [
@@ -30,11 +33,8 @@ export const CariocaProvider = ({ children }) => {
     const newStock = []
 
     while (index <= cards.length) {
-      console.log("Index:", index)
-      console.log("Stock has", newStock.length)
-      console.log("Decks", deckInPlay.length)
-
       const card = deckInPlay[Math.floor(Math.random()*deckInPlay.length)]
+
       if (index === 24) {
         // Puts 25th card face up on table
         dPile.push(card)
@@ -82,10 +82,24 @@ export const CariocaProvider = ({ children }) => {
     }
   }
 
+  const stageCard = (hand, card) => {
+    const newStage = [...stage]
+    console.log(newStage)
+    newStage.push(card)
+    console.log(newStage)
+    setStage(newStage)
+    const newHand = [...hand]
+    newHand.splice(newHand.indexOf(card), 1)
+    if (hand === playersHand) {
+      setPlayersHand(newHand)
+    } else if (hand === computersHand) {
+      setComputersHand(newHand)
+    }
+  }
   
   return (
     <CariocaContext.Provider
-      value={{ playersHand, computersHand, discardPile, stock, dealCards, contracts, sortByValue, takeCard }}
+      value={{ playersHand, computersHand, discardPile, stock, dealCards, contracts, sortByValue, takeCard, stageCard, stage }}
     >
       {children}
     </CariocaContext.Provider>
