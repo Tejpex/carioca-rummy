@@ -2,7 +2,7 @@ import styled from "styled-components"
 import { useCarioca } from "../contexts/CariocaContext"
 
 export const PlayersSide = () => {
-  const { playersHand, sortByValue, stage, stageCard } = useCarioca()
+  const { playersHand, sortByValue, stage, stageCard, unstageCard } = useCarioca()
 
   return (
     <>
@@ -19,9 +19,13 @@ export const PlayersSide = () => {
         ))}
       </CardRow>
       <Stage>
+        <button>Spela kort</button>
+        <button>Släng kort</button>
         {stage.map((card, index) => (
-            <CardImage src={card.img} alt={card.name} key={index} />
-          ))}
+          <button onClick={() => unstageCard(card)} key={index}>
+            <CardImage src={card.img} alt={card.name} />
+          </button>
+        ))}
       </Stage>
     </>
   )
