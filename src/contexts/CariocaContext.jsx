@@ -10,7 +10,6 @@ export const CariocaProvider = ({ children }) => {
   const [computersHand, setComputersHand] = useState([])
   const [playersTable, setPlayersTable] = useState([])
   const [computersTable, setComputersTable] = useState([])
-  const [stage, setStage] = useState([])
   const [discardPile, setDiscardPile] = useState([])
   const [stock, setStock] = useState([])
   const contracts = [
@@ -67,13 +66,11 @@ export const CariocaProvider = ({ children }) => {
   }
 
   const takeCard = (hand, card, pile) => {
-    const newHand = [...hand]
-    newHand.push(card)
     if (hand === playersHand) {
-      setPlayersHand(newHand)
+      setPlayersHand((prevHand) => [...prevHand, card])
       setPlayerCanPickCard(false)
     } else if (hand === computersHand) {
-      setComputersHand(newHand)
+      setComputersHand((prevHand) => [...prevHand, card])
     }
     const newPile = [...pile]
     if (pile === discardPile) {
@@ -84,32 +81,26 @@ export const CariocaProvider = ({ children }) => {
       setStock(newPile)
     }
   }
-
-  const stageCard = (hand, card) => {
-    const newStage = [...stage]
-    newStage.push(card)
-    setStage(newStage)
-    const newHand = [...hand]
-    newHand.splice(newHand.indexOf(card), 1)
+  
+  const toggleStaged = (hand, card) => {
     if (hand === playersHand) {
-      setPlayersHand(newHand)
+      setPlayersHand(
+        playersHand.map((pCard) => 
+          pCard === card ? { ...pCard, staged: !pCard.staged } : pCard
+        )
+      )
     } else if (hand === computersHand) {
-      setComputersHand(newHand)
+      setComputersHand(
+        computersHand.map((cCard) =>
+          cCard === card ? { ...cCard, staged: !cCard.staged } : cCard
+        )
+      )
     }
-  }
-
-  const unstageCard = (card) => {
-    const newStage = [...stage]
-    newStage.splice(newStage.indexOf(card), 1)
-    setStage(newStage)
-    const newHand = [...playersHand]
-    newHand.push(card)
-    setPlayersHand(newHand)
   }
   
   return (
     <CariocaContext.Provider
-      value={{ playersHand, computersHand, discardPile, stock, dealCards, contracts, sortByValue, takeCard, stageCard, stage, playerCanPickCard, unstageCard }}
+      value={{ playersHand, computersHand, discardPile, stock, dealCards, contracts, sortByValue, takeCard, toggleStaged, playerCanPickCard }}
     >
       {children}
     </CariocaContext.Provider>

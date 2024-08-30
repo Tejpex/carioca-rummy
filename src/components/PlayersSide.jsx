@@ -2,7 +2,7 @@ import styled from "styled-components"
 import { useCarioca } from "../contexts/CariocaContext"
 
 export const PlayersSide = () => {
-  const { playersHand, sortByValue, stage, stageCard, unstageCard } = useCarioca()
+  const { playersHand, sortByValue, toggleStaged } = useCarioca()
 
   return (
     <>
@@ -13,20 +13,14 @@ export const PlayersSide = () => {
           </button>
         </div>
         {playersHand.map((card, index) => (
-          <button onClick={() => stageCard(playersHand, card)} key={index}>
-            <CardImage src={card.img} alt={card.name} />
-          </button>
+          <CardButton onClick={() => toggleStaged(playersHand, card)} key={index}>
+            {!card.staged && <CardImage src={card.img} alt={card.name} />}
+            {card.staged && <CardImageStaged src={card.img} alt={card.name} />}
+          </CardButton>
         ))}
       </CardRow>
-      <Stage>
-        <button>Spela kort</button>
-        <button>Släng kort</button>
-        {stage.map((card, index) => (
-          <button onClick={() => unstageCard(card)} key={index}>
-            <CardImage src={card.img} alt={card.name} />
-          </button>
-        ))}
-      </Stage>
+      <button>Spela kort</button>
+      <button>Släng kort</button>
     </>
   )
 }
@@ -38,11 +32,18 @@ const CardRow = styled.div`
   justify-content: flex-start;
 `
 
-const Stage = styled.div`
-  background-color: green;
-  height: 100px;
+const CardButton = styled.button`
+  background: none;
+  border: none;
+  padding: 0;
 `
 
 const CardImage = styled.img`
   height: 90px;
+`
+
+const CardImageStaged = styled.img`
+  height: 90px;
+  position: relative;
+  top: 10px;
 `
