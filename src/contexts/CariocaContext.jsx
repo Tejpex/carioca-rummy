@@ -97,10 +97,44 @@ export const CariocaProvider = ({ children }) => {
       )
     }
   }
+
+  const checkForTrio = (hand, table) => {
+    const cardsToCheck = hand.filter((card) => card.staged)
+    if (cardsToCheck.length === 3) {
+      if (cardsToCheck[0].value === cardsToCheck[1].value) {
+        if (cardsToCheck[1].value === cardsToCheck[2].value) {
+          const newTable = [...table]
+          cardsToCheck.map((card) => {
+            newTable.push(card)
+            hand.splice(hand.indexOf(card), 1)
+          })
+          setPlayersTable(newTable)
+        } else {
+          console.log("Two same value")
+        }
+      } else {
+        console.log("Different value")
+      }
+    } else {
+      console.log("Not 3 cards")
+    }
+  }
+
+  const throwCard = (hand) => {
+    const cardsToThrow = hand.filter((card) => card.staged)
+    if (cardsToThrow.length === 1) {
+      const newDPile = [...discardPile]
+      newDPile.push(cardsToThrow[0])
+      hand.splice(hand.indexOf(cardsToThrow[0]), 1)
+      setDiscardPile(newDPile)
+    } else {
+      console.log("Not one card.")
+    }
+  }
   
   return (
     <CariocaContext.Provider
-      value={{ playersHand, computersHand, discardPile, stock, dealCards, contracts, sortByValue, takeCard, toggleStaged, playerCanPickCard }}
+      value={{ playersHand, computersHand, discardPile, stock, dealCards, contracts, sortByValue, takeCard, toggleStaged, playerCanPickCard, checkForTrio, playersTable, throwCard }}
     >
       {children}
     </CariocaContext.Provider>
