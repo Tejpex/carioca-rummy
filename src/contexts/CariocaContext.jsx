@@ -6,12 +6,19 @@ import cards from "../cards.json"
 const CariocaContext = createContext()
 
 export const CariocaProvider = ({ children }) => {
-  const [playersHand, setPlayersHand] = useState([])
-  const [computersHand, setComputersHand] = useState([])
-  const [playersTable, setPlayersTable] = useState([])
-  const [computersTable, setComputersTable] = useState([])
+  const [player, setPlayer] = useState({
+    hand: [],
+    table: []
+  })
+
+  const [computer, setComputer] = useState({
+    hand: [],
+    table: []
+  })
+  
   const [discardPile, setDiscardPile] = useState([])
   const [stock, setStock] = useState([])
+
   const contracts = [
     "2 Trios",
     "1 Trio, 1 Escala",
@@ -22,14 +29,24 @@ export const CariocaProvider = ({ children }) => {
     "4 Trios",
     "3 Escalas",
   ]
-  const [playerCanPickCard, setPlayerCanPickCard] = useState(false)
+
+  // 0-deal cards, 1-player pick card, 2-player plays, 3-player throws card
+  const [gameStageIndex, setGameStageIndex] = useState(0)
+
+  const setNewHand = (person, newHand) => {
+    if (person === player) {
+      setPlayer({ ...player, hand: newHand })
+    } else if (person === computer) {
+      setComputer({ ...computer, hand: newHand })
+    }
+  }
   
   const dealCards = () => {
     let index = 0
     const deckInPlay = [...cards]
-    const pCards = []
-    const cCards = []
-    const dPile = []
+    const newPlayerCards = []
+    const newComputerCards = []
+    const newDiscardPile = []
     const newStock = []
 
     while (index <= cards.length) {
@@ -37,41 +54,40 @@ export const CariocaProvider = ({ children }) => {
 
       if (index === 24) {
         // Puts 25th card face up on table
-        dPile.push(card)
+        newDiscardPile.push(card)
       } else if (index > 24) {
         // Puts last cards in the stock
         newStock.push(card)
       } else if (index % 2 === 0) {
         // Deals 12 cards to player (even-number under 25)
-        pCards.push(card)
+        newPlayerCards.push(card)
       } else {
         // Deals 12 cards to computer (odd-number under 25)
-        cCards.push(card)
+        newComputerCards.push(card)
       }
       deckInPlay.splice(deckInPlay.indexOf(card), 1)
       index ++
     }
 
-    setPlayersHand(pCards)
-    setComputersHand(cCards)
-    setDiscardPile(dPile)
+    setPlayer({ ...player, hand: newPlayerCards })
+    setComputer({ ...computer, hand: newComputerCards})
+    setDiscardPile(newDiscardPile)
     setStock(newStock)
-    setPlayerCanPickCard(true)
+    setGameStageIndex(1)
   }
 
-  const sortByValue = (array) => {
-    const newArray = [...array]
-    newArray.sort((a, b) => a.value - b.value)
-    setPlayersHand(newArray)
+  const sortByValue = (person) => {
+    const hand = person.hand
+    const newHand = [...hand]
+    newHand.sort((a, b) => a.value - b.value)
+    setNewHand(person, newHand)
   }
 
-  const takeCard = (hand, card, pile) => {
-    if (hand === playersHand) {
-      setPlayersHand((prevHand) => [...prevHand, card])
-      setPlayerCanPickCard(false)
-    } else if (hand === computersHand) {
-      setComputersHand((prevHand) => [...prevHand, card])
-    }
+  const takeCard = (person, card, pile) => {
+    const hand = person.hand
+    const newHand = [...hand, card]
+    setNewHand(person, newHand)
+
     const newPile = [...pile]
     if (pile === discardPile) {
       newPile.splice(-1, 1)
@@ -80,22 +96,15 @@ export const CariocaProvider = ({ children }) => {
       newPile.splice(0, 1)
       setStock(newPile)
     }
+    setGameStageIndex(gameStageIndex + 1)
   }
   
-  const toggleStaged = (hand, card) => {
-    if (hand === playersHand) {
-      setPlayersHand(
-        playersHand.map((pCard) => 
-          pCard === card ? { ...pCard, staged: !pCard.staged } : pCard
-        )
-      )
-    } else if (hand === computersHand) {
-      setComputersHand(
-        computersHand.map((cCard) =>
-          cCard === card ? { ...cCard, staged: !cCard.staged } : cCard
-        )
-      )
-    }
+  const toggleStaged = (person, card) => {
+    const hand = person.hand
+    const newHand = hand.map((oldCard) =>
+      oldCard === card ? { ...oldCard, staged: !oldCard.staged } : oldCard
+    )
+    setNewHand(person, newHand)
   }
 
   const checkForTrio = (hand, table) => {
@@ -131,10 +140,14 @@ export const CariocaProvider = ({ children }) => {
       console.log("Not one card.")
     }
   }
+
+  const computerPlay = () => {
+
+  }
   
   return (
     <CariocaContext.Provider
-      value={{ playersHand, computersHand, discardPile, stock, dealCards, contracts, sortByValue, takeCard, toggleStaged, playerCanPickCard, checkForTrio, playersTable, throwCard }}
+      value={{ player, computer, discardPile, stock, gameStageIndex, dealCards, contracts, sortByValue, takeCard, toggleStaged, checkForTrio, throwCard  }}
     >
       {children}
     </CariocaContext.Provider>

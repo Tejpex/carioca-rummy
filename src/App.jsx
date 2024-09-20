@@ -1,8 +1,6 @@
 import { CariocaProvider } from "./contexts/CariocaContext"
 import { Header } from "./components/Header"
-import { PlayersSide } from "./components/PlayersSide"
-import { ComputersSide } from "./components/ComputersSide"
-import { Table } from "./components/Table"
+import { GameSite } from "./components/GameSite"
 import "./App.css"
 
 function App() {
@@ -10,9 +8,7 @@ function App() {
     <div>
       <CariocaProvider>
         <Header />
-        <PlayersSide />
-        <Table />
-        <ComputersSide />
+        <GameSite />
       </CariocaProvider>
     </div>
   )

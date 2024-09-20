@@ -3,7 +3,7 @@ import { useEffect } from "react"
 import { useCarioca } from "../contexts/CariocaContext"
 
 export const Table = () => {
-  const { discardPile, stock, dealCards, takeCard, playersHand, playerCanPickCard } = useCarioca()
+  const { player, discardPile, stock, dealCards, takeCard, gameStageIndex } = useCarioca()
 
   useEffect(() => {
     dealCards()
@@ -14,10 +14,11 @@ export const Table = () => {
   const topOfTheStock = stock.slice(1)[0]
 
   const handleClick = (card, pile) => {
-    if (playerCanPickCard) {
-      takeCard(playersHand, card, pile)
+    if (gameStageIndex === 1) {
+      takeCard(player, card, pile)
+    } else {
+      alert("Not your turn to pick a card.")
     }
-    
   }
 
   return (

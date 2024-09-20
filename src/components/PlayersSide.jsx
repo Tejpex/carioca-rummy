@@ -2,19 +2,21 @@ import styled from "styled-components"
 import { useCarioca } from "../contexts/CariocaContext"
 
 export const PlayersSide = () => {
-  const { playersHand, sortByValue, toggleStaged, checkForTrio, playersTable, throwCard } = useCarioca()
+  const { sortByValue, toggleStaged, checkForTrio, playersTable, throwCard, player } = useCarioca()
+
+  const hand = player.hand 
 
   return (
     <>
       <CardRow>
         <div>
-          <button onClick={() => sortByValue(playersHand)}>
+          <button onClick={() => sortByValue(player)}>
             Sortera efter värde
           </button>
         </div>
-        {playersHand.map((card, index) => (
+        {hand.map((card, index) => (
           <CardButton
-            onClick={() => toggleStaged(playersHand, card)}
+            onClick={() => toggleStaged(hand, card)}
             key={index}
           >
             {!card.staged && <CardImage src={card.img} alt={card.name} />}
