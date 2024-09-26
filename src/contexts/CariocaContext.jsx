@@ -20,15 +20,17 @@ export const CariocaProvider = ({ children }) => {
   const [stock, setStock] = useState([])
 
   const contracts = [
-    "2 Trios",
-    "1 Trio, 1 Escala",
-    "2 Escalas",
-    "3 Trios",
-    "2 Trios, 1 Escala",
-    "1 Trio, 2 Escalas",
-    "4 Trios",
-    "3 Escalas",
+    "2 triss",
+    "1 triss, 1 stege",
+    "2 stegar",
+    "3 triss",
+    "2 triss, 1 stege",
+    "1 triss, 2 stegar",
+    "4 triss",
+    "3 stegar",
   ]
+
+  const gameStages = ["Dela ut kort", "Ta ett kort", "Spela kort eller släng ett kort", "Datorn spelar"]
 
   // 0-deal cards, 1-player pick card, 2-player plays, 3-player throws card
   const [gameStageIndex, setGameStageIndex] = useState(0)
@@ -38,6 +40,14 @@ export const CariocaProvider = ({ children }) => {
       setPlayer({ ...player, hand: newHand })
     } else if (person === computer) {
       setComputer({ ...computer, hand: newHand })
+    }
+  }
+
+  const setNewTable = (person, newTable) => {
+    if (person === player) {
+      setPlayer({ ...player, table: newTable })
+    } else if (person === computer) {
+      setComputer({ ...computer, table: newTable })
     }
   }
   
@@ -107,25 +117,21 @@ export const CariocaProvider = ({ children }) => {
     setNewHand(person, newHand)
   }
 
-  const checkForTrio = (hand, table) => {
+  const checkForTrio = (person) => {
+    const hand = person.hand
+    const table = person.table
     const cardsToCheck = hand.filter((card) => card.staged)
-    if (cardsToCheck.length === 3) {
-      if (cardsToCheck[0].value === cardsToCheck[1].value) {
-        if (cardsToCheck[1].value === cardsToCheck[2].value) {
+    if (cardsToCheck.length === 3 && 
+      cardsToCheck[0].value === cardsToCheck[1].value && 
+      cardsToCheck[1].value === cardsToCheck[2].value) {
           const newTable = [...table]
           cardsToCheck.map((card) => {
             newTable.push(card)
             hand.splice(hand.indexOf(card), 1)
           })
-          setPlayersTable(newTable)
-        } else {
-          console.log("Two same value")
-        }
-      } else {
-        console.log("Different value")
-      }
+          setNewTable(person, newTable)
     } else {
-      console.log("Not 3 cards")
+      alert("Det behövs tre kort av samma värde för att spela triss.")
     }
   }
 
@@ -147,7 +153,7 @@ export const CariocaProvider = ({ children }) => {
   
   return (
     <CariocaContext.Provider
-      value={{ player, computer, discardPile, stock, gameStageIndex, dealCards, contracts, sortByValue, takeCard, toggleStaged, checkForTrio, throwCard  }}
+      value={{ player, computer, discardPile, stock, gameStageIndex, dealCards, contracts, sortByValue, takeCard, toggleStaged, checkForTrio, throwCard, gameStages }}
     >
       {children}
     </CariocaContext.Provider>
