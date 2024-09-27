@@ -32,7 +32,7 @@ export const CariocaProvider = ({ children }) => {
 
   const gameStages = ["Dela ut kort", "Ta ett kort", "Spela kort eller släng ett kort", "Datorn spelar"]
 
-  // 0-deal cards, 1-player pick card, 2-player plays, 3-player throws card
+  // 0-deal cards, 1-player pick card, 2-player plays or player throws card
   const [gameStageIndex, setGameStageIndex] = useState(0)
 
   const setNewHand = (person, newHand) => {
@@ -135,19 +135,39 @@ export const CariocaProvider = ({ children }) => {
     }
   }
 
-  const throwCard = (hand) => {
+  const throwCard = (person) => {
+    const hand = person.hand
     const cardsToThrow = hand.filter((card) => card.staged)
     if (cardsToThrow.length === 1) {
       const newDPile = [...discardPile]
       newDPile.push(cardsToThrow[0])
       hand.splice(hand.indexOf(cardsToThrow[0]), 1)
       setDiscardPile(newDPile)
+      computerPlay(cardsToThrow[0])
     } else {
-      console.log("Not one card.")
+      alert("Du kan bara slänga ett kort.")
     }
   }
 
-  const computerPlay = () => {
+  const computerPlay = (lastCardThrown) => {
+    setGameStageIndex(3)
+    const topOfTheStock = stock.slice(1)[0]
+    const counterSameValue = {}
+
+    computer.hand.forEach((card) => {
+      if (counterSameValue[card.value]) {
+        counterSameValue[card.value] += 1
+      } else {
+        counterSameValue[card.value] = 1
+      }
+    })
+    
+    if (counterSameValue[lastCardThrown.value] >= 2) {
+      setTimeout(() => takeCard(computer, lastCardThrown, discardPile), 2000)
+    } else {
+      setTimeout(() => takeCard(computer, topOfTheStock, stock), 2000)
+    }
+
 
   }
   
