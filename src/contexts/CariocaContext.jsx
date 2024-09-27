@@ -31,8 +31,6 @@ export const CariocaProvider = ({ children }) => {
   ]
 
   const gameStages = ["Dela ut kort", "Ta ett kort", "Spela kort eller släng ett kort", "Datorn spelar"]
-
-  // 0-deal cards, 1-player pick card, 2-player plays or player throws card
   const [gameStageIndex, setGameStageIndex] = useState(0)
 
   const setNewHand = (person, newHand) => {
@@ -117,10 +115,14 @@ export const CariocaProvider = ({ children }) => {
     setNewHand(person, newHand)
   }
 
-  const checkForTrio = (person) => {
+  const checkForTrio = (person, extraCard) => {
     const hand = person.hand
+    let newHand = [...hand]
+    if (extraCard) {
+      newHand = [...hand, extraCard]
+    }
     const table = person.table
-    const cardsToCheck = hand.filter((card) => card.staged)
+    const cardsToCheck = newHand.filter((card) => card.staged)
     if (cardsToCheck.length === 3 && 
       cardsToCheck[0].value === cardsToCheck[1].value && 
       cardsToCheck[1].value === cardsToCheck[2].value) {
@@ -141,6 +143,7 @@ export const CariocaProvider = ({ children }) => {
     if (cardsToThrow.length === 1) {
       const newDPile = [...discardPile]
       newDPile.push(cardsToThrow[0])
+      newDPile.map(card => card.staged = false)
       hand.splice(hand.indexOf(cardsToThrow[0]), 1)
       setDiscardPile(newDPile)
       computerPlay(cardsToThrow[0])
@@ -149,25 +152,41 @@ export const CariocaProvider = ({ children }) => {
     }
   }
 
-  const computerPlay = (lastCardThrown) => {
-    setGameStageIndex(3)
-    const topOfTheStock = stock.slice(1)[0]
+  const countCards = (cards) => {
     const counterSameValue = {}
-
-    computer.hand.forEach((card) => {
+    cards.forEach((card) => {
       if (counterSameValue[card.value]) {
         counterSameValue[card.value] += 1
       } else {
         counterSameValue[card.value] = 1
       }
     })
+    return counterSameValue
+  }
+
+  const computerPlay = (lastCardThrown) => {
+    setGameStageIndex(3)
+    const topOfTheStock = stock.slice(1)[0]
+    let newCard = {}
     
-    if (counterSameValue[lastCardThrown.value] >= 2) {
+    if (countCards(computer.hand)[lastCardThrown.value] >= 2) {
       setTimeout(() => takeCard(computer, lastCardThrown, discardPile), 2000)
+      newCard = lastCardThrown
     } else {
       setTimeout(() => takeCard(computer, topOfTheStock, stock), 2000)
+      newCard = topOfTheStock
     }
 
+    let newHand = [...computer.hand, newCard]
+    for (const [key, value] of Object.entries(countCards(newHand))) {
+      if (value >= 3) {
+        const trioCards = newHand.filter((card) => card.value === Number(key))
+        trioCards.map(card => card.staged = true)
+        setTimeout(() => checkForTrio(computer, newCard), 2500)
+      }
+    }
+
+    setTimeout(() => setGameStageIndex(1), 3000)
 
   }
   
