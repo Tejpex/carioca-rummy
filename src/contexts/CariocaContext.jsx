@@ -115,25 +115,34 @@ export const CariocaProvider = ({ children }) => {
     setNewHand(person, newHand)
   }
 
-  const checkForTrio = (person, extraCard) => {
+  const checkForTrio = (person) => {
     const hand = person.hand
-    let newHand = [...hand]
-    if (extraCard) {
-      newHand = [...hand, extraCard]
-    }
-    const table = person.table
-    const cardsToCheck = newHand.filter((card) => card.staged)
+    
+    const cardsToCheck = hand.filter((card) => card.staged)
     if (cardsToCheck.length === 3 && 
       cardsToCheck[0].value === cardsToCheck[1].value && 
       cardsToCheck[1].value === cardsToCheck[2].value) {
-          const newTable = [...table]
-          cardsToCheck.map((card) => {
-            newTable.push(card)
-            hand.splice(hand.indexOf(card), 1)
-          })
-          setNewTable(person, newTable)
-    } else {
-      alert("Det behövs tre kort av samma värde för att spela triss.")
+        playCards(person, cardsToCheck)
+      } else {
+        alert("Det behövs tre kort av samma värde för att spela triss.")
+      }
+    }
+    
+  const playCards = (person, cards) => {
+    const hand = person.hand 
+    const newHand = [...hand]
+    const table = person.table
+    const newTable = [...table]
+    
+    cards.map((card) => {
+      newTable.push(card)
+      newHand.splice(newHand.indexOf(card), 1)
+    })
+
+    if (person === player) {
+      setPlayer({ ...player, hand: newHand, table: newTable })
+    } else if (person === computer) {
+      setComputer({ ...computer, hand: newHand, table: newTable })
     }
   }
 
@@ -168,24 +177,45 @@ export const CariocaProvider = ({ children }) => {
     setGameStageIndex(3)
     const topOfTheStock = stock.slice(1)[0]
     let newCard = {}
-    
-    if (countCards(computer.hand)[lastCardThrown.value] >= 2) {
-      setTimeout(() => takeCard(computer, lastCardThrown, discardPile), 2000)
-      newCard = lastCardThrown
-    } else {
-      setTimeout(() => takeCard(computer, topOfTheStock, stock), 2000)
-      newCard = topOfTheStock
-    }
 
-    let newHand = [...computer.hand, newCard]
-    for (const [key, value] of Object.entries(countCards(newHand))) {
-      if (value >= 3) {
-        const trioCards = newHand.filter((card) => card.value === Number(key))
-        trioCards.map(card => card.staged = true)
-        setTimeout(() => checkForTrio(computer, newCard), 2500)
+    //setTimeout(() => {
+      if (countCards(computer.hand)[lastCardThrown.value] >= 2) {
+    //    takeCard(computer, lastCardThrown, discardPile)
+        newCard = lastCardThrown
+        const newPile = [...discardPile]
+        newPile.splice(-1, 1)
+        setDiscardPile(newPile)        
+      } else {
+    //    takeCard(computer, topOfTheStock, stock)
+        newCard = topOfTheStock
+        const newPile = [...discardPile]
+        newPile.splice(0, 1)
+        setStock(newPile)
       }
-    }
+    //}, 1000)
+    
+    
+      const newHand = [...computer.hand, newCard]
+      let trioCards = []
+      for (const [key, value] of Object.entries(countCards(newHand))) {
+        if (value >= 3) {
+          const sameValueCards = newHand.filter((card) => card.value === Number(key))
+          trioCards.push(sameValueCards[0])
+          trioCards.push(sameValueCards[1])
+          trioCards.push(sameValueCards[2])
+        }
+      }
 
+      const newTable = [...computer.table]
+
+      trioCards.map((card) => {
+        newTable.push(card)
+        newHand.splice(newHand.indexOf(card), 1)
+      })
+      
+    //  playCards(computer, trioCards[0])
+  
+    setTimeout(() => setComputer({ ...computer, hand: newHand, table: newTable }), 2000)
     setTimeout(() => setGameStageIndex(1), 3000)
 
   }
