@@ -117,16 +117,19 @@ export const CariocaProvider = ({ children }) => {
 
   const checkForTrio = (person) => {
     const hand = person.hand
-    
     const cardsToCheck = hand.filter((card) => card.staged)
+    
     if (cardsToCheck.length === 3 && 
       cardsToCheck[0].value === cardsToCheck[1].value && 
       cardsToCheck[1].value === cardsToCheck[2].value) {
         playCards(person, cardsToCheck)
-      } else {
-        alert("Det behövs tre kort av samma värde för att spela triss.")
-      }
+    } else if (checkReachedGoal(person)) {
+      //cardsToCheck.map()
+      alert("Mål nått")
+    } else {
+      alert("Det behövs tre kort av samma värde för att spela triss.")
     }
+  }
     
   const playCards = (person, cards) => {
     const hand = person.hand 
@@ -171,6 +174,21 @@ export const CariocaProvider = ({ children }) => {
       }
     })
     return counterSameValue
+  }
+
+  const checkReachedGoal = (person) => {
+    const table = person.table
+    let triosReached = 0
+    for (const [key, value] of Object.entries(countCards(table))) {
+      if (value >= 3) {
+        triosReached += 1
+      }
+    }
+    if (triosReached >= 2) {
+      return true
+    } else {
+      return false
+    }
   }
 
   const computerPlay = (lastCardThrown) => {
