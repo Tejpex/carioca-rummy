@@ -84,25 +84,28 @@ export const CariocaProvider = ({ children }) => {
     setGameStageIndex(1)
   }
 
-  const sortByValue = (person) => {
-    const hand = person.hand
-    const newHand = [...hand]
-    newHand.sort((a, b) => a.value - b.value)
-    setNewHand(person, newHand)
+  const sortByValue = (cards) => {
+    const sortedCards = [...cards]
+    sortedCards.sort((a, b) => a.value - b.value)
+    return sortedCards
+  }
+
+  const addCards = (oldCards, newCard) => {
+    const newCards = [...oldCards, newCard]
+    return newCards
   }
 
   const takeCard = (person, card, pile) => {
     const hand = person.hand
-    const newHand = [...hand, card]
-    setNewHand(person, newHand)
+    setNewHand(person, addCards(hand, card))
 
     const newPile = [...pile]
     if (pile === discardPile) {
-      newPile.splice(-1, 1)
-      setDiscardPile(newPile)
+      const newDiscard = newPile.toSpliced(-1, 1)
+      setDiscardPile(newDiscard)
     } else if (pile === stock) {
-      newPile.splice(0, 1)
-      setStock(newPile)
+      const newStock = newPile.toSpliced(0, 1)
+      setStock(newStock)
     }
     setGameStageIndex(gameStageIndex + 1)
   }
@@ -158,6 +161,8 @@ export const CariocaProvider = ({ children }) => {
     } else if (person === computer) {
       setComputer({ ...computer, hand: newHand, table: newTable })
     }
+
+    checkForWin()
   }
 
   const throwCard = (person) => {
@@ -169,6 +174,7 @@ export const CariocaProvider = ({ children }) => {
       newDPile.map(card => card.staged = false)
       hand.splice(hand.indexOf(cardsToThrow[0]), 1)
       setDiscardPile(newDPile)
+      checkForWin()
       computerPlay(cardsToThrow[0])
     } else {
       alert("Välj ett kort att slänga.")
@@ -202,23 +208,33 @@ export const CariocaProvider = ({ children }) => {
     }
   }
 
-  const computerPlay = (lastCardThrown) => {
-    setGameStageIndex(3)
-    const topOfTheStock = stock.slice(1)[0]
-    let newCard = {}
-    const newDiscard = [...discardPile]
+  const checkForWin = () => {
+    if (player.hand.length === 0) {
+      alert("Du vann omgången.")
+    }
+    if (computer.hand.length === 0) {
+      alert("Datorn vann omgången.")
+    }
+  }
 
-    if (countCards(computer.hand)[lastCardThrown.value] >= 2) {
-      newCard = lastCardThrown
-      newDiscard.splice(-1, 1)    
+  const computerPlay = (lastCardThrown) => {
+    setGameStageIndex(3) // Computers turn
+    const topOfTheStock = stock.slice(0)[0]
+    let cardPicked = {}
+    const newDiscardPile = [...discardPile]
+
+    if (countCards(computer.hand)[lastCardThrown.value] >= 2) { //Two cards in hand with same value as lastCardThrown
+      cardPicked = lastCardThrown
     } else {
-      newCard = topOfTheStock
-      const newPile = [...stock]
-      newPile.splice(0, 1)
-      setTimeout(() => setStock(newPile), 1500)
+      cardPicked = topOfTheStock
+      //Make sure lastCardThrown stays in discard pile
+      newDiscardPile.push(lastCardThrown)
+      //Remove top card from stock
+      const newStock = [...stock].toSpliced(0, 1)
+      setTimeout(() => setStock(newStock), 1500)
     }    
     
-    const newHand = [...computer.hand, newCard]
+    const newHand = [...computer.hand, cardPicked]
     let trioCards = []
     let singleCards = []
     for (const [key, value] of Object.entries(countCards(newHand))) {
@@ -242,16 +258,17 @@ export const CariocaProvider = ({ children }) => {
     singleCards.sort((a, b) => a.value - b.value)
     const highestSingle = singleCards.slice(-1)[0]
     newHand.splice(newHand.indexOf(highestSingle), 1)
-    newDiscard.push(highestSingle)
+    newDiscardPile.push(highestSingle)
 
-    setTimeout(() => setDiscardPile(newDiscard), 1500) 
+    setTimeout(() => setDiscardPile(newDiscardPile), 1500) 
     setTimeout(() => setComputer({ ...computer, hand: newHand, table: newTable }), 2000)
+    setTimeout(() => checkForWin(), 2500)
     setTimeout(() => setGameStageIndex(1), 3000)
   }
   
   return (
     <CariocaContext.Provider
-      value={{ player, computer, discardPile, stock, gameStageIndex, dealCards, contracts, sortByValue, takeCard, toggleStaged, checkForTrio, throwCard, gameStages }}
+      value={{ player, computer, discardPile, stock, gameStageIndex, dealCards, contracts, sortByValue, takeCard, toggleStaged, checkForTrio, throwCard, gameStages, setNewHand }}
     >
       {children}
     </CariocaContext.Provider>

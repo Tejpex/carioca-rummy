@@ -5,14 +5,20 @@ export const HandRow = ({person}) => {
   const {
     sortByValue,
     toggleStaged,
+    setNewHand
   } = useCarioca()
 
-  let hand = person.hand
+  const hand = person.hand
+
+  const sortHandByValue = () => {
+    const cards = sortByValue(person.hand)
+    setNewHand(person, cards)
+  }
 
   return (
     <CardRow>
       <div>
-        <button onClick={() => sortByValue(person)}>Sortera efter värde</button>
+        <button onClick={() => sortHandByValue()}>Sortera efter värde</button>
       </div>
       {hand.map((card, index) => (
         <CardButton onClick={() => toggleStaged(person, card)} key={index}>

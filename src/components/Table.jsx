@@ -11,7 +11,7 @@ export const Table = () => {
   }, [])
 
   const lastCardThrown = discardPile.slice(-1)[0]
-  const topOfTheStock = stock.slice(1)[0]
+  const topOfTheStock = stock.slice(0)[0]
 
   const handleClick = (card, pile) => {
     if (gameStageIndex === 1) {
