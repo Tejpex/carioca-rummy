@@ -2,12 +2,14 @@ import styled from "styled-components"
 import { useCarioca } from "../contexts/CariocaContext"
 
 export const Header = () => {
-  const { gameStages, contracts, gameStageIndex } = useCarioca()
+  const { gameStages, contracts, gameStageIndex, player, computer } = useCarioca()
 
   return (
     <HeaderDiv>
       <Title>Carioca Rummy</Title>
-      <Info>Mål: {contracts[0]} Att göra: {gameStages[gameStageIndex]}</Info>
+      <Info>Mål: {contracts[0]}</Info>
+      <Info>Att göra: {gameStages[gameStageIndex]}</Info>
+      <Score>Dina poäng: {player.score} Datorns poäng: {computer.score}</Score>
     </HeaderDiv>
   )
 }
@@ -21,6 +23,11 @@ const Title = styled.h1`
 const Info = styled.h2`
   margin: 0 10px;
   font-size: 22px;
+  color: white;
+`
+
+const Score = styled.p`
+  font-size: 14px;
   color: white;
 `
 

@@ -8,12 +8,14 @@ const CariocaContext = createContext()
 export const CariocaProvider = ({ children }) => {
   const [player, setPlayer] = useState({
     hand: [],
-    table: []
+    table: [],
+    score: 0
   })
 
   const [computer, setComputer] = useState({
     hand: [],
-    table: []
+    table: [],
+    score: 0
   })
   
   const [discardPile, setDiscardPile] = useState([])
