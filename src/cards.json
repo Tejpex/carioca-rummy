@@ -26,70 +26,70 @@
     "color": "red",
     "img": "/Hjarter-4.png",
     "staged": false,
-    "name": "Four"
+    "name": "Four of Hearts"
     },
   {"suit": "Hearts",
     "value": 5,
     "color": "red",
     "img": "/Hjarter-5.png",
     "staged": false,
-    "name": "Five"
+    "name": "Five of Hearts"
     },
   {"suit": "Hearts",
     "value": 6,
     "color": "red",
     "img": "/Hjarter-6.png",
     "staged": false,
-    "name": "Six"
+    "name": "Six of Hearts"
     },
   {"suit": "Hearts",
     "value": 7,
     "color": "red",
     "img": "/Hjarter-7.png",
     "staged": false,
-    "name": "Seven"
+    "name": "Seven of Hearts"
     },
   {"suit": "Hearts",
     "value": 8,
     "color": "red",
     "img": "/Hjarter-8.png",
     "staged": false,
-    "name": "Eight"
+    "name": "Eight of Hearts"
     },
   {"suit": "Hearts",
     "value": 9,
     "color": "red",
     "img": "/Hjarter-9.png",
     "staged": false,
-    "name": "Nine"
+    "name": "Nine of Hearts"
     },
   {"suit": "Hearts",
     "value": 10,
     "color": "red",
     "img": "/Hjarter-10.png",
     "staged": false,
-    "name": "Ten"
+    "name": "Ten of Hearts"
     },
   {"suit": "Hearts",
     "value": 11,
     "color": "red",
     "img": "/Hjarter-Kn.png",
     "staged": false,
-    "name": "Jack"
+    "name": "Jack of Hearts"
     },
   {"suit": "Hearts",
     "value": 12,
     "color": "red",
     "img": "/Hjarter-D.png",
     "staged": false,
-    "name": "Queen"
+    "name": "Queen of Hearts"
     },
   {"suit": "Hearts",
     "value": 13,
     "color": "red",
     "img": "/Hjarter-K.png",
     "staged": false,
-    "name": "King"
+    "name": "King of Hearts"
     },
   {"suit": "Spades",
     "value": 1,
@@ -369,91 +369,91 @@
     "color": "red",
     "img": "/Hjarter-1.png",
     "staged": false,
-    "name": "Ace"
+    "name": "Ace of Hearts"
     },
   {"suit": "Hearts",
     "value": 2,
     "color": "red",
     "img": "/Hjarter-2.png",
     "staged": false,
-    "name": "Two"
+    "name": "Two of Hearts"
     },
   {"suit": "Hearts",
     "value": 3,
     "color": "red",
     "img": "/Hjarter-3.png",
     "staged": false,
-    "name": "Three"
+    "name": "Three of Hearts"
     },
   {"suit": "Hearts",
     "value": 4,
     "color": "red",
     "img": "/Hjarter-4.png",
     "staged": false,
-    "name": "Four"
+    "name": "Four of Hearts"
     },
   {"suit": "Hearts",
     "value": 5,
     "color": "red",
     "img": "/Hjarter-5.png",
     "staged": false,
-    "name": "Five"
+    "name": "Five of Hearts"
     },
   {"suit": "Hearts",
     "value": 6,
     "color": "red",
     "img": "/Hjarter-6.png",
     "staged": false,
-    "name": "Six"
+    "name": "Six of Hearts"
     },
   {"suit": "Hearts",
     "value": 7,
     "color": "red",
     "img": "/Hjarter-7.png",
     "staged": false,
-    "name": "Seven"
+    "name": "Seven of Hearts"
     },
   {"suit": "Hearts",
     "value": 8,
     "color": "red",
     "img": "/Hjarter-8.png",
     "staged": false,
-    "name": "Eight"
+    "name": "Eight of Hearts"
     },
   {"suit": "Hearts",
     "value": 9,
     "color": "red",
     "img": "/Hjarter-9.png",
     "staged": false,
-    "name": "Nine"
+    "name": "Nine of Hearts"
     },
   {"suit": "Hearts",
     "value": 10,
     "color": "red",
     "img": "/Hjarter-10.png",
     "staged": false,
-    "name": "Ten"
+    "name": "Ten of Hearts"
     },
   {"suit": "Hearts",
     "value": 11,
     "color": "red",
     "img": "/Hjarter-Kn.png",
     "staged": false,
-    "name": "Jack"
+    "name": "Jack of Hearts"
     },
   {"suit": "Hearts",
     "value": 12,
     "color": "red",
     "img": "/Hjarter-D.png",
     "staged": false,
-    "name": "Queen"
+    "name": "Queen of Hearts"
     },
   {"suit": "Hearts",
     "value": 13,
     "color": "red",
     "img": "/Hjarter-K.png",
     "staged": false,
-    "name": "King"
+    "name": "King of Hearts"
     },
   {"suit": "Spades",
     "value": 1,

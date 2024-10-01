@@ -77,8 +77,8 @@ export const CariocaProvider = ({ children }) => {
       index ++
     }
 
-    setPlayer({ ...player, hand: newPlayerCards })
-    setComputer({ ...computer, hand: newComputerCards})
+    setPlayer({ ...player, hand: newPlayerCards, table: []})
+    setComputer({ ...computer, hand: newComputerCards, table: []})
     setDiscardPile(newDiscardPile)
     setStock(newStock)
     setGameStageIndex(1)
@@ -124,8 +124,19 @@ export const CariocaProvider = ({ children }) => {
       cardsToCheck[1].value === cardsToCheck[2].value) {
         playCards(person, cardsToCheck)
     } else if (checkReachedGoal(person)) {
-      //cardsToCheck.map()
-      alert("Mål nått")
+      const playerTableCount = countCards(player.table)
+      const computerTableCount = countCards(computer.table)
+      let cardsToPlay = []
+      cardsToCheck.map((card) => {
+        if (playerTableCount[card.value] >= 3) {
+          cardsToPlay.push(card)
+        } else if (computerTableCount[card.value] >= 3) {
+          cardsToPlay.push(card)
+        } else {
+          alert("Kortet matchar inte något på bordet.")
+        }
+      })
+      playCards(person, cardsToPlay)
     } else {
       alert("Det behövs tre kort av samma värde för att spela triss.")
     }
@@ -160,7 +171,7 @@ export const CariocaProvider = ({ children }) => {
       setDiscardPile(newDPile)
       computerPlay(cardsToThrow[0])
     } else {
-      alert("Du kan bara slänga ett kort.")
+      alert("Välj ett kort att slänga.")
     }
   }
 
