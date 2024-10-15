@@ -22,14 +22,54 @@ export const CariocaProvider = ({ children }) => {
   const [stock, setStock] = useState([])
 
   const contracts = [
-    "2 triss",
-    "1 triss, 1 stege",
-    "2 stegar",
-    "3 triss",
-    "2 triss, 1 stege",
-    "1 triss, 2 stegar",
-    "4 triss",
-    "3 stegar",
+    {
+      index: 0,
+      name: "2 triss",
+      trios: 2,
+      scalas: 0,
+    },
+    {
+      index: 1,
+      name: "1 triss, 1 stege",
+      trios: 1,
+      scalas: 1,
+    },
+    {
+      index: 2,
+      name: "2 stegar",
+      trios: 0,
+      scalas: 2,
+    },
+    {
+      index: 3,
+      name: "3 triss",
+      trios: 3,
+      scalas: 0,
+    },
+    {
+      index: 4,
+      name: "2 triss, 1 stege",
+      trios: 2,
+      scalas: 1,
+    },
+    {
+      index: 5,
+      name: "1 triss, 2 stegar",
+      trios: 1,
+      scalas: 2,
+    },
+    {
+      index: 6,
+      name: "4 triss",
+      trios: 4,
+      scalas: 0,
+    },
+    {
+      index: 7,
+      name: "3 stegar",
+      trios: 0,
+      scalas: 3,
+    }
   ]
   const [contractNumber, setContractNumber] = useState(0)
 

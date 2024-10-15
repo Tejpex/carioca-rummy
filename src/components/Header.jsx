@@ -7,9 +7,12 @@ export const Header = () => {
   return (
     <HeaderDiv>
       <Title>Carioca Rummy</Title>
-      <Info>Mål: {contracts[contractNumber]}</Info>
+      <Info>Mål: {contracts[contractNumber].name}</Info>
       <Info>Att göra: {gameStages[gameStageIndex]}</Info>
-      <Score>Dina poäng: {player.score} Datorns poäng: {computer.score}</Score>
+      <ScoreDiv>
+        <Score>Dina poäng: {player.score}</Score>
+        <Score>Datorns poäng: {computer.score}</Score>
+      </ScoreDiv>
     </HeaderDiv>
   )
 }
@@ -31,6 +34,12 @@ const Score = styled.p`
   color: white;
 `
 
+const ScoreDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-right: 80px;
+`
+
 const HeaderDiv = styled.div`
   background-color: black;
   width: 100vw;
@@ -38,5 +47,5 @@ const HeaderDiv = styled.div`
   padding: 10px 30px;
   display: flex;
   align-items: center;
-  justify-content: flex-start; 
+  justify-content: space-between; 
 `
