@@ -3,10 +3,10 @@ import { useEffect } from "react"
 import { useCarioca } from "../contexts/CariocaContext"
 
 export const Table = () => {
-  const { player, discardPile, stock, dealCards, takeCard, gameStageIndex } = useCarioca()
+  const { player, discardPile, stock, startNewGame, takeCard, gameStageIndex } = useCarioca()
 
   useEffect(() => {
-    dealCards()
+    startNewGame()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

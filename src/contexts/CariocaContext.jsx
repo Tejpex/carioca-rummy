@@ -31,35 +31,66 @@ export const CariocaProvider = ({ children }) => {
     "4 triss",
     "3 stegar",
   ]
+  const [contractNumber, setContractNumber] = useState(0)
 
   const gameStages = ["Dela ut kort", "Ta ett kort", "Spela kort eller släng ett kort", "Datorn spelar"]
   const [gameStageIndex, setGameStageIndex] = useState(0)
 
-  const setNewHand = (person, newHand) => {
-    if (person === player) {
-      setPlayer({ ...player, hand: newHand })
-    } else if (person === computer) {
-      setComputer({ ...computer, hand: newHand })
-    }
-  }
-
-  const setNewTable = (person, newTable) => {
-    if (person === player) {
-      setPlayer({ ...player, table: newTable })
-    } else if (person === computer) {
-      setComputer({ ...computer, table: newTable })
-    }
+  //Helper functions to calculate things
+  const countCardsByValue = (cards) => {
+    const counterSameValue = {}
+    cards.forEach((card) => {
+      if (counterSameValue[card.value]) {
+        counterSameValue[card.value] += 1
+      } else {
+        counterSameValue[card.value] = 1
+      }
+    })
+    return counterSameValue
   }
   
-  const dealCards = () => {
-    let index = 0
-    const deckInPlay = [...cards]
-    const newPlayerCards = []
-    const newComputerCards = []
-    const newDiscardPile = []
-    const newStock = []
+  const sortByValue = (cards) => {
+    const sortedCards = [...cards]
+    sortedCards.sort((a, b) => a.value - b.value)
+    return sortedCards
+  }
 
-    while (index <= cards.length) {
+  const addCardsTogether = (oldCards, newCard) => {
+    const newCards = [...oldCards, newCard]
+    return newCards
+  }
+
+  const checkReachedGoal = (person) => {
+    const table = person.table
+    let triosReached = 0
+    for (const [key, value] of Object.entries(countCardsByValue(table))) {
+      if (value >= 3) {
+        triosReached += 1
+      }
+    }
+    if (triosReached >= 2) {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  const countPoints = (person) => {
+    let newPoint = 0
+    person.hand.forEach((card) => (newPoint += card.value))
+    return newPoint
+  }
+
+  //Helper functions to move around cards
+  const dealCards = () => {
+    const deckInPlay = [...cards] //Make copy of all cards to use in play
+    const newPlayerCards = [] //Collects players cards
+    const newComputerCards = [] //Collects computers cards
+    const newDiscardPile = [] //Collects cards in discard pile
+    const newStock = [] //Collects cards in stock
+    let index = 0 //Counts how many cards have been dealt
+
+    while (index < cards.length) {
       const card = deckInPlay[Math.floor(Math.random()*deckInPlay.length)]
 
       if (index === 24) {
@@ -83,33 +114,22 @@ export const CariocaProvider = ({ children }) => {
     setComputer({ ...computer, hand: newComputerCards, table: []})
     setDiscardPile(newDiscardPile)
     setStock(newStock)
-    setGameStageIndex(1)
   }
 
-  const sortByValue = (cards) => {
-    const sortedCards = [...cards]
-    sortedCards.sort((a, b) => a.value - b.value)
-    return sortedCards
-  }
-
-  const addCards = (oldCards, newCard) => {
-    const newCards = [...oldCards, newCard]
-    return newCards
-  }
-
-  const takeCard = (person, card, pile) => {
-    const hand = person.hand
-    setNewHand(person, addCards(hand, card))
-
-    const newPile = [...pile]
-    if (pile === discardPile) {
-      const newDiscard = newPile.toSpliced(-1, 1)
-      setDiscardPile(newDiscard)
-    } else if (pile === stock) {
-      const newStock = newPile.toSpliced(0, 1)
-      setStock(newStock)
+  const setNewHand = (person, newHand) => {
+    if (person === player) {
+      setPlayer({ ...player, hand: newHand })
+    } else if (person === computer) {
+      setComputer({ ...computer, hand: newHand })
     }
-    setGameStageIndex(gameStageIndex + 1)
+  }
+
+  const setNewTable = (person, newTable) => {
+    if (person === player) {
+      setPlayer({ ...player, table: newTable })
+    } else if (person === computer) {
+      setComputer({ ...computer, table: newTable })
+    }
   }
   
   const toggleStaged = (person, card) => {
@@ -120,6 +140,59 @@ export const CariocaProvider = ({ children }) => {
     setNewHand(person, newHand)
   }
 
+  const moveCardsToHand = (person, card, pile) => {
+    const hand = person.hand
+    setNewHand(person, addCardsTogether(hand, card))
+
+    const newPile = [...pile]
+    if (pile === discardPile) {
+      const newDiscard = newPile.toSpliced(-1, 1)
+      setDiscardPile(newDiscard)
+    } else if (pile === stock) {
+      const newStock = newPile.toSpliced(0, 1)
+      setStock(newStock)
+    }
+  }
+
+  const playCards = (person, cards) => {
+    const hand = person.hand
+    const newHand = [...hand]
+    const table = person.table
+    const newTable = [...table]
+
+    cards.map((card) => {
+      newTable.push(card)
+      newHand.splice(newHand.indexOf(card), 1)
+    })
+
+    if (person === player) {
+      setPlayer({ ...player, hand: newHand, table: newTable })
+    } else if (person === computer) {
+      setComputer({ ...computer, hand: newHand, table: newTable })
+    }
+  }
+
+  //Functions to handle gameplay
+  const startNewGame = () => {
+    dealCards()
+    setContractNumber(0)
+    setGameStageIndex(1)
+  }
+
+  const nextContract = () => {
+    dealCards()
+    setContractNumber(contractNumber + 1)
+    setGameStageIndex(1)
+    
+  }
+
+  const takeCard = (person, card, pile) => {
+    moveCardsToHand(person, card, pile)
+    setGameStageIndex(2)
+  }
+  
+  
+
   const checkForTrio = (person) => {
     const hand = person.hand
     const cardsToCheck = hand.filter((card) => card.staged)
@@ -129,8 +202,8 @@ export const CariocaProvider = ({ children }) => {
       cardsToCheck[1].value === cardsToCheck[2].value) {
         playCards(person, cardsToCheck)
     } else if (checkReachedGoal(person)) {
-      const playerTableCount = countCards(player.table)
-      const computerTableCount = countCards(computer.table)
+      const playerTableCount = countCardsByValue(player.table)
+      const computerTableCount = countCardsByValue(computer.table)
       let cardsToPlay = []
       cardsToCheck.map((card) => {
         if (playerTableCount[card.value] >= 3) {
@@ -145,28 +218,10 @@ export const CariocaProvider = ({ children }) => {
     } else {
       alert("Det behövs tre kort av samma värde för att spela triss.")
     }
-  }
-    
-  const playCards = (person, cards) => {
-    const hand = person.hand 
-    const newHand = [...hand]
-    const table = person.table
-    const newTable = [...table]
-    
-    cards.map((card) => {
-      newTable.push(card)
-      newHand.splice(newHand.indexOf(card), 1)
-    })
-
-    if (person === player) {
-      setPlayer({ ...player, hand: newHand, table: newTable })
-    } else if (person === computer) {
-      setComputer({ ...computer, hand: newHand, table: newTable })
-    }
-
     checkForWin()
   }
-
+    
+  
   const throwCard = (person) => {
     const hand = person.hand
     const cardsToThrow = hand.filter((card) => card.staged)
@@ -182,40 +237,18 @@ export const CariocaProvider = ({ children }) => {
       alert("Välj ett kort att slänga.")
     }
   }
-
-  const countCards = (cards) => {
-    const counterSameValue = {}
-    cards.forEach((card) => {
-      if (counterSameValue[card.value]) {
-        counterSameValue[card.value] += 1
-      } else {
-        counterSameValue[card.value] = 1
-      }
-    })
-    return counterSameValue
-  }
-
-  const checkReachedGoal = (person) => {
-    const table = person.table
-    let triosReached = 0
-    for (const [key, value] of Object.entries(countCards(table))) {
-      if (value >= 3) {
-        triosReached += 1
-      }
-    }
-    if (triosReached >= 2) {
-      return true
-    } else {
-      return false
-    }
-  }
+ 
 
   const checkForWin = () => {
+    const pPoint = countPoints(player)
+    const cPoint = countPoints(computer)
     if (player.hand.length === 0) {
-      alert("Du vann omgången.")
+      alert(`Du vann omgången. Datorn fick ${cPoint} poäng.`)
+      setComputer({ ...computer, score: cPoint })
     }
     if (computer.hand.length === 0) {
-      alert("Datorn vann omgången.")
+      alert(`Datorn vann omgången. Du fick ${pPoint} poäng.`)
+      setPlayer({ ...player, score: pPoint })
     }
   }
 
@@ -225,7 +258,7 @@ export const CariocaProvider = ({ children }) => {
     let cardPicked = {}
     const newDiscardPile = [...discardPile]
 
-    if (countCards(computer.hand)[lastCardThrown.value] >= 2) { //Two cards in hand with same value as lastCardThrown
+    if (countCardsByValue(computer.hand)[lastCardThrown.value] >= 2) { //Two cards in hand with same value as lastCardThrown
       cardPicked = lastCardThrown
     } else {
       cardPicked = topOfTheStock
@@ -239,7 +272,7 @@ export const CariocaProvider = ({ children }) => {
     const newHand = [...computer.hand, cardPicked]
     let trioCards = []
     let singleCards = []
-    for (const [key, value] of Object.entries(countCards(newHand))) {
+    for (const [key, value] of Object.entries(countCardsByValue(newHand))) {
       if (value >= 3) {
         const sameValueCards = newHand.filter((card) => card.value === Number(key))
         trioCards.push(sameValueCards[0])
@@ -257,10 +290,16 @@ export const CariocaProvider = ({ children }) => {
       newHand.splice(newHand.indexOf(card), 1)
     })
 
-    singleCards.sort((a, b) => a.value - b.value)
-    const highestSingle = singleCards.slice(-1)[0]
-    newHand.splice(newHand.indexOf(highestSingle), 1)
-    newDiscardPile.push(highestSingle)
+    if (singleCards.length > 0) {
+      singleCards.sort((a, b) => a.value - b.value)
+      const highestSingle = singleCards.slice(-1)[0]
+      newHand.splice(newHand.indexOf(highestSingle), 1)
+      newDiscardPile.push(highestSingle)
+    } else { // If computer has no singles
+      const highestValueCard = sortByValue(newHand).slice(-1)[0]
+      newHand.splice(newHand.indexOf(highestValueCard), 1)
+      newDiscardPile.push(highestValueCard)
+    }
 
     setTimeout(() => setDiscardPile(newDiscardPile), 1500) 
     setTimeout(() => setComputer({ ...computer, hand: newHand, table: newTable }), 2000)
@@ -270,7 +309,7 @@ export const CariocaProvider = ({ children }) => {
   
   return (
     <CariocaContext.Provider
-      value={{ player, computer, discardPile, stock, gameStageIndex, dealCards, contracts, sortByValue, takeCard, toggleStaged, checkForTrio, throwCard, gameStages, setNewHand }}
+      value={{ player, computer, discardPile, stock, gameStageIndex, contracts, contractNumber, startNewGame, sortByValue, takeCard, toggleStaged, checkForTrio, throwCard, gameStages, setNewHand }}
     >
       {children}
     </CariocaContext.Provider>
