@@ -287,21 +287,26 @@ export const CariocaProvider = ({ children }) => {
       setMessage(`Du vann omgången. Datorn fick ${cPoint} poäng.`)
       setComputer({ ...computer, score: cPoint })
       setTimeout(() => setMessage(""), 2000)
-    }
-    if (computer.hand.length === 0) {
+    } else if (computer.hand.length === 0) {
       setMessage(`Datorn vann omgången. Du fick ${pPoint} poäng.`)
       setPlayer({ ...player, score: pPoint })
       setTimeout(() => setMessage(""), 2000)
+    } else {
+
     }
   }
 
   const computerPlay = (lastCardThrown) => {
-    setGameStageIndex(3) // Computers turn
+    // Computers turn starts
+    setGameStageIndex(3)
+
+    // Decide which card to pick and pick it
     const topOfTheStock = stock.slice(0)[0]
     let cardPicked = {}
     const newDiscardPile = [...discardPile]
 
-    if (countCardsByValue(computer.hand)[lastCardThrown.value] >= 2) { //Two cards in hand with same value as lastCardThrown
+    if (countCardsByValue(computer.hand)[lastCardThrown.value] >= 2) {
+      //Two cards in hand with same value as lastCardThrown
       cardPicked = lastCardThrown
     } else {
       cardPicked = topOfTheStock
@@ -310,42 +315,52 @@ export const CariocaProvider = ({ children }) => {
       //Remove top card from stock
       const newStock = [...stock].toSpliced(0, 1)
       setTimeout(() => setStock(newStock), 1500)
-    }    
-    
+    }
+
+    // Decide which cards to play and which to throw
     const newHand = [...computer.hand, cardPicked]
     let trioCards = []
     let singleCards = []
     for (const [key, value] of Object.entries(countCardsByValue(newHand))) {
       if (value >= 3) {
-        const sameValueCards = newHand.filter((card) => card.value === Number(key))
+        const sameValueCards = newHand.filter(
+          (card) => card.value === Number(key)
+        )
         trioCards.push(sameValueCards[0])
         trioCards.push(sameValueCards[1])
         trioCards.push(sameValueCards[2])
       } else if (value === 1) {
         const lonelyCards = newHand.filter((card) => card.value === Number(key))
-        singleCards.push(lonelyCards[0])
+        singleCards.push(lonelyCards[0]) //For use when throwing away cards
       }
     }
 
+    // Play cards
     const newTable = [...computer.table]
     trioCards.map((card) => {
       newTable.push(card)
       newHand.splice(newHand.indexOf(card), 1)
     })
 
+    // Decide which card to throw and throw it
     if (singleCards.length > 0) {
       singleCards.sort((a, b) => a.value - b.value)
       const highestSingle = singleCards.slice(-1)[0]
       newHand.splice(newHand.indexOf(highestSingle), 1)
       newDiscardPile.push(highestSingle)
-    } else { // If computer has no singles
+    } else {
+      // If computer has no singles
       const highestValueCard = sortByValue(newHand).slice(-1)[0]
       newHand.splice(newHand.indexOf(highestValueCard), 1)
       newDiscardPile.push(highestValueCard)
     }
 
-    setTimeout(() => setDiscardPile(newDiscardPile), 1500) 
-    setTimeout(() => setComputer({ ...computer, hand: newHand, table: newTable }), 2000)
+    // Make all changes in hands, piles and on table
+    setTimeout(() => setDiscardPile(newDiscardPile), 1500)
+    setTimeout(
+      () => setComputer({ ...computer, hand: newHand, table: newTable }),
+      2000
+    )
     setTimeout(() => checkForWin(), 2500)
     setTimeout(() => setGameStageIndex(1), 3000)
   }
