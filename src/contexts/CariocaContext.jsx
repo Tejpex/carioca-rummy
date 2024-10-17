@@ -122,6 +122,16 @@ export const CariocaProvider = ({ children }) => {
     return newPoint
   }
 
+  const somebodyHasWon = (hand) => {
+    if (
+      hand.length === 0 ||
+      player.hand.length === 0 ||
+      computer.hand.length === 0
+    ) {
+      return true
+    }
+  }
+
   //Helper functions to move around cards
   const dealCards = () => {
     const deckInPlay = [...cards] //Make copy of all cards to use in play
@@ -211,6 +221,9 @@ export const CariocaProvider = ({ children }) => {
     } else if (person === computer) {
       setComputer({ ...computer, hand: newHand, table: newTable })
     }
+    if (somebodyHasWon(newHand)) {
+      handleWin(person, newHand)
+    }
   }
 
   //Functions to handle gameplay
@@ -259,7 +272,6 @@ export const CariocaProvider = ({ children }) => {
     } else {
       alert("Det behövs tre kort av samma värde för att spela triss.")
     }
-    checkForWin()
   }
     
   
@@ -272,28 +284,29 @@ export const CariocaProvider = ({ children }) => {
       newDPile.map(card => card.staged = false)
       hand.splice(hand.indexOf(cardsToThrow[0]), 1)
       setDiscardPile(newDPile)
-      checkForWin()
-      computerPlay(cardsToThrow[0])
+      if (somebodyHasWon(hand)) {
+        handleWin(person, hand)
+      } else {
+        computerPlay(cardsToThrow[0])
+      }   
     } else {
       alert("Välj ett kort att slänga.")
     }
   }
- 
 
-  const checkForWin = () => {
+  const handleWin = (person, hand) => {
     const pPoint = countPoints(player)
     const cPoint = countPoints(computer)
-    if (player.hand.length === 0) {
+    if (person === player && hand.length === 0) {
       setMessage(`Du vann omgången. Datorn fick ${cPoint} poäng.`)
       setComputer({ ...computer, score: cPoint })
-      setTimeout(() => setMessage(""), 2000)
-    } else if (computer.hand.length === 0) {
+    } 
+    if (person === computer && hand.length === 0) {
       setMessage(`Datorn vann omgången. Du fick ${pPoint} poäng.`)
       setPlayer({ ...player, score: pPoint })
-      setTimeout(() => setMessage(""), 2000)
-    } else {
-
     }
+    setTimeout(() => setMessage(""), 2000)
+    setTimeout(() => alert("Next round"), 2100)
   }
 
   const computerPlay = (lastCardThrown) => {
@@ -361,8 +374,11 @@ export const CariocaProvider = ({ children }) => {
       () => setComputer({ ...computer, hand: newHand, table: newTable }),
       2000
     )
-    setTimeout(() => checkForWin(), 2500)
-    setTimeout(() => setGameStageIndex(1), 3000)
+    if (somebodyHasWon(newHand)) {
+      handleWin(computer, newHand)
+    } else {
+      setTimeout(() => setGameStageIndex(1), 3000)
+    }
   }
   
   return (
