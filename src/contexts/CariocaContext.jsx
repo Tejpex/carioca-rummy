@@ -236,8 +236,7 @@ export const CariocaProvider = ({ children }) => {
   const nextContract = () => {
     dealCards()
     setContractNumber(contractNumber + 1)
-    setGameStageIndex(1)
-    
+    setGameStageIndex(1)   
   }
 
   const takeCard = (person, card, pile) => {
@@ -306,7 +305,7 @@ export const CariocaProvider = ({ children }) => {
       setPlayer({ ...player, score: pPoint })
     }
     setTimeout(() => setMessage(""), 2000)
-    setTimeout(() => alert("Next round"), 2100)
+    setTimeout(nextContract, 2100)
   }
 
   const computerPlay = (lastCardThrown) => {
