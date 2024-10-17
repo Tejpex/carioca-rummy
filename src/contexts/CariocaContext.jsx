@@ -6,6 +6,7 @@ import cards from "../cards.json"
 const CariocaContext = createContext()
 
 export const CariocaProvider = ({ children }) => {
+  const [message, setMessage] = useState()
   const [player, setPlayer] = useState({
     hand: [],
     table: [],
@@ -283,12 +284,14 @@ export const CariocaProvider = ({ children }) => {
     const pPoint = countPoints(player)
     const cPoint = countPoints(computer)
     if (player.hand.length === 0) {
-      alert(`Du vann omgången. Datorn fick ${cPoint} poäng.`)
+      setMessage(`Du vann omgången. Datorn fick ${cPoint} poäng.`)
       setComputer({ ...computer, score: cPoint })
+      setTimeout(() => setMessage(""), 2000)
     }
     if (computer.hand.length === 0) {
-      alert(`Datorn vann omgången. Du fick ${pPoint} poäng.`)
+      setMessage(`Datorn vann omgången. Du fick ${pPoint} poäng.`)
       setPlayer({ ...player, score: pPoint })
+      setTimeout(() => setMessage(""), 2000)
     }
   }
 
@@ -349,7 +352,7 @@ export const CariocaProvider = ({ children }) => {
   
   return (
     <CariocaContext.Provider
-      value={{ player, computer, discardPile, stock, gameStageIndex, contracts, contractNumber, startNewGame, sortByValue, takeCard, toggleStaged, checkForTrio, throwCard, gameStages, setNewHand }}
+      value={{ player, computer, discardPile, stock, gameStageIndex, contracts, contractNumber, startNewGame, sortByValue, takeCard, toggleStaged, checkForTrio, throwCard, gameStages, setNewHand, message }}
     >
       {children}
     </CariocaContext.Provider>
