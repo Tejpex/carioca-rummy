@@ -10,13 +10,13 @@ export const CariocaProvider = ({ children }) => {
   const [player, setPlayer] = useState({
     hand: [],
     table: [],
-    score: 0
+    score: null
   })
 
   const [computer, setComputer] = useState({
     hand: [],
     table: [],
-    score: 0
+    score: null
   })
   
   const [discardPile, setDiscardPile] = useState([])
@@ -133,7 +133,7 @@ export const CariocaProvider = ({ children }) => {
   }
 
   //Helper functions to move around cards
-  const dealCards = () => {
+  const dealCards = (pScore, cScore) => {
     const deckInPlay = [...cards] //Make copy of all cards to use in play
     const newPlayerCards = [] //Collects players cards
     const newComputerCards = [] //Collects computers cards
@@ -161,8 +161,8 @@ export const CariocaProvider = ({ children }) => {
       index ++
     }
 
-    setPlayer({ ...player, hand: newPlayerCards, table: []})
-    setComputer({ ...computer, hand: newComputerCards, table: []})
+    setPlayer({ ...player, hand: newPlayerCards, table: [], score: pScore})
+    setComputer({ ...computer, hand: newComputerCards, table: [], score: cScore})
     setDiscardPile(newDiscardPile)
     setStock(newStock)
   }
@@ -228,13 +228,13 @@ export const CariocaProvider = ({ children }) => {
 
   //Functions to handle gameplay
   const startNewGame = () => {
-    dealCards()
+    dealCards(0, 0)
     setContractNumber(0)
     setGameStageIndex(1)
   }
 
-  const nextContract = () => {
-    dealCards()
+  const nextContract = (pScore, cScore) => {
+    dealCards(pScore, cScore)
     setContractNumber(contractNumber + 1)
     setGameStageIndex(1)   
   }
@@ -294,18 +294,18 @@ export const CariocaProvider = ({ children }) => {
   }
 
   const handleWin = (person, hand) => {
-    const pPoint = countPoints(player)
-    const cPoint = countPoints(computer)
+    let newPlayerScore = player.score
+    let newComputerScore = computer.score 
     if (person === player && hand.length === 0) {
-      setMessage(`Du vann omgången. Datorn fick ${cPoint} poäng.`)
-      setComputer({ ...computer, score: cPoint })
+      setMessage(`Du vann omgången. Datorn fick ${countPoints(computer)} poäng.`) 
+      newComputerScore += countPoints(computer)
     } 
     if (person === computer && hand.length === 0) {
-      setMessage(`Datorn vann omgången. Du fick ${pPoint} poäng.`)
-      setPlayer({ ...player, score: pPoint })
+      setMessage(`Datorn vann omgången. Du fick ${countPoints(player)} poäng.`)  
+      newPlayerScore += countPoints(player)
     }
     setTimeout(() => setMessage(""), 2000)
-    setTimeout(nextContract, 2100)
+    setTimeout(() => nextContract(newPlayerScore, newComputerScore), 2100)
   }
 
   const computerPlay = (lastCardThrown) => {
