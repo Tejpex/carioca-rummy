@@ -101,6 +101,27 @@ export const CariocaProvider = ({ children }) => {
     return newCards
   }
 
+  const cardsAreATrio = (cards) => {
+    const equalInValue = (cardSet) => {
+      return cardSet.every((card) => card.value === cardSet[0].value)
+    }
+    
+    if (cards.length >= 3 && equalInValue(cards)){
+      return true
+    }
+  }
+
+  const cardsAreAScala = (cards) => {
+    const sortedCards = sortByValue(cards)
+    if (
+      cards.length >= 4 &&
+      cards[0].value === cards[1].value &&
+      cards[1].value === cards[2].value
+    ) {
+      return true
+    }
+  }
+
   const checkReachedGoal = (person) => {
     const table = person.table
     let triosReached = 0
@@ -243,17 +264,13 @@ export const CariocaProvider = ({ children }) => {
     moveCardsToHand(person, card, pile)
     setGameStageIndex(2)
   }
-  
-  
 
-  const checkForTrio = (person) => {
+  const tryToPlayCards = (person) => {
     const hand = person.hand
     const cardsToCheck = hand.filter((card) => card.staged)
     
-    if (cardsToCheck.length === 3 && 
-      cardsToCheck[0].value === cardsToCheck[1].value && 
-      cardsToCheck[1].value === cardsToCheck[2].value) {
-        playCards(person, cardsToCheck)
+    if (cardsAreATrio(cardsToCheck) && contracts[contractNumber].trios > 0) {
+      playCards(person, cardsToCheck)
     } else if (checkReachedGoal(person)) {
       const playerTableCount = countCardsByValue(player.table)
       const computerTableCount = countCardsByValue(computer.table)
@@ -382,7 +399,7 @@ export const CariocaProvider = ({ children }) => {
   
   return (
     <CariocaContext.Provider
-      value={{ player, computer, discardPile, stock, gameStageIndex, contracts, contractNumber, startNewGame, sortByValue, takeCard, toggleStaged, checkForTrio, throwCard, gameStages, setNewHand, message }}
+      value={{ player, computer, discardPile, stock, gameStageIndex, contracts, contractNumber, startNewGame, sortByValue, takeCard, toggleStaged, tryToPlayCards, throwCard, gameStages, setNewHand, message, setMessage }}
     >
       {children}
     </CariocaContext.Provider>

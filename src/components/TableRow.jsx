@@ -2,7 +2,7 @@ import styled from "styled-components"
 import { useCarioca } from "../contexts/CariocaContext"
 
 export const TableRow = ({person}) => {
-  const { checkForTrio, throwCard, gameStageIndex } = useCarioca()
+  const { tryToPlayCards, throwCard, gameStageIndex, setMessage } = useCarioca()
   let table = person.table
   const messages = ["Delar ut kort...", "Börja med att ta ett kort.", "Din tur.", "Det är datorns tur."]
 
@@ -10,12 +10,13 @@ export const TableRow = ({person}) => {
   const handleClick = (command) => {
     if (gameStageIndex === 2) {
       if (command === "play") {
-        checkForTrio(person)
+        tryToPlayCards(person)
       } else if (command === "throw") {
         throwCard(person)
       }
     } else {
-      alert(messages[gameStageIndex])
+      setMessage(messages[gameStageIndex])
+      setTimeout(() => setMessage(""), 2000)
     }
   }
 
