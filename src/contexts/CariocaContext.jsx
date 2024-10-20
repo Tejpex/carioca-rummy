@@ -113,11 +113,29 @@ export const CariocaProvider = ({ children }) => {
 
   const cardsAreAScala = (cards) => {
     const sortedCards = sortByValue(cards)
-    if (
-      cards.length >= 4 &&
-      cards[0].value === cards[1].value &&
-      cards[1].value === cards[2].value
-    ) {
+    const equalSuit = (cardSet) => {
+      return cardSet.every((card) => card.suit === cardSet[0].suit)
+    }
+    const valuesIncreaseByOne = (cardSet) => {
+      console.log("Last", cardSet[cardSet.length - 1])
+      if (cardSet[0].value === 1 && cardSet[cardSet.length - 1].value === 13) {
+        alert("Special case")
+        return false
+      } else {
+        let checkingValue = cardSet[0].value - 1
+        cardSet.forEach((card) => {
+          if (card.value === checkingValue + 1) {
+            checkingValue = card.value
+          } else {
+            return false
+          }
+        })
+        if (checkingValue === cardSet[cardSet.length - 1].value) {
+          return true
+        }
+      }
+    }
+    if (cards.length >= 4 && equalSuit(sortedCards) && valuesIncreaseByOne(sortedCards)) {
       return true
     }
   }
@@ -270,6 +288,9 @@ export const CariocaProvider = ({ children }) => {
     const cardsToCheck = hand.filter((card) => card.staged)
     
     if (cardsAreATrio(cardsToCheck) && contracts[contractNumber].trios > 0) {
+      playCards(person, cardsToCheck)
+    // && contracts[contractNumber].scalas > 0
+    } else if (cardsAreAScala(cardsToCheck)) {
       playCards(person, cardsToCheck)
     } else if (checkReachedGoal(person)) {
       const playerTableCount = countCardsByValue(player.table)
