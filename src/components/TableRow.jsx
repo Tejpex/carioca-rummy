@@ -2,7 +2,7 @@ import styled from "styled-components"
 import { useCarioca } from "../contexts/CariocaContext"
 
 export const TableRow = ({person}) => {
-  const { tryToPlayCards, throwCard, gameStageIndex, setMessage } = useCarioca()
+  const { tryToPlayCards, throwCard, gameStageIndex, setMessage, player } = useCarioca()
   let table = person.table
   const messages = ["Delar ut kort...", "Börja med att ta ett kort.", "Din tur.", "Det är datorns tur."]
 
@@ -23,10 +23,12 @@ export const TableRow = ({person}) => {
   return (
     <>
       <TableCardRow>
-        <div>
-          <button onClick={() => handleClick("play")}>Spela kort</button>
-          <button onClick={() => handleClick("throw")}>Släng kort</button>
-        </div>
+        {person === player && (
+          <div>
+            <button onClick={() => handleClick("play")}>Spela kort</button>
+            <button onClick={() => handleClick("throw")}>Släng kort</button>
+          </div>
+        )}
         {table.map((card, index) => (
           <CardImage src={card.img} key={index} alt={card.name} />
         ))}
