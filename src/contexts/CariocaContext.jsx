@@ -7,16 +7,24 @@ const CariocaContext = createContext()
 
 export const CariocaProvider = ({ children }) => {
   const [message, setMessage] = useState()
+  let error = "Inget fel"
+
   const [player, setPlayer] = useState({
     hand: [],
-    table: [],
-    score: null
+    trioTable: [],
+    scalaTable: [],
+    score: null,
+    triosReached: false,
+    scalasReached: false,
   })
 
   const [computer, setComputer] = useState({
     hand: [],
-    table: [],
-    score: null
+    trioTable: [],
+    scalaTable: [],
+    score: null,
+    triosReached: false,
+    scalasReached: false,
   })
   
   const [discardPile, setDiscardPile] = useState([])
@@ -106,7 +114,13 @@ export const CariocaProvider = ({ children }) => {
       return cardSet.every((card) => card.value === cardSet[0].value)
     }
     
-    if (cards.length >= 3 && equalInValue(cards)){
+    if (cards.length < 3){
+      error = "Det behövs minst tre kort för att spela en triss."
+      return false
+    } else if (!equalInValue(cards)) {
+      error = "Korten har inte samma värde."
+      return false
+    } else {
       return true
     }
   }
@@ -117,9 +131,8 @@ export const CariocaProvider = ({ children }) => {
       return cardSet.every((card) => card.suit === cardSet[0].suit)
     }
     const valuesIncreaseByOne = (cardSet) => {
-      console.log("Last", cardSet[cardSet.length - 1])
       if (cardSet[0].value === 1 && cardSet[cardSet.length - 1].value === 13) {
-        alert("Special case")
+        error = "Kan inte hantera dessa stegar ännu."
         return false
       } else {
         let checkingValue = cardSet[0].value - 1
@@ -135,7 +148,17 @@ export const CariocaProvider = ({ children }) => {
         }
       }
     }
-    if (cards.length >= 4 && equalSuit(sortedCards) && valuesIncreaseByOne(sortedCards)) {
+
+    if (cards.length < 4) {
+      error = "Det behövs minst fyra kort för att spela en stege."
+      return false
+    } else if (!equalSuit(sortedCards)) {
+      error = "Korten har inte samma färg."
+      return false
+    } else if (!valuesIncreaseByOne(sortedCards)) {
+      error = "Korten bildar inte en stege."
+      return false
+    } else {
       return true
     }
   }
@@ -200,8 +223,20 @@ export const CariocaProvider = ({ children }) => {
       index ++
     }
 
-    setPlayer({ ...player, hand: newPlayerCards, table: [], score: pScore})
-    setComputer({ ...computer, hand: newComputerCards, table: [], score: cScore})
+    setPlayer({
+      ...player,
+      hand: newPlayerCards,
+      trioTable: [],
+      scalaTable: [],
+      score: pScore,
+    })
+    setComputer({
+      ...computer,
+      hand: newComputerCards,
+      trioTable: [],
+      scalaTable: [],
+      score: cScore,
+    })
     setDiscardPile(newDiscardPile)
     setStock(newStock)
   }
@@ -211,14 +246,6 @@ export const CariocaProvider = ({ children }) => {
       setPlayer({ ...player, hand: newHand })
     } else if (person === computer) {
       setComputer({ ...computer, hand: newHand })
-    }
-  }
-
-  const setNewTable = (person, newTable) => {
-    if (person === player) {
-      setPlayer({ ...player, table: newTable })
-    } else if (person === computer) {
-      setComputer({ ...computer, table: newTable })
     }
   }
   
@@ -244,10 +271,9 @@ export const CariocaProvider = ({ children }) => {
     }
   }
 
-  const playCards = (person, cards) => {
+  const placeCardsOnTable = (person, table, cards) => {
     const hand = person.hand
     const newHand = [...hand]
-    const table = person.table
     const newTable = [...table]
 
     cards.map((card) => {
@@ -255,11 +281,16 @@ export const CariocaProvider = ({ children }) => {
       newHand.splice(newHand.indexOf(card), 1)
     })
 
-    if (person === player) {
-      setPlayer({ ...player, hand: newHand, table: newTable })
-    } else if (person === computer) {
-      setComputer({ ...computer, hand: newHand, table: newTable })
+    if (person === player && table === person.trioTable) {
+      setPlayer({ ...player, hand: newHand, trioTable: newTable })
+    } else if (person === player && table === person.scalaTable) {
+      setPlayer({ ...player, hand: newHand, scalaTable: newTable })
+    } else if (person === computer && table === person.trioTable) {
+      setComputer({ ...computer, hand: newHand, trioTable: newTable })
+    } else if (person === computer && table === person.scalaTable) {
+      setPlayer({ ...player, hand: newHand, trioTable: newTable })
     }
+
     if (somebodyHasWon(newHand)) {
       handleWin(person, newHand)
     }
@@ -288,13 +319,12 @@ export const CariocaProvider = ({ children }) => {
     const cardsToCheck = hand.filter((card) => card.staged)
     
     if (cardsAreATrio(cardsToCheck) && contracts[contractNumber].trios > 0) {
-      playCards(person, cardsToCheck)
-    // && contracts[contractNumber].scalas > 0
-    } else if (cardsAreAScala(cardsToCheck)) {
-      playCards(person, cardsToCheck)
+      placeCardsOnTable(person, person.trioTable, cardsToCheck)
+    } else if (cardsAreAScala(cardsToCheck) && contracts[contractNumber].scalas > 0) {
+      placeCardsOnTable(person, person.scalaTable, cardsToCheck)
     } else if (checkReachedGoal(person)) {
-      const playerTableCount = countCardsByValue(player.table)
-      const computerTableCount = countCardsByValue(computer.table)
+      const playerTableCount = countCardsByValue(player.trioTable)
+      const computerTableCount = countCardsByValue(computer.trioTable)
       let cardsToPlay = []
       cardsToCheck.map((card) => {
         if (playerTableCount[card.value] >= 3) {
@@ -302,12 +332,14 @@ export const CariocaProvider = ({ children }) => {
         } else if (computerTableCount[card.value] >= 3) {
           cardsToPlay.push(card)
         } else {
-          alert("Kortet matchar inte något på bordet.")
+          setMessage("Kortet matchar inte något på bordet.")
+          setTimeout(() => setMessage(""), 2000)
         }
       })
-      playCards(person, cardsToPlay)
+      placeCardsOnTable(person, cardsToPlay)
     } else {
-      alert("Det behövs tre kort av samma värde för att spela triss.")
+      setMessage(error)
+      setTimeout(() => setMessage(""), 3000)
     }
   }
     
@@ -386,7 +418,7 @@ export const CariocaProvider = ({ children }) => {
     }
 
     // Play cards
-    const newTable = [...computer.table]
+    const newTable = [...computer.trioTable]
     trioCards.map((card) => {
       newTable.push(card)
       newHand.splice(newHand.indexOf(card), 1)
@@ -408,7 +440,7 @@ export const CariocaProvider = ({ children }) => {
     // Make all changes in hands, piles and on table
     setTimeout(() => setDiscardPile(newDiscardPile), 1500)
     setTimeout(
-      () => setComputer({ ...computer, hand: newHand, table: newTable }),
+      () => setComputer({ ...computer, hand: newHand, trioTable: newTable }),
       2000
     )
     if (somebodyHasWon(newHand)) {

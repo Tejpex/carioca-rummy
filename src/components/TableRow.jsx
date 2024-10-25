@@ -3,7 +3,8 @@ import { useCarioca } from "../contexts/CariocaContext"
 
 export const TableRow = ({person}) => {
   const { tryToPlayCards, throwCard, gameStageIndex, setMessage, player } = useCarioca()
-  let table = person.table
+  const trioTable = person.trioTable
+  const scalaTable = person.scalaTable
   const messages = ["Delar ut kort...", "Börja med att ta ett kort.", "Din tur.", "Det är datorns tur."]
 
 
@@ -29,7 +30,10 @@ export const TableRow = ({person}) => {
             <button onClick={() => handleClick("throw")}>Släng kort</button>
           </div>
         )}
-        {table.map((card, index) => (
+        {trioTable.map((card, index) => (
+          <CardImage src={card.img} key={index} alt={card.name} />
+        ))}
+        {scalaTable.map((card, index) => (
           <CardImage src={card.img} key={index} alt={card.name} />
         ))}
       </TableCardRow>
