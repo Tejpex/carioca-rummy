@@ -96,91 +96,91 @@
     "color": "black",
     "img": "/Spader-1.png",
     "staged": false,
-    "name": "Ace"
+    "name": "Ace of Spades"
     },
   {"suit": "Spades",
     "value": 2,
     "color": "black",
     "img": "/Spader-2.png",
     "staged": false,
-    "name": "Two"
+    "name": "Two of Spades"
     },
   {"suit": "Spades",
     "value": 3,
     "color": "black",
     "img": "/Spader-3.png",
     "staged": false,
-    "name": "Three"
+    "name": "Three of Spades"
     },
   {"suit": "Spades",
     "value": 4,
     "color": "black",
     "img": "/Spader-4.png",
     "staged": false,
-    "name": "Four"
+    "name": "Four of Spades"
     },
   {"suit": "Spades",
     "value": 5,
     "color": "black",
     "img": "/Spader-5.png",
     "staged": false,
-    "name": "Five"
+    "name": "Five of Spades"
     },
   {"suit": "Spades",
     "value": 6,
     "color": "black",
     "img": "/Spader-6.png",
     "staged": false,
-    "name": "Six"
+    "name": "Six of Spades"
     },
   {"suit": "Spades",
     "value": 7,
     "color": "black",
     "img": "/Spader-7.png",
     "staged": false,
-    "name": "Seven"
+    "name": "Seven of Spades"
     },
   {"suit": "Spades",
     "value": 8,
     "color": "black",
     "img": "/Spader-8.png",
     "staged": false,
-    "name": "Eight"
+    "name": "Eight of Spades"
     },
   {"suit": "Spades",
     "value": 9,
     "color": "black",
     "img": "/Spader-9.png",
     "staged": false,
-    "name": "Nine"
+    "name": "Nine of Spades"
     },
   {"suit": "Spades",
     "value": 10,
     "color": "black",
     "img": "/Spader-10.png",
     "staged": false,
-    "name": "Ten"
+    "name": "Ten of Spades"
     },
   {"suit": "Spades",
     "value": 11,
     "color": "black",
     "img": "/Spader-Kn.png",
     "staged": false,
-    "name": "Jack"
+    "name": "Jack of Spades"
     },
   {"suit": "Spades",
     "value": 12,
     "color": "black",
     "img": "/Spader-D.png",
     "staged": false,
-    "name": "Queen"
+    "name": "Queen of Spades"
     },
   {"suit": "Spades",
     "value": 13,
     "color": "black",
     "img": "/Spader-K.png",
     "staged": false,
-    "name": "King"
+    "name": "King of Spades"
     },
   {"suit": "Diamonds",
     "value": 1,
@@ -460,91 +460,91 @@
     "color": "black",
     "img": "/Spader-1.png",
     "staged": false,
-    "name": "Ace"
+    "name": "Ace of Spades"
     },
   {"suit": "Spades",
     "value": 2,
     "color": "black",
     "img": "/Spader-2.png",
     "staged": false,
-    "name": "Two"
+    "name": "Two of Spades"
     },
   {"suit": "Spades",
     "value": 3,
     "color": "black",
     "img": "/Spader-3.png",
     "staged": false,
-    "name": "Three"
+    "name": "Three of Spades"
     },
   {"suit": "Spades",
     "value": 4,
     "color": "black",
     "img": "/Spader-4.png",
     "staged": false,
-    "name": "Four"
+    "name": "Four of Spades"
     },
   {"suit": "Spades",
     "value": 5,
     "color": "black",
     "img": "/Spader-5.png",
     "staged": false,
-    "name": "Five"
+    "name": "Five of Spades"
     },
   {"suit": "Spades",
     "value": 6,
     "color": "black",
     "img": "/Spader-6.png",
     "staged": false,
-    "name": "Six"
+    "name": "Six of Spades"
     },
   {"suit": "Spades",
     "value": 7,
     "color": "black",
     "img": "/Spader-7.png",
     "staged": false,
-    "name": "Seven"
+    "name": "Seven of Spades"
     },
   {"suit": "Spades",
     "value": 8,
     "color": "black",
     "img": "/Spader-8.png",
     "staged": false,
-    "name": "Eight"
+    "name": "Eight of Spades"
     },
   {"suit": "Spades",
     "value": 9,
     "color": "black",
     "img": "/Spader-9.png",
     "staged": false,
-    "name": "Nine"
+    "name": "Nine of Spades"
     },
   {"suit": "Spades",
     "value": 10,
     "color": "black",
     "img": "/Spader-10.png",
     "staged": false,
-    "name": "Ten"
+    "name": "Ten of Spades"
     },
   {"suit": "Spades",
     "value": 11,
     "color": "black",
     "img": "/Spader-Kn.png",
     "staged": false,
-    "name": "Jack"
+    "name": "Jack of Spades"
     },
   {"suit": "Spades",
     "value": 12,
     "color": "black",
     "img": "/Spader-D.png",
     "staged": false,
-    "name": "Queen"
+    "name": "Queen of Spades"
     },
   {"suit": "Spades",
     "value": 13,
     "color": "black",
     "img": "/Spader-K.png",
     "staged": false,
-    "name": "King"
+    "name": "King of Spades"
     },
   {"suit": "Diamonds",
     "value": 1,
