@@ -104,6 +104,15 @@ export const CariocaProvider = ({ children }) => {
     return sortedCards
   }
 
+  const sortByColor = (cards) => {
+    const sortedCards = [...cards]
+    sortedCards.sort((a, b) => a.value - b.value)
+    sortedCards.sort((a, b) =>
+      a.suit > b.suit ? 1 : b.suit > a.suit ? -1 : 0
+    )
+    return sortedCards
+  }
+
   const addCardsTogether = (oldCards, newCard) => {
     const newCards = [...oldCards, newCard]
     return newCards
@@ -452,7 +461,7 @@ export const CariocaProvider = ({ children }) => {
   
   return (
     <CariocaContext.Provider
-      value={{ player, computer, discardPile, stock, gameStageIndex, contracts, contractNumber, startNewGame, sortByValue, takeCard, toggleStaged, tryToPlayCards, throwCard, gameStages, setNewHand, message, setMessage }}
+      value={{ player, computer, discardPile, stock, gameStageIndex, contracts, contractNumber, startNewGame, sortByValue, sortByColor, takeCard, toggleStaged, tryToPlayCards, throwCard, gameStages, setNewHand, message, setMessage }}
     >
       {children}
     </CariocaContext.Provider>

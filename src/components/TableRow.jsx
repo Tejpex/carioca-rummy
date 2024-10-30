@@ -25,10 +25,10 @@ export const TableRow = ({person}) => {
     <>
       <TableCardRow>
         {person === player && (
-          <div>
+          <ButtonBox>
             <button onClick={() => handleClick("play")}>Spela kort</button>
             <button onClick={() => handleClick("throw")}>Släng kort</button>
-          </div>
+          </ButtonBox>
         )}
         {trioTable.map((card, index) => (
           <CardImage src={card.img} key={index} alt={card.name} />
@@ -47,6 +47,12 @@ const TableCardRow = styled.div`
   padding: 15px;
   display: flex;
   justify-content: flex-start;
+`
+
+const ButtonBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 `
 
 const CardImage = styled.img`

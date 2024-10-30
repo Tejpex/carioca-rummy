@@ -4,6 +4,7 @@ import { useCarioca } from "../contexts/CariocaContext"
 export const HandRow = ({person}) => {
   const {
     sortByValue,
+    sortByColor,
     toggleStaged,
     setNewHand
   } = useCarioca()
@@ -15,11 +16,17 @@ export const HandRow = ({person}) => {
     setNewHand(person, cards)
   }
 
+  const sortHandByColor = () => {
+    const cards = sortByColor(person.hand)
+    setNewHand(person, cards)
+  }
+
   return (
     <CardRow>
-      <div>
+      <ButtonBox>
         <button onClick={() => sortHandByValue()}>Sortera efter värde</button>
-      </div>
+        <button onClick={() => sortHandByColor()}>Sortera efter färg</button>
+      </ButtonBox>
       {hand.map((card, index) => (
         <CardButton onClick={() => toggleStaged(person, card)} key={index}>
           {!card.staged && <CardImage src={card.img} alt={card.name} />}
@@ -29,6 +36,12 @@ export const HandRow = ({person}) => {
     </CardRow>
   )
 }
+
+const ButtonBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`
 
 const CardRow = styled.div`
   background-color: red;
