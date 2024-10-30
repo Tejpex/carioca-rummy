@@ -12,19 +12,19 @@ export const CariocaProvider = ({ children }) => {
   const [player, setPlayer] = useState({
     hand: [],
     trioTable: [],
+    triosReached: 0,
     scalaTable: [],
-    score: null,
-    triosReached: false,
-    scalasReached: false,
+    scalasReached: 0,
+    score: null
   })
 
   const [computer, setComputer] = useState({
     hand: [],
     trioTable: [],
+    triosReached: 0,
     scalaTable: [],
-    score: null,
-    triosReached: false,
-    scalasReached: false,
+    scalasReached: 0,
+    score: null
   })
   
   const [discardPile, setDiscardPile] = useState([])
@@ -119,15 +119,16 @@ export const CariocaProvider = ({ children }) => {
   }
 
   const cardsAreATrio = (cards) => {
+    const giveTrioErrors = contracts[contractNumber].trios > player.triosReached
     const equalInValue = (cardSet) => {
       return cardSet.every((card) => card.value === cardSet[0].value)
     }
     
-    if (cards.length < 3){
-      error = "Det behövs minst tre kort för att spela en triss."
+    if (cards.length < 3) {
+      error = giveTrioErrors ? "Det behövs minst tre kort för att spela en triss." : error
       return false
     } else if (!equalInValue(cards)) {
-      error = "Korten har inte samma värde."
+      error = giveTrioErrors ? "Korten har inte samma värde." : error
       return false
     } else {
       return true
@@ -135,13 +136,16 @@ export const CariocaProvider = ({ children }) => {
   }
 
   const cardsAreAScala = (cards) => {
+    const giveScalaErrors = contracts[contractNumber].scalas > player.scalasReached
     const sortedCards = sortByValue(cards)
     const equalSuit = (cardSet) => {
       return cardSet.every((card) => card.suit === cardSet[0].suit)
     }
     const valuesIncreaseByOne = (cardSet) => {
       if (cardSet[0].value === 1 && cardSet[cardSet.length - 1].value === 13) {
-        error = "Kan inte hantera dessa stegar ännu."
+        error = giveScalaErrors
+          ? "Kan inte hantera dessa stegar ännu."
+          : error
         return false
       } else {
         let checkingValue = cardSet[0].value - 1
@@ -159,31 +163,16 @@ export const CariocaProvider = ({ children }) => {
     }
 
     if (cards.length < 4) {
-      error = "Det behövs minst fyra kort för att spela en stege."
+      error = giveScalaErrors ? "Det behövs minst fyra kort för att spela en stege." : error
       return false
     } else if (!equalSuit(sortedCards)) {
-      error = "Korten har inte samma färg."
+      error = giveScalaErrors ? "Korten har inte samma färg." : error
       return false
     } else if (!valuesIncreaseByOne(sortedCards)) {
-      error = "Korten bildar inte en stege."
+      error = giveScalaErrors ? "Korten bildar inte en stege." : error
       return false
     } else {
       return true
-    }
-  }
-
-  const checkReachedGoal = (person) => {
-    const table = person.table
-    let triosReached = 0
-    for (const [key, value] of Object.entries(countCardsByValue(table))) {
-      if (value >= 3) {
-        triosReached += 1
-      }
-    }
-    if (triosReached >= 2) {
-      return true
-    } else {
-      return false
     }
   }
 
@@ -236,14 +225,18 @@ export const CariocaProvider = ({ children }) => {
       ...player,
       hand: newPlayerCards,
       trioTable: [],
+      triosReached: 0,
       scalaTable: [],
+      scalasReached: 0,
       score: pScore,
     })
     setComputer({
       ...computer,
       hand: newComputerCards,
       trioTable: [],
+      triosReached: 0,
       scalaTable: [],
+      scalasReached: 0,
       score: cScore,
     })
     setDiscardPile(newDiscardPile)
@@ -280,31 +273,6 @@ export const CariocaProvider = ({ children }) => {
     }
   }
 
-  const placeCardsOnTable = (person, table, cards) => {
-    const hand = person.hand
-    const newHand = [...hand]
-    const newTable = [...table]
-
-    cards.map((card) => {
-      newTable.push(card)
-      newHand.splice(newHand.indexOf(card), 1)
-    })
-
-    if (person === player && table === person.trioTable) {
-      setPlayer({ ...player, hand: newHand, trioTable: newTable })
-    } else if (person === player && table === person.scalaTable) {
-      setPlayer({ ...player, hand: newHand, scalaTable: newTable })
-    } else if (person === computer && table === person.trioTable) {
-      setComputer({ ...computer, hand: newHand, trioTable: newTable })
-    } else if (person === computer && table === person.scalaTable) {
-      setPlayer({ ...player, hand: newHand, trioTable: newTable })
-    }
-
-    if (somebodyHasWon(newHand)) {
-      handleWin(person, newHand)
-    }
-  }
-
   //Functions to handle gameplay
   const startNewGame = () => {
     dealCards(0, 0)
@@ -324,31 +292,95 @@ export const CariocaProvider = ({ children }) => {
   }
 
   const tryToPlayCards = (person) => {
+    // Card sets already in play
     const hand = person.hand
+    const ownTrioTable = person.trioTable
+    const ownScalaTable = person.scalaTable
+    const opponentTrioTable = (person === player ? computer.trioTable : player.trioTable)
+    const opponentScalaTable =
+      person === player ? computer.scalaTable : player.scalaTable
+
     const cardsToCheck = hand.filter((card) => card.staged)
-    
-    if (cardsAreATrio(cardsToCheck) && contracts[contractNumber].trios > 0) {
-      placeCardsOnTable(person, person.trioTable, cardsToCheck)
-    } else if (cardsAreAScala(cardsToCheck) && contracts[contractNumber].scalas > 0) {
-      placeCardsOnTable(person, person.scalaTable, cardsToCheck)
-    } else if (checkReachedGoal(person)) {
-      const playerTableCount = countCardsByValue(player.trioTable)
-      const computerTableCount = countCardsByValue(computer.trioTable)
-      let cardsToPlay = []
+
+    // New card sets
+    const newHand = [...hand]
+    const newOwnTrioTable = [...ownTrioTable]
+    const newOwnScalaTable = [...ownScalaTable]
+    const newOpponentTrioTable = [...opponentTrioTable]
+    const newOpponentScalaTable = [...opponentScalaTable]
+
+    // Keep track of goals
+    let trioCount = person.triosReached
+    let scalaCount = person.scalasReached
+
+    // Which cards goes where
+    if (
+      cardsAreATrio(cardsToCheck) &&
+      contracts[contractNumber].trios > trioCount
+    ) {
       cardsToCheck.map((card) => {
-        if (playerTableCount[card.value] >= 3) {
-          cardsToPlay.push(card)
-        } else if (computerTableCount[card.value] >= 3) {
-          cardsToPlay.push(card)
+        newOwnTrioTable.push(card)
+        newHand.splice(newHand.indexOf(card), 1)
+      })
+      trioCount += 1
+    } else if (
+      cardsAreAScala(cardsToCheck) &&
+      contracts[contractNumber].scalas > scalaCount
+    ) {
+      cardsToCheck.map((card) => {
+        newOwnScalaTable.push(card)
+        newHand.splice(newHand.indexOf(card), 1)
+      })
+      scalaCount += 1
+    } else if ( // Goal is reached
+      person.triosReached >= contracts[contractNumber].trios &&
+      person.scalasReached >= contracts[contractNumber].scalas
+    ) {
+      cardsToCheck.map((card) => {
+        if (ownTrioTable.some(c => c.value === card.value)) {
+          newOwnTrioTable.push(card)
+          newHand.splice(newHand.indexOf(card), 1)
+        } else if (opponentTrioTable.some((c) => c.value === card.value)) {
+          newOpponentTrioTable.push(card)
+          newHand.splice(newHand.indexOf(card), 1)
         } else {
-          setMessage("Kortet matchar inte något på bordet.")
-          setTimeout(() => setMessage(""), 2000)
+          setMessage("Korten matchar inte något på bordet.")
+          setTimeout(() => setMessage(""), 3000)
         }
       })
-      placeCardsOnTable(person, cardsToPlay)
     } else {
       setMessage(error)
       setTimeout(() => setMessage(""), 3000)
+    }
+
+    if (person === player) {
+      setPlayer({
+        ...player,
+        hand: newHand,
+        trioTable: newOwnTrioTable,
+        triosReached: trioCount,
+        scalaTable: newOwnScalaTable,
+        scalasReached: scalaCount
+      })
+      setComputer({
+        ...computer,
+        trioTable: newOpponentTrioTable,
+        scalaTable: newOpponentScalaTable,
+      })
+    } else {
+      setComputer({
+        ...computer,
+        hand: newHand,
+        trioTable: newOwnTrioTable,
+        triosReached: trioCount,
+        scalaTable: newOwnScalaTable,
+        scalasReached: scalaCount,
+      })
+      setPlayer({
+        ...player,
+        trioTable: newOpponentTrioTable,
+        scalaTable: newOpponentScalaTable,
+      })
     }
   }
     
@@ -455,7 +487,7 @@ export const CariocaProvider = ({ children }) => {
     if (somebodyHasWon(newHand)) {
       handleWin(computer, newHand)
     } else {
-      setTimeout(() => setGameStageIndex(1), 3000)
+      setTimeout(() => setGameStageIndex(1), 2500)
     }
   }
   
