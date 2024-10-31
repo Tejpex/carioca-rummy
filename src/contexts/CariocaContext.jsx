@@ -2,6 +2,7 @@
 import PropTypes from "prop-types"
 import { createContext, useContext, useState } from "react"
 import cards from "../cards.json"
+import testCards from "../testCards.json"
 
 const CariocaContext = createContext()
 
@@ -142,24 +143,24 @@ export const CariocaProvider = ({ children }) => {
       return cardSet.every((card) => card.suit === cardSet[0].suit)
     }
     const valuesIncreaseByOne = (cardSet) => {
-      if (cardSet[0].value === 1 && cardSet[cardSet.length - 1].value === 13) {
-        error = giveScalaErrors
-          ? "Kan inte hantera dessa stegar ännu."
-          : error
-        return false
-      } else {
-        let checkingValue = cardSet[0].value - 1
-        cardSet.forEach((card) => {
-          if (card.value === checkingValue + 1) {
+      let checkingValue = cardSet[0].value - 1 // Which value to check against
+      let gapCount = 0 // How many gaps are there (one allowed with ace+king)
+      cardSet.forEach((card) => {
+        if (card.value === checkingValue + 1) {
+          checkingValue = card.value // Value approved, increase checking value
+        } else {
+          if (cardSet[0].value === 1 && cardSet[cardSet.length - 1].value === 13 && gapCount === 0) {
+            gapCount += 1
             checkingValue = card.value
           } else {
             return false
           }
-        })
-        if (checkingValue === cardSet[cardSet.length - 1].value) {
-          return true
         }
-      }
+      })
+      
+      if (checkingValue === cardSet[cardSet.length - 1].value) {
+        return true // Last checking value is same as last card
+      }     
     }
 
     if (cards.length < 4) {
@@ -194,7 +195,8 @@ export const CariocaProvider = ({ children }) => {
 
   //Helper functions to move around cards
   const dealCards = (pScore, cScore) => {
-    const deckInPlay = [...cards] //Make copy of all cards to use in play
+    const deckInPlay = [...testCards] // Cards for testing
+    //const deckInPlay = [...cards] //Make copy of all cards to use in play
     const newPlayerCards = [] //Collects players cards
     const newComputerCards = [] //Collects computers cards
     const newDiscardPile = [] //Collects cards in discard pile
@@ -296,10 +298,8 @@ export const CariocaProvider = ({ children }) => {
     const hand = person.hand
     const ownTrioTable = person.trioTable
     const ownScalaTable = person.scalaTable
-    const opponentTrioTable = (person === player ? computer.trioTable : player.trioTable)
-    const opponentScalaTable =
-      person === player ? computer.scalaTable : player.scalaTable
-
+    const opponentTrioTable = person === player ? computer.trioTable : player.trioTable
+    const opponentScalaTable = person === player ? computer.scalaTable : player.scalaTable
     const cardsToCheck = hand.filter((card) => card.staged)
 
     // New card sets
@@ -324,8 +324,8 @@ export const CariocaProvider = ({ children }) => {
       })
       trioCount += 1
     } else if (
-      cardsAreAScala(cardsToCheck) &&
-      contracts[contractNumber].scalas > scalaCount
+      cardsAreAScala(cardsToCheck) 
+      //&&contracts[contractNumber].scalas > scalaCount
     ) {
       cardsToCheck.map((card) => {
         newOwnScalaTable.push(card)
