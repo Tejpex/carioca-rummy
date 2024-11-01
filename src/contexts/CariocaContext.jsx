@@ -177,6 +177,36 @@ export const CariocaProvider = ({ children }) => {
     }
   }
 
+  const cardMatchesAScala = (newCard, cardSet) => {
+    if (cardSet.length === 0) {
+      return false
+    } 
+
+    let checkingValue = cardSet[0].value - 1 // Which value to check against
+    if (newCard.value === checkingValue) {
+      return true // New card one lower, approved
+    } else {
+      cardSet.forEach((card) => {
+        if (card.value === checkingValue + 1) {
+          checkingValue = card.value // Card part of existing scala
+        } else if (newCard.vale === checkingValue + 1) {
+          return true // New card one higher, approved
+        } else {
+          checkingValue = card.value // Looking at new scala
+          if (newCard.value === checkingValue - 1) {
+            return true // New card one lower than new scala, approved
+          }
+        }
+      })   
+    }
+
+    if (newCard.value === checkingValue +1) {
+      return true // New card one higher than last card, approved
+    } else {
+      return false    
+    }
+  }
+  
   const countPoints = (person) => {
     let newPoint = 0
     person.hand.forEach((card) => (newPoint += card.value))
@@ -195,8 +225,8 @@ export const CariocaProvider = ({ children }) => {
 
   //Helper functions to move around cards
   const dealCards = (pScore, cScore) => {
-    const deckInPlay = [...testCards] // Cards for testing
-    //const deckInPlay = [...cards] //Make copy of all cards to use in play
+    //const deckInPlay = [...testCards] // Cards for testing
+    const deckInPlay = [...cards] //Make copy of all cards to use in play
     const newPlayerCards = [] //Collects players cards
     const newComputerCards = [] //Collects computers cards
     const newDiscardPile = [] //Collects cards in discard pile
@@ -324,8 +354,8 @@ export const CariocaProvider = ({ children }) => {
       })
       trioCount += 1
     } else if (
-      cardsAreAScala(cardsToCheck) 
-      //&&contracts[contractNumber].scalas > scalaCount
+      cardsAreAScala(cardsToCheck) &&
+      contracts[contractNumber].scalas > scalaCount
     ) {
       cardsToCheck.map((card) => {
         newOwnScalaTable.push(card)
@@ -343,6 +373,12 @@ export const CariocaProvider = ({ children }) => {
         } else if (opponentTrioTable.some((c) => c.value === card.value)) {
           newOpponentTrioTable.push(card)
           newHand.splice(newHand.indexOf(card), 1)
+        } else if (cardMatchesAScala(card, ownScalaTable)) {
+          newOwnScalaTable.push(card)
+          newHand.splice(newHand.indexOf(card), 1)
+        } else if (cardMatchesAScala(card, opponentScalaTable)) {
+          newOpponentScalaTable.push(card)
+          newHand.splice(newHand.indexOf(card), 1)
         } else {
           setMessage("Korten matchar inte något på bordet.")
           setTimeout(() => setMessage(""), 3000)
@@ -357,29 +393,29 @@ export const CariocaProvider = ({ children }) => {
       setPlayer({
         ...player,
         hand: newHand,
-        trioTable: newOwnTrioTable,
+        trioTable: sortByValue(newOwnTrioTable),
         triosReached: trioCount,
-        scalaTable: newOwnScalaTable,
+        scalaTable: sortByColor(newOwnScalaTable),
         scalasReached: scalaCount
       })
       setComputer({
         ...computer,
-        trioTable: newOpponentTrioTable,
-        scalaTable: newOpponentScalaTable,
+        trioTable: sortByValue(newOpponentTrioTable),
+        scalaTable: sortByColor(newOpponentScalaTable),
       })
     } else {
       setComputer({
         ...computer,
         hand: newHand,
-        trioTable: newOwnTrioTable,
+        trioTable: sortByValue(newOwnTrioTable),
         triosReached: trioCount,
-        scalaTable: newOwnScalaTable,
+        scalaTable: sortByColor(newOwnScalaTable),
         scalasReached: scalaCount,
       })
       setPlayer({
         ...player,
-        trioTable: newOpponentTrioTable,
-        scalaTable: newOpponentScalaTable,
+        trioTable: sortByValue(newOpponentTrioTable),
+        scalaTable: sortByColor(newOpponentScalaTable),
       })
     }
   }
