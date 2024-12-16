@@ -189,7 +189,7 @@ export const CariocaProvider = ({ children }) => {
       cardSet.forEach((card) => {
         if (card.value === checkingValue + 1) {
           checkingValue = card.value // Card part of existing scala
-        } else if (newCard.vale === checkingValue + 1) {
+        } else if (newCard.value === checkingValue + 1) {
           return true // New card one higher, approved
         } else {
           checkingValue = card.value // Looking at new scala
@@ -347,7 +347,7 @@ export const CariocaProvider = ({ children }) => {
     if (
       cardsAreATrio(cardsToCheck) &&
       contracts[contractNumber].trios > trioCount
-    ) {
+    ) { // Play trio
       cardsToCheck.map((card) => {
         newOwnTrioTable.push(card)
         newHand.splice(newHand.indexOf(card), 1)
@@ -356,7 +356,7 @@ export const CariocaProvider = ({ children }) => {
     } else if (
       cardsAreAScala(cardsToCheck) &&
       contracts[contractNumber].scalas > scalaCount
-    ) {
+    ) { //Play scala
       cardsToCheck.map((card) => {
         newOwnScalaTable.push(card)
         newHand.splice(newHand.indexOf(card), 1)
@@ -367,16 +367,16 @@ export const CariocaProvider = ({ children }) => {
       person.scalasReached >= contracts[contractNumber].scalas
     ) {
       cardsToCheck.map((card) => {
-        if (ownTrioTable.some(c => c.value === card.value)) {
+        if (ownTrioTable.some(c => c.value === card.value)) { // Matches own trios
           newOwnTrioTable.push(card)
           newHand.splice(newHand.indexOf(card), 1)
-        } else if (opponentTrioTable.some((c) => c.value === card.value)) {
+        } else if (opponentTrioTable.some((c) => c.value === card.value)) { // Matches opponents trios
           newOpponentTrioTable.push(card)
           newHand.splice(newHand.indexOf(card), 1)
-        } else if (cardMatchesAScala(card, ownScalaTable)) {
+        } else if (cardMatchesAScala(card, ownScalaTable)) { // Matches own scalas
           newOwnScalaTable.push(card)
           newHand.splice(newHand.indexOf(card), 1)
-        } else if (cardMatchesAScala(card, opponentScalaTable)) {
+        } else if (cardMatchesAScala(card, opponentScalaTable)) { // Matches opponents scalas
           newOpponentScalaTable.push(card)
           newHand.splice(newHand.indexOf(card), 1)
         } else {
