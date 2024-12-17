@@ -4,7 +4,7 @@ import { useCarioca } from "../contexts/CariocaContext"
 export const HandRow = ({person}) => {
   const {
     sortByValue,
-    sortByColor,
+    sortBySuit,
     toggleStaged,
     setNewHand
   } = useCarioca()
@@ -17,7 +17,7 @@ export const HandRow = ({person}) => {
   }
 
   const sortHandByColor = () => {
-    const cards = sortByColor(person.hand)
+    const cards = sortBySuit(person.hand)
     setNewHand(person, cards)
   }
 

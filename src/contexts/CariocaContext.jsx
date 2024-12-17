@@ -30,13 +30,13 @@ export const CariocaProvider = ({ children }) => {
   
   const [discardPile, setDiscardPile] = useState([])
   const [stock, setStock] = useState([])
-
+  // ---------- !!!!!!!!!! Changed for testing purposes !!!!!!!!!!!!!! ---------------
   const contracts = [
     {
       index: 0,
       name: "2 triss",
-      trios: 2,
-      scalas: 0,
+      trios: 1,
+      scalas: 2,
     },
     {
       index: 1,
@@ -98,6 +98,18 @@ export const CariocaProvider = ({ children }) => {
     })
     return counterSameValue
   }
+
+  const countCardsBySuit = (cards) => {
+    const counterSameSuit = {}
+    cards.forEach((card) => {
+      if (counterSameSuit[card.suit]) {
+        counterSameSuit[card.suit] += 1
+      } else {
+        counterSameSuit[card.suit] = 1
+      }
+    })
+    return counterSameSuit
+  }
   
   const sortByValue = (cards) => {
     const sortedCards = [...cards]
@@ -105,7 +117,7 @@ export const CariocaProvider = ({ children }) => {
     return sortedCards
   }
 
-  const sortByColor = (cards) => {
+  const sortBySuit = (cards) => {
     const sortedCards = [...cards]
     sortedCards.sort((a, b) => a.value - b.value)
     sortedCards.sort((a, b) =>
@@ -178,33 +190,90 @@ export const CariocaProvider = ({ children }) => {
   }
 
   const cardMatchesAScala = (newCard, cardSet) => {
-    if (cardSet.length === 0) {
+    if (cardSet.length === 0) { // No existing scalas
       return false
     } 
 
     let checkingValue = cardSet[0].value - 1 // Which value to check against
     if (newCard.value === checkingValue) {
-      return true // New card one lower, approved
+      return true // New card one lower than first scala, approved
     } else {
       cardSet.forEach((card) => {
         if (card.value === checkingValue + 1) {
-          checkingValue = card.value // Card part of existing scala
+          checkingValue = card.value // Card on table part of existing scala
         } else if (newCard.value === checkingValue + 1) {
-          return true // New card one higher, approved
+          return true // New card one higher than scala on table, approved
         } else {
-          checkingValue = card.value // Looking at new scala
+          checkingValue = card.value // Looking at next scala on table
           if (newCard.value === checkingValue - 1) {
-            return true // New card one lower than new scala, approved
+            return true // New card one lower than next scala, approved
           }
         }
       })   
     }
 
     if (newCard.value === checkingValue +1) {
-      return true // New card one higher than last card, approved
+      return true // New card one higher than last scala on table, approved
     } else {
       return false    
     }
+  }
+
+  const cardIsAlmostPartOfScala = (cardToCheck, cardSet) => {
+    const cardSetSorted = sortBySuit(cardSet)
+    let checkingSuit = cardSetSorted[0].suit // Which suit to check against
+    let checkingValue = cardSetSorted[0].value // Which value to check against
+    let returnStatement = false
+
+    if (
+      cardToCheck.suit === checkingSuit &&
+      checkingValue - cardToCheck.value > 0 &&
+      checkingValue - cardToCheck.value <= 2
+    ) {
+      returnStatement = true // New card slightly lower value than first card, approved
+    }
+
+    cardSetSorted.forEach((card) => { 
+      if (card.suit === checkingSuit) { // Card in set still on same suit
+        if (card.value - checkingValue <= 1) { 
+          checkingValue = card.value // Card in set doesn't need new card
+        } else if (
+          cardToCheck.suit === checkingSuit &&
+          cardToCheck.value - checkingValue > 0 &&
+          cardToCheck.value - checkingValue <= 2
+        ) {
+          returnStatement = true // New card slightly higher value than last card, approved
+        } else {
+          checkingValue = card.value // Looking at higher value card in set
+          if (
+            cardToCheck.suit === checkingSuit &&
+            checkingValue - cardToCheck.value > 0 &&
+            checkingValue - cardToCheck.value <= 2
+          ) {
+            returnStatement = true // New card slightly lower than higher value card, approved
+          }
+        }
+      } else {
+        if (
+          cardToCheck.suit === checkingSuit &&
+          cardToCheck.value - checkingValue > 0 &&
+          cardToCheck.value - checkingValue <= 2
+        ) {
+          returnStatement = true // New card slightly higher value than last card, approved
+        } else {
+          checkingSuit = card.suit
+          checkingValue = card.value
+          if (
+            cardToCheck.suit === checkingSuit &&
+            checkingValue - cardToCheck.value > 0 &&
+            checkingValue - cardToCheck.value <= 2
+          ) {
+            returnStatement = true // New card slightly lower than new suit card, approved
+          }
+        }
+      }
+    })
+    return returnStatement
   }
   
   const countPoints = (person) => {
@@ -395,13 +464,13 @@ export const CariocaProvider = ({ children }) => {
         hand: newHand,
         trioTable: sortByValue(newOwnTrioTable),
         triosReached: trioCount,
-        scalaTable: sortByColor(newOwnScalaTable),
+        scalaTable: sortBySuit(newOwnScalaTable),
         scalasReached: scalaCount
       })
       setComputer({
         ...computer,
         trioTable: sortByValue(newOpponentTrioTable),
-        scalaTable: sortByColor(newOpponentScalaTable),
+        scalaTable: sortBySuit(newOpponentScalaTable),
       })
     } else {
       setComputer({
@@ -409,13 +478,13 @@ export const CariocaProvider = ({ children }) => {
         hand: newHand,
         trioTable: sortByValue(newOwnTrioTable),
         triosReached: trioCount,
-        scalaTable: sortByColor(newOwnScalaTable),
+        scalaTable: sortBySuit(newOwnScalaTable),
         scalasReached: scalaCount,
       })
       setPlayer({
         ...player,
         trioTable: sortByValue(newOpponentTrioTable),
-        scalaTable: sortByColor(newOpponentScalaTable),
+        scalaTable: sortBySuit(newOpponentScalaTable),
       })
     }
   }
@@ -460,20 +529,43 @@ export const CariocaProvider = ({ children }) => {
     setGameStageIndex(3)
 
     // Decide which card to pick and pick it
+    // Starting values
     const topOfTheStock = stock.slice(0)[0]
     let cardPicked = {}
     const newDiscardPile = [...discardPile]
 
-    if (countCardsByValue(computer.hand)[lastCardThrown.value] >= 2) {
-      //Two cards in hand with same value as lastCardThrown
-      cardPicked = lastCardThrown
-    } else {
-      cardPicked = topOfTheStock
-      //Make sure lastCardThrown stays in discard pile
-      newDiscardPile.push(lastCardThrown)
-      //Remove top card from stock
-      const newStock = [...stock].toSpliced(0, 1)
-      setTimeout(() => setStock(newStock), 1500)
+    // Keep track of goals
+    let trioCount = computer.triosReached
+    let scalaCount = computer.scalasReached
+
+    // If scalas are the goal
+    if (contracts[contractNumber].scalas > scalaCount) {
+      console.log("Going for scalas")
+      if (cardIsAlmostPartOfScala(lastCardThrown, computer.hand)) {
+        // lastCardThrown almost matches scala in hand
+        console.log("Match for scala, picked:", lastCardThrown)
+        cardPicked = lastCardThrown
+      } else {
+        cardPicked = topOfTheStock
+        //Make sure lastCardThrown stays in discard pile
+        newDiscardPile.push(lastCardThrown)
+        //Remove top card from stock
+        const newStock = [...stock].toSpliced(0, 1)
+        setTimeout(() => setStock(newStock), 1500)
+      }
+    // If trios are the goal
+    } else if (contracts[contractNumber].trios > trioCount) { 
+      if (countCardsByValue(computer.hand)[lastCardThrown.value] >= 2) {
+        //Two cards in hand with same value as lastCardThrown
+        cardPicked = lastCardThrown
+      } else {
+        cardPicked = topOfTheStock
+        //Make sure lastCardThrown stays in discard pile
+        newDiscardPile.push(lastCardThrown)
+        //Remove top card from stock
+        const newStock = [...stock].toSpliced(0, 1)
+        setTimeout(() => setStock(newStock), 1500)
+      }
     }
 
     // Decide which cards to play and which to throw
@@ -529,7 +621,7 @@ export const CariocaProvider = ({ children }) => {
   
   return (
     <CariocaContext.Provider
-      value={{ player, computer, discardPile, stock, gameStageIndex, contracts, contractNumber, startNewGame, sortByValue, sortByColor, takeCard, toggleStaged, tryToPlayCards, throwCard, gameStages, setNewHand, message, setMessage }}
+      value={{ player, computer, discardPile, stock, gameStageIndex, contracts, contractNumber, startNewGame, sortByValue, sortBySuit, takeCard, toggleStaged, tryToPlayCards, throwCard, gameStages, setNewHand, message, setMessage }}
     >
       {children}
     </CariocaContext.Provider>
