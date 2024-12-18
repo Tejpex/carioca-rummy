@@ -30,13 +30,13 @@ export const CariocaProvider = ({ children }) => {
   
   const [discardPile, setDiscardPile] = useState([])
   const [stock, setStock] = useState([])
-  // ---------- !!!!!!!!!! Changed for testing purposes !!!!!!!!!!!!!! ---------------
+  
   const contracts = [
     {
       index: 0,
       name: "2 triss",
-      trios: 1,
-      scalas: 2,
+      trios: 2,
+      scalas: 0,
     },
     {
       index: 1,
@@ -539,33 +539,29 @@ export const CariocaProvider = ({ children }) => {
     let scalaCount = computer.scalasReached
 
     // If scalas are the goal
-    if (contracts[contractNumber].scalas > scalaCount) {
-      console.log("Going for scalas")
-      if (cardIsAlmostPartOfScala(lastCardThrown, computer.hand)) {
-        // lastCardThrown almost matches scala in hand
-        console.log("Match for scala, picked:", lastCardThrown)
-        cardPicked = lastCardThrown
-      } else {
-        cardPicked = topOfTheStock
-        //Make sure lastCardThrown stays in discard pile
-        newDiscardPile.push(lastCardThrown)
-        //Remove top card from stock
-        const newStock = [...stock].toSpliced(0, 1)
-        setTimeout(() => setStock(newStock), 1500)
-      }
+    if (
+      contracts[contractNumber].scalas > scalaCount && 
+      cardIsAlmostPartOfScala(lastCardThrown, computer.hand)
+    ) {
+      // lastCardThrown almost matches scala in hand
+      console.log("Match for scala, picked:", lastCardThrown)
+      cardPicked = lastCardThrown
     // If trios are the goal
-    } else if (contracts[contractNumber].trios > trioCount) { 
-      if (countCardsByValue(computer.hand)[lastCardThrown.value] >= 2) {
-        //Two cards in hand with same value as lastCardThrown
-        cardPicked = lastCardThrown
-      } else {
-        cardPicked = topOfTheStock
-        //Make sure lastCardThrown stays in discard pile
-        newDiscardPile.push(lastCardThrown)
-        //Remove top card from stock
-        const newStock = [...stock].toSpliced(0, 1)
-        setTimeout(() => setStock(newStock), 1500)
-      }
+    } else if (
+      contracts[contractNumber].trios > trioCount &&
+      countCardsByValue(computer.hand)[lastCardThrown.value] >= 2
+    ) {
+      //Two cards in hand with same value as lastCardThrown
+      console.log("Match for trio, picked:", lastCardThrown)
+      cardPicked = lastCardThrown
+    } else {
+      cardPicked = topOfTheStock
+      console.log("No match, picked:", topOfTheStock)
+      //Make sure lastCardThrown stays in discard pile
+      newDiscardPile.push(lastCardThrown)
+      //Remove top card from stock
+      const newStock = [...stock].toSpliced(0, 1)
+      setTimeout(() => setStock(newStock), 1500)
     }
 
     // Decide which cards to play and which to throw
