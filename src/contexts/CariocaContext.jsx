@@ -110,6 +110,24 @@ export const CariocaProvider = ({ children }) => {
     })
     return counterSameSuit
   }
+
+  const findHighestValueGap = (cardSet) => {
+    const cardsSorted = sortBySuit(cardSet)
+    let checkingSuit = "suit"
+    let checkingValue = cardsSorted[0].value
+    let highestGap = 0
+    cardsSorted.forEach((card) => {
+      if (card.suit === checkingSuit) {
+        if (card.value - checkingValue > highestGap) {
+          highestGap = card.value - checkingValue
+        }
+      } else {
+        checkingSuit = card.suit
+      }
+      checkingValue = card.value
+    })
+    return highestGap
+  }
   
   const sortByValue = (cards) => {
     const sortedCards = [...cards]
@@ -563,9 +581,8 @@ export const CariocaProvider = ({ children }) => {
         }
       }
       console.log("Singles", singleCards)
-      // Sort cards into throw or maybe-throw
+      // Sort singles into throw or maybe-throw
       if (singleCards.length > 0) {
-        // There are singles - sort singles
         singleCards.sort((a, b) => a.value - b.value)
         if (contracts[contractNumber].trios > computer.triosReached) {
           // Trios is also a goal - look at card value and find those singles
@@ -600,8 +617,10 @@ export const CariocaProvider = ({ children }) => {
           throwAwayCard = singleCards[singleCards.length - 1]
           console.log("Throw away(No trio goal):", throwAwayCard)
         }
-      }
-
+      } 
+      // Sort rest of cards into keep or maybe-throw
+      const highestGap = findHighestValueGap(newHand)
+      console.log("Gap", highestGap)
 
     } else if (contracts[contractNumber].trios > computer.triosReached) {
       // Trios are a goal
