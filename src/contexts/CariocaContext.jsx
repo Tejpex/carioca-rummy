@@ -237,7 +237,7 @@ export const CariocaProvider = ({ children }) => {
     }
   }
 
-  const cardIsAlmostPartOfScala = (cardToCheck, cardSet) => {
+  const cardIsAlmostPartOfScala = (cardToCheck, cardSet, allowedGap) => {
     const cardSetSorted = sortBySuit(cardSet)
     let checkingSuit = cardSetSorted[0].suit // Which suit to check against
     let checkingValue = cardSetSorted[0].value // Which value to check against
@@ -246,19 +246,20 @@ export const CariocaProvider = ({ children }) => {
     if (
       cardToCheck.suit === checkingSuit &&
       checkingValue - cardToCheck.value > 0 &&
-      checkingValue - cardToCheck.value <= 2
+      checkingValue - cardToCheck.value <= allowedGap
     ) {
       returnStatement = true // New card slightly lower value than first card, approved
     }
 
     cardSetSorted.forEach((card) => { 
+      // console.log("Testing new", cardToCheck, "against old", card, "Suit", checkingSuit, "Value",checkingValue)
       if (card.suit === checkingSuit) { // Card in set still on same suit
         if (card.value - checkingValue <= 1) { 
           checkingValue = card.value // Card in set doesn't need new card
         } else if (
           cardToCheck.suit === checkingSuit &&
           cardToCheck.value - checkingValue > 0 &&
-          cardToCheck.value - checkingValue <= 2
+          cardToCheck.value - checkingValue <= allowedGap
         ) {
           returnStatement = true // New card slightly higher value than last card, approved
         } else {
@@ -266,7 +267,7 @@ export const CariocaProvider = ({ children }) => {
           if (
             cardToCheck.suit === checkingSuit &&
             checkingValue - cardToCheck.value > 0 &&
-            checkingValue - cardToCheck.value <= 2
+            checkingValue - cardToCheck.value <= allowedGap
           ) {
             returnStatement = true // New card slightly lower than higher value card, approved
           }
@@ -275,7 +276,7 @@ export const CariocaProvider = ({ children }) => {
         if (
           cardToCheck.suit === checkingSuit &&
           cardToCheck.value - checkingValue > 0 &&
-          cardToCheck.value - checkingValue <= 2
+          cardToCheck.value - checkingValue <= allowedGap
         ) {
           returnStatement = true // New card slightly higher value than last card, approved
         } else {
@@ -284,13 +285,22 @@ export const CariocaProvider = ({ children }) => {
           if (
             cardToCheck.suit === checkingSuit &&
             checkingValue - cardToCheck.value > 0 &&
-            checkingValue - cardToCheck.value <= 2
+            checkingValue - cardToCheck.value <= allowedGap
           ) {
             returnStatement = true // New card slightly lower than new suit card, approved
           }
         }
       }
     })
+
+    if (
+      cardToCheck.suit === checkingSuit &&
+      cardToCheck.value - checkingValue > 0 &&
+      cardToCheck.value - checkingValue <= allowedGap
+    ) {
+      returnStatement = true // New card slightly higher than last card in cardSet, approved
+    }
+
     return returnStatement
   }
   
@@ -554,10 +564,9 @@ export const CariocaProvider = ({ children }) => {
     let throwAwayCard = {}
 
     //Gamplay depending on goal
-    if (contracts[contractNumber].scalas > computer.scalasReached) {
-      // Scalas are a goal
+    if (contracts[contractNumber].scalas > computer.scalasReached) { // Scalas are a goal
       console.log("Scalas are goal")
-      if (cardIsAlmostPartOfScala(lastCardThrown, computer.hand)) {
+      if (cardIsAlmostPartOfScala(lastCardThrown, computer.hand, 2)) {
         cardPicked = lastCardThrown
       } else {
         cardPicked = topOfTheStock
@@ -605,12 +614,11 @@ export const CariocaProvider = ({ children }) => {
             cardsLonelyInValue.sort((a, b) => a.value - b.value)
             throwAwayCard = cardsLonelyInValue[cardsLonelyInValue.length - 1]
             console.log("Throw away(Lonely in value):", throwAwayCard)
-          } else {
+          // } else {
             // No cards are lonely in both suit and value - put them in maybepile
-            singleCards.forEach((card) => {
-              cardsWeMightThrow.push(card)
-            })
-            console.log("Maybe-pile:", cardsWeMightThrow)
+            //singleCards.forEach((card) => {
+            //  cardsWeMightThrow.push(card)
+            //})
           }
         } else {
           // Trios is not a goal - throw away highest single
@@ -621,9 +629,16 @@ export const CariocaProvider = ({ children }) => {
       // Sort rest of cards into keep or maybe-throw
       const highestGap = findHighestValueGap(newHand)
       console.log("Gap", highestGap)
+      newHand.forEach((card) => {
+        const testHand = newHand.filter((c) => c != card)
+        // console.log("TestHand", testHand)
+        if (!cardIsAlmostPartOfScala(card, testHand, highestGap - 1)) {
+          cardsWeMightThrow.push(card)
+        }
+      })
+      console.log("Maybe-pile", cardsWeMightThrow)
 
-    } else if (contracts[contractNumber].trios > computer.triosReached) {
-      // Trios are a goal
+    } else if (contracts[contractNumber].trios > computer.triosReached) { // Trios are a goal
       if (countCardsByValue(computer.hand)[lastCardThrown.value] >= 2) {
       //Two cards in hand with same value as lastCardThrown
         cardPicked = lastCardThrown
