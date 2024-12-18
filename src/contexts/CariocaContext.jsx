@@ -30,13 +30,13 @@ export const CariocaProvider = ({ children }) => {
   
   const [discardPile, setDiscardPile] = useState([])
   const [stock, setStock] = useState([])
-  
+  // ------------ !!!!! Changed for test-purpose! !!!! -------------
   const contracts = [
     {
       index: 0,
       name: "2 triss",
-      trios: 2,
-      scalas: 0,
+      trios: 1,
+      scalas: 2,
     },
     {
       index: 1,
@@ -528,80 +528,136 @@ export const CariocaProvider = ({ children }) => {
     // Computers turn starts
     setGameStageIndex(3)
 
-    // Decide which card to pick and pick it
     // Starting values
     const topOfTheStock = stock.slice(0)[0]
     let cardPicked = {}
     const newDiscardPile = [...discardPile]
+    const newHand = [...computer.hand]
+    let throwAwayCard = {}
 
-    // Keep track of goals
-    let trioCount = computer.triosReached
-    let scalaCount = computer.scalasReached
+    //Gamplay depending on goal
+    if (contracts[contractNumber].scalas > computer.scalasReached) {
+      // Scalas are a goal
+      console.log("Scalas are goal")
+      if (cardIsAlmostPartOfScala(lastCardThrown, computer.hand)) {
+        cardPicked = lastCardThrown
+      } else {
+        cardPicked = topOfTheStock
+        //Make sure lastCardThrown stays in discard pile
+        newDiscardPile.push(lastCardThrown)
+        //Remove top card from stock
+        const newStock = [...stock].toSpliced(0, 1)
+        setTimeout(() => setStock(newStock), 1500)
+      }
+      newHand.push(cardPicked)
+      // Decide which cards to play and which to throw
+      let cardsWeMightThrow = []
+      // Find singles according to suit
+      let singleCards = []
+      for (const [key, value] of Object.entries(countCardsBySuit(newHand))) {
+        if (value === 1) {
+          const lonelyCard = newHand.filter(
+            (card) => card.suit === key
+          )
+          singleCards.push(lonelyCard[0])
+        }
+      }
+      console.log("Singles", singleCards)
+      // Sort cards into throw or maybe-throw
+      if (singleCards.length > 0) {
+        // There are singles - sort singles
+        singleCards.sort((a, b) => a.value - b.value)
+        if (contracts[contractNumber].trios > computer.triosReached) {
+          // Trios is also a goal - look at card value and find those singles
+          let cardsLonelyInValue = []
+          for (const [key, value] of Object.entries(
+            countCardsByValue(newHand)
+          )) { // Look at entire hand to find single values
+            if (value === 1) {
+              // Look in singleCards to find matches
+              singleCards.forEach((card) => {
+                if (card.value === Number(key)) {
+                  cardsLonelyInValue.push(card)
+                }
+              })
+            }
+          }
+          console.log("CardsLonelyInValue", cardsLonelyInValue)
+          if (cardsLonelyInValue.length > 0) {
+            // Some cards are lonely in both suit and value - throw away highest
+            cardsLonelyInValue.sort((a, b) => a.value - b.value)
+            throwAwayCard = cardsLonelyInValue[cardsLonelyInValue.length - 1]
+            console.log("Throw away(Lonely in value):", throwAwayCard)
+          } else {
+            // No cards are lonely in both suit and value - put them in maybepile
+            singleCards.forEach((card) => {
+              cardsWeMightThrow.push(card)
+            })
+            console.log("Maybe-pile:", cardsWeMightThrow)
+          }
+        } else {
+          // Trios is not a goal - throw away highest single
+          throwAwayCard = singleCards[singleCards.length - 1]
+          console.log("Throw away(No trio goal):", throwAwayCard)
+        }
+      }
 
-    // If scalas are the goal
-    if (
-      contracts[contractNumber].scalas > scalaCount && 
-      cardIsAlmostPartOfScala(lastCardThrown, computer.hand)
-    ) {
-      // lastCardThrown almost matches scala in hand
-      console.log("Match for scala, picked:", lastCardThrown)
-      cardPicked = lastCardThrown
-    // If trios are the goal
-    } else if (
-      contracts[contractNumber].trios > trioCount &&
-      countCardsByValue(computer.hand)[lastCardThrown.value] >= 2
-    ) {
+
+    } else if (contracts[contractNumber].trios > computer.triosReached) {
+      // Trios are a goal
+      if (countCardsByValue(computer.hand)[lastCardThrown.value] >= 2) {
       //Two cards in hand with same value as lastCardThrown
-      console.log("Match for trio, picked:", lastCardThrown)
-      cardPicked = lastCardThrown
-    } else {
-      cardPicked = topOfTheStock
-      console.log("No match, picked:", topOfTheStock)
-      //Make sure lastCardThrown stays in discard pile
-      newDiscardPile.push(lastCardThrown)
-      //Remove top card from stock
-      const newStock = [...stock].toSpliced(0, 1)
-      setTimeout(() => setStock(newStock), 1500)
+        cardPicked = lastCardThrown
+      } else {
+        cardPicked = topOfTheStock
+        //Make sure lastCardThrown stays in discard pile
+        newDiscardPile.push(lastCardThrown)
+        //Remove top card from stock
+        const newStock = [...stock].toSpliced(0, 1)
+        setTimeout(() => setStock(newStock), 1500)
+      }
+      newHand.push(cardPicked)
     }
 
-    // Decide which cards to play and which to throw
-    const newHand = [...computer.hand, cardPicked]
     let trioCards = []
     let singleCards = []
     for (const [key, value] of Object.entries(countCardsByValue(newHand))) {
-      if (value >= 3) {
-        const sameValueCards = newHand.filter(
-          (card) => card.value === Number(key)
-        )
-        trioCards.push(sameValueCards[0])
-        trioCards.push(sameValueCards[1])
-        trioCards.push(sameValueCards[2])
-      } else if (value === 1) {
-        const lonelyCards = newHand.filter((card) => card.value === Number(key))
-        singleCards.push(lonelyCards[0]) //For use when throwing away cards
+        if (value >= 3) {
+          const sameValueCards = newHand.filter(
+            (card) => card.value === Number(key)
+          )
+          trioCards.push(sameValueCards[0])
+          trioCards.push(sameValueCards[1])
+          trioCards.push(sameValueCards[2])
+        } else if (value === 1) {
+          const lonelyCards = newHand.filter(
+            (card) => card.value === Number(key)
+          )
+          singleCards.push(lonelyCards[0]) //For use when throwing away cards
+        }
       }
-    }
 
-    // Play cards
-    const newTable = [...computer.trioTable]
-    trioCards.map((card) => {
-      newTable.push(card)
-      newHand.splice(newHand.indexOf(card), 1)
-    })
+      // Play cards
+      const newTable = [...computer.trioTable]
+      trioCards.map((card) => {
+        newTable.push(card)
+        newHand.splice(newHand.indexOf(card), 1)
+      })
 
-    // Decide which card to throw and throw it
-    if (singleCards.length > 0) {
-      singleCards.sort((a, b) => a.value - b.value)
-      const highestSingle = singleCards.slice(-1)[0]
-      newHand.splice(newHand.indexOf(highestSingle), 1)
-      newDiscardPile.push(highestSingle)
-    } else {
-      // If computer has no singles
-      const highestValueCard = sortByValue(newHand).slice(-1)[0]
-      newHand.splice(newHand.indexOf(highestValueCard), 1)
-      newDiscardPile.push(highestValueCard)
-    }
-
+      // Decide which card to throw and throw it
+      if (singleCards.length > 0) {
+        singleCards.sort((a, b) => a.value - b.value)
+        const highestSingle = singleCards.slice(-1)[0]
+        newHand.splice(newHand.indexOf(highestSingle), 1)
+        newDiscardPile.push(highestSingle)
+      } else {
+        // If computer has no singles
+        const highestValueCard = sortByValue(newHand).slice(-1)[0]
+        newHand.splice(newHand.indexOf(highestValueCard), 1)
+        newDiscardPile.push(highestValueCard)
+      }
+  
+    
     // Make all changes in hands, piles and on table
     setTimeout(() => setDiscardPile(newDiscardPile), 1500)
     setTimeout(
