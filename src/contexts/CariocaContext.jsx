@@ -128,6 +128,25 @@ export const CariocaProvider = ({ children }) => {
     })
     return highestGap
   }
+
+  const findSinglesInTwoSets = (bigCardSet, smallCardSet) => {
+    let singlesInBothSets = []
+    // Look at big card set to find single values
+    for (const [key, value] of Object.entries(
+      countCardsByValue(bigCardSet)
+    )) { 
+      if (value === 1) {
+        // Are cards also found in small set?
+        smallCardSet.forEach((card) => {
+          if (card.value === Number(key)) {
+            singlesInBothSets.push(card)
+          }
+        })
+      }
+    }
+    console.log("SinglesInBothSets", singlesInBothSets)
+    return singlesInBothSets
+  }
   
   const sortByValue = (cards) => {
     const sortedCards = [...cards]
@@ -563,9 +582,12 @@ export const CariocaProvider = ({ children }) => {
     const newHand = [...computer.hand]
     let throwAwayCard = {}
 
-    //Gamplay depending on goal
-    if (contracts[contractNumber].scalas > computer.scalasReached) { // Scalas are a goal
+    // Gamplay depending on goal
+    // Scalas are a goal
+    if (contracts[contractNumber].scalas > computer.scalasReached) { 
       console.log("Scalas are goal")
+
+      // Decide which card to pick and pick it
       if (cardIsAlmostPartOfScala(lastCardThrown, computer.hand, 2)) {
         cardPicked = lastCardThrown
       } else {
@@ -577,9 +599,9 @@ export const CariocaProvider = ({ children }) => {
         setTimeout(() => setStock(newStock), 1500)
       }
       newHand.push(cardPicked)
-      // Decide which cards to play and which to throw
-      let cardsWeMightThrow = []
-      // Find singles according to suit
+
+      // Decide which card to throw
+      // Step 1: Find singles according to suit
       let singleCards = []
       for (const [key, value] of Object.entries(countCardsBySuit(newHand))) {
         if (value === 1) {
@@ -590,11 +612,12 @@ export const CariocaProvider = ({ children }) => {
         }
       }
       console.log("Singles", singleCards)
-      // Sort singles into throw or maybe-throw
+      // Step 2: Try to find a throw-card amongst the singles
       if (singleCards.length > 0) {
         singleCards.sort((a, b) => a.value - b.value)
         if (contracts[contractNumber].trios > computer.triosReached) {
-          // Trios is also a goal - look at card value and find those singles
+          // Trios is also a goal - look at card value and find singles in both suit and value
+          // If such cards are fund, set the highest to throw away
           let cardsLonelyInValue = []
           for (const [key, value] of Object.entries(
             countCardsByValue(newHand)
@@ -614,11 +637,6 @@ export const CariocaProvider = ({ children }) => {
             cardsLonelyInValue.sort((a, b) => a.value - b.value)
             throwAwayCard = cardsLonelyInValue[cardsLonelyInValue.length - 1]
             console.log("Throw away(Lonely in value):", throwAwayCard)
-          // } else {
-            // No cards are lonely in both suit and value - put them in maybepile
-            //singleCards.forEach((card) => {
-            //  cardsWeMightThrow.push(card)
-            //})
           }
         } else {
           // Trios is not a goal - throw away highest single
@@ -626,21 +644,35 @@ export const CariocaProvider = ({ children }) => {
           console.log("Throw away(No trio goal):", throwAwayCard)
         }
       } 
-      // Sort rest of cards into keep or maybe-throw
-      const highestGap = findHighestValueGap(newHand)
-      console.log("Gap", highestGap)
-      newHand.forEach((card) => {
-        const testHand = newHand.filter((c) => c != card)
-        // console.log("TestHand", testHand)
-        if (!cardIsAlmostPartOfScala(card, testHand, highestGap - 1)) {
-          cardsWeMightThrow.push(card)
-        }
-      })
-      console.log("Maybe-pile", cardsWeMightThrow)
+      // Step 3: If no throw-card is set, find throw-card in onother way
+      if (throwAwayCard == {}) {
+        console.log("No throw-away yet.")
+        // Find cards with high value-gaps an put in maybe-pile
+        const highestGap = findHighestValueGap(newHand)
+        console.log("Gap", highestGap)
+        let cardsWeMightThrow = []
+        newHand.forEach((card) => {
+          const testHand = newHand.filter((c) => c != card)
+          if (!cardIsAlmostPartOfScala(card, testHand, highestGap - 1)) {
+            cardsWeMightThrow.push(card)
+          }
+        })
+        console.log("Maybe-pile", cardsWeMightThrow)
+        // Use maybe-pile to decide which card to throw
+        // if Trio is goal find the singles and throw the highest
+        // Trio is not a goal
+        cardsWeMightThrow.sort((a, b) => a.value - b.value)
+        throwAwayCard = cardsWeMightThrow[cardsWeMightThrow.length - 1]
+        console.log("Throw away(Highest of highest gap):", throwAwayCard)
+      }
+      
 
-    } else if (contracts[contractNumber].trios > computer.triosReached) { // Trios are a goal
+    }
+    // Trios are the only goal 
+    else if (contracts[contractNumber].trios > computer.triosReached) {
+      // Decide which card to pick and pick it
       if (countCardsByValue(computer.hand)[lastCardThrown.value] >= 2) {
-      //Two cards in hand with same value as lastCardThrown
+        //Two cards in hand with same value as lastCardThrown
         cardPicked = lastCardThrown
       } else {
         cardPicked = topOfTheStock
