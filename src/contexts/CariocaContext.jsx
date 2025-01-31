@@ -122,7 +122,6 @@ export const CariocaProvider = ({ children }) => {
         })
       }
     }
-    console.log("SinglesInBothSets", singlesInBothSets)
     return singlesInBothSets
   }
 
@@ -572,28 +571,13 @@ export const CariocaProvider = ({ children }) => {
       console.log("Singles in suit", singleCardsAccordingToSuit)
       // Step 2: Try to find a throw-card amongst the singles
       if (singleCardsAccordingToSuit.length > 0) {
-        singleCardsAccordingToSuit.sort((a, b) => a.value - b.value)
         if (contracts[contractNumber].trios > computer.triosReached) {
-          // Trios is also a goal - look at card value and find singles in both suit and value
-          // If such cards are fund, set the highest to throw away
-          let cardsLonelyInValueAndSuit = []
-          for (const [key, value] of Object.entries(
-            countCardsByValue(newHand)
-          )) { // Look at entire hand to find single values
-            if (value === 1) {
-              // Look in singleCards to find matches
-              singleCardsAccordingToSuit.forEach((card) => {
-                if (card.value === Number(key)) {
-                  cardsLonelyInValueAndSuit.push(card)
-                }
-              })
-            }
-          }
-          console.log("CardsLonelyInValue", cardsLonelyInValueAndSuit)
+          // Trios is also a goal - compare single suit cards to all of hand to see if they are also singles in value
+          const cardsLonelyInValueAndSuit = findSinglesInTwoSets(newHand, singleCardsAccordingToSuit)
+          console.log("CardsLonelyInValueAndSuit", cardsLonelyInValueAndSuit)
           if (cardsLonelyInValueAndSuit.length > 0) {
             // Some cards are lonely in both suit and value - throw away highest
-            cardsLonelyInValueAndSuit.sort((a, b) => a.value - b.value)
-            throwAwayCard = cardsLonelyInValueAndSuit[cardsLonelyInValueAndSuit.length - 1]
+            throwAwayCard = sortByValue(cardsLonelyInValueAndSuit)[cardsLonelyInValueAndSuit.length - 1]
             console.log("Throw away(Lonely in value and suit):", throwAwayCard)
           }
         } else {
@@ -619,37 +603,20 @@ export const CariocaProvider = ({ children }) => {
         // Use maybe-pile to decide which card to throw
         // Trios is also a goal - look at card value and find singles in value
         if (contracts[contractNumber].trios > computer.triosReached) {
-          let singlesAmongstMaybes = []
-          for (const [key, value] of Object.entries(
-            countCardsByValue(newHand)
-          )) {
-            // Look at entire hand to find single values
-            if (value === 1) {
-              // Look in singlesAmongstMaybes to find matches
-              cardsWeMightThrow.forEach((card) => {
-                if (card.value === Number(key)) {
-                  singlesAmongstMaybes.push(card)
-                }
-              })
-            }
-          }
+          const singlesAmongstMaybes = findSinglesInTwoSets(newHand, cardsWeMightThrow)
           console.log("Singles in maybe", singlesAmongstMaybes)
           if (singlesAmongstMaybes.length > 0) {
             // Some maybe-cards are lonely in value - throw away highest
-            singlesAmongstMaybes.sort((a, b) => a.value - b.value)
-            throwAwayCard =
-              singlesAmongstMaybes[singlesAmongstMaybes.length - 1]
+            throwAwayCard = sortByValue(singlesAmongstMaybes)[singlesAmongstMaybes.length - 1]
             console.log("Throw away(Single in maybe):", throwAwayCard)
           } else {
             // No maybes are singles - throw away highest anyway
-            cardsWeMightThrow.sort((a, b) => a.value - b.value)
-            throwAwayCard = cardsWeMightThrow[cardsWeMightThrow.length - 1]
+            throwAwayCard = sortByValue(cardsWeMightThrow)[cardsWeMightThrow.length - 1]
             console.log("Throw away(No single maybes):", throwAwayCard)
           }
         } else {
           // Trio is not a goal - throw away highest maybe
-          cardsWeMightThrow.sort((a, b) => a.value - b.value)
-          throwAwayCard = cardsWeMightThrow[cardsWeMightThrow.length - 1]
+          throwAwayCard = sortByValue(cardsWeMightThrow)[cardsWeMightThrow.length - 1]
           console.log("Throw away(Highest of highest gap):", throwAwayCard)
         }
       }
