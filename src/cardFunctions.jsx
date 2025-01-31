@@ -1,4 +1,5 @@
 // Sorting and counting cards
+
 /**
  * Sort cards in ascending order by the value on the card
  * @param  {Array} cards The cards that need sorting
@@ -10,6 +11,11 @@ export const sortByValue = (cards) => {
   return sortedCards
 }
 
+/**
+ * Sort cards in ascending order by both value and the suit on the card
+ * @param  {Array} cards The cards that need sorting
+ * @return {Array}      The cards in sorted order
+ */
 export const sortBySuit = (cards) => {
   const sortedCards = [...cards]
   sortedCards.sort((a, b) => a.value - b.value)
@@ -17,6 +23,11 @@ export const sortBySuit = (cards) => {
   return sortedCards
 }
 
+/**
+ * Count how many cards there are of each value
+ * @param  {Array} cards The cards that should be counted
+ * @return {Object}      Object where keys are card-values and values are the count
+ */
 export const countCardsByValue = (cards) => {
   const counterSameValue = {}
   cards.forEach((card) => {
@@ -29,6 +40,11 @@ export const countCardsByValue = (cards) => {
   return counterSameValue
 }
 
+/**
+ * Count how many cards there are in each suit
+ * @param  {Array} cards The cards that should be counted
+ * @return {Object}      Object where keys are suits and values are how many
+ */
 export const countCardsBySuit = (cards) => {
   const counterSameSuit = {}
   cards.forEach((card) => {
@@ -43,6 +59,11 @@ export const countCardsBySuit = (cards) => {
 
 
 // Count points
+/**
+ * Count the sum of the card values for a persons hand
+ * @param  {Object} person The person whose cards should be counted 
+ * @return {Number}      Number of points person has in the hand
+ */
 export const countPoints = (person) => {
   let newPoint = 0
   person.hand.forEach((card) => (newPoint += card.value))
