@@ -147,26 +147,6 @@ export const CariocaProvider = ({ children }) => {
     console.log("SinglesInBothSets", singlesInBothSets)
     return singlesInBothSets
   }
-  
-  const sortByValue = (cards) => {
-    const sortedCards = [...cards]
-    sortedCards.sort((a, b) => a.value - b.value)
-    return sortedCards
-  }
-
-  const sortBySuit = (cards) => {
-    const sortedCards = [...cards]
-    sortedCards.sort((a, b) => a.value - b.value)
-    sortedCards.sort((a, b) =>
-      a.suit > b.suit ? 1 : b.suit > a.suit ? -1 : 0
-    )
-    return sortedCards
-  }
-
-  const addCardsTogether = (oldCards, newCard) => {
-    const newCards = [...oldCards, newCard]
-    return newCards
-  }
 
   const cardsAreATrio = (cards) => {
     const giveTrioErrors = contracts[contractNumber].trios > player.triosReached
@@ -340,6 +320,26 @@ export const CariocaProvider = ({ children }) => {
   }
 
   //Helper functions to move around cards
+  const sortByValue = (cards) => {
+    const sortedCards = [...cards]
+    sortedCards.sort((a, b) => a.value - b.value)
+    return sortedCards
+  }
+
+  const sortBySuit = (cards) => {
+    const sortedCards = [...cards]
+    sortedCards.sort((a, b) => a.value - b.value)
+    sortedCards.sort((a, b) =>
+      a.suit > b.suit ? 1 : b.suit > a.suit ? -1 : 0
+    )
+    return sortedCards
+  }
+
+  const addCardsTogether = (oldCards, newCard) => {
+    const newCards = [...oldCards, newCard]
+    return newCards
+  }
+
   const dealCards = (pScore, cScore) => {
     //const deckInPlay = [...testCards] // Cards for testing
     const deckInPlay = [...cards] //Make copy of all cards to use in play
@@ -536,7 +536,6 @@ export const CariocaProvider = ({ children }) => {
     }
   }
     
-  
   const throwCard = (person) => {
     const hand = person.hand
     const cardsToThrow = hand.filter((card) => card.staged)
