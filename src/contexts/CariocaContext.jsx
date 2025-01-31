@@ -4,6 +4,8 @@ import { createContext, useContext, useState } from "react"
 import cards from "../cards.json"
 import testCards from "../testCards.json"
 
+import { sortByValue, sortBySuit, countCardsBySuit, countCardsByValue, countPoints } from "../cardFunctions"
+
 const CariocaContext = createContext()
 
 export const CariocaProvider = ({ children }) => {
@@ -87,30 +89,6 @@ export const CariocaProvider = ({ children }) => {
   const [gameStageIndex, setGameStageIndex] = useState(0)
 
   //Helper functions to calculate things
-  const countCardsByValue = (cards) => {
-    const counterSameValue = {}
-    cards.forEach((card) => {
-      if (counterSameValue[card.value]) {
-        counterSameValue[card.value] += 1
-      } else {
-        counterSameValue[card.value] = 1
-      }
-    })
-    return counterSameValue
-  }
-
-  const countCardsBySuit = (cards) => {
-    const counterSameSuit = {}
-    cards.forEach((card) => {
-      if (counterSameSuit[card.suit]) {
-        counterSameSuit[card.suit] += 1
-      } else {
-        counterSameSuit[card.suit] = 1
-      }
-    })
-    return counterSameSuit
-  }
-
   const findHighestValueGap = (cardSet) => {
     const cardsSorted = sortBySuit(cardSet)
     let checkingSuit = "suit"
@@ -302,12 +280,6 @@ export const CariocaProvider = ({ children }) => {
 
     return returnStatement
   }
-  
-  const countPoints = (person) => {
-    let newPoint = 0
-    person.hand.forEach((card) => (newPoint += card.value))
-    return newPoint
-  }
 
   const somebodyHasWon = (hand) => {
     if (
@@ -320,20 +292,6 @@ export const CariocaProvider = ({ children }) => {
   }
 
   //Helper functions to move around cards
-  const sortByValue = (cards) => {
-    const sortedCards = [...cards]
-    sortedCards.sort((a, b) => a.value - b.value)
-    return sortedCards
-  }
-
-  const sortBySuit = (cards) => {
-    const sortedCards = [...cards]
-    sortedCards.sort((a, b) => a.value - b.value)
-    sortedCards.sort((a, b) =>
-      a.suit > b.suit ? 1 : b.suit > a.suit ? -1 : 0
-    )
-    return sortedCards
-  }
 
   const addCardsTogether = (oldCards, newCard) => {
     const newCards = [...oldCards, newCard]
@@ -586,7 +544,6 @@ export const CariocaProvider = ({ children }) => {
     // Gamplay depending on goal
     // Scalas are a goal
     if (contracts[contractNumber].scalas > computer.scalasReached) { 
-      console.log("Scalas are goal")
 
       // Decide which card to pick and pick it
       if (cardIsAlmostPartOfScala(lastCardThrown, computer.hand, 2)) {
@@ -696,7 +653,11 @@ export const CariocaProvider = ({ children }) => {
           console.log("Throw away(Highest of highest gap):", throwAwayCard)
         }
       }
+
+      // Find cards to play
+      // Step 1: Check each suit to see if there is at least four cards
     }
+
     // Trios are the only goal 
     else if (contracts[contractNumber].trios > computer.triosReached) {
       // Decide which card to pick and pick it
@@ -713,6 +674,7 @@ export const CariocaProvider = ({ children }) => {
       }
       newHand.push(cardPicked)
 
+      // Find all trios and all single cards according to value
       let trioCards = []
       let singleCards = []
       for (const [key, value] of Object.entries(countCardsByValue(newHand))) {
@@ -731,7 +693,7 @@ export const CariocaProvider = ({ children }) => {
         }
       }
 
-      // Play cards
+      // Play trio cards
       trioCards.map((card) => {
         newTrioTable.push(card)
         newHand.splice(newHand.indexOf(card), 1)
@@ -739,11 +701,11 @@ export const CariocaProvider = ({ children }) => {
 
       // Decide which card to throw
       if (singleCards.length > 0) {
-        singleCards.sort((a, b) => a.value - b.value)
-        const highestSingle = singleCards.slice(-1)[0]
+        // There are single cards - throw away highest single
+        const highestSingle = sortByValue(singleCards).slice(-1)[0]
         throwAwayCard = highestSingle
       } else {
-        // If computer has no singles
+        // Computer has no singles - throw away highest of all cards
         const highestValueCard = sortByValue(newHand).slice(-1)[0]
         throwAwayCard = highestValueCard
       }
