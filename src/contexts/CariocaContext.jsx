@@ -245,7 +245,7 @@ export const CariocaProvider = ({ children }) => {
     if (
       cardToCheck.suit === checkingSuit &&
       checkingValue - cardToCheck.value > 0 &&
-      checkingValue - cardToCheck.value <= allowedGap
+      checkingValue - cardToCheck.value < allowedGap
     ) {
       returnStatement = true // New card slightly lower value than first card, approved
     }
