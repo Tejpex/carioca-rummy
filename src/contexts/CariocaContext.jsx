@@ -142,8 +142,8 @@ export const CariocaProvider = ({ children }) => {
     }
   }
 
-  const cardsAreAScala = (cards) => {
-    const giveScalaErrors = contracts[contractNumber].scalas > player.scalasReached
+  const cardsAreAScala = (cards, person) => {
+    const giveScalaErrors = contracts[contractNumber].scalas > player.scalasReached && person === player
     const sortedCards = sortByValue(cards)
     const equalSuit = (cardSet) => {
       return cardSet.every((card) => card.suit === cardSet[0].suit)
@@ -298,7 +298,7 @@ export const CariocaProvider = ({ children }) => {
   }
 
   const dealCards = (pScore, cScore) => {
-    //const deckInPlay = [...testCards] // Cards for testing
+    // const deckInPlay = [...testCards] // Cards for testing
     const deckInPlay = [...cards] //Make copy of all cards to use in play
     const newPlayerCards = [] //Collects players cards
     const newComputerCards = [] //Collects computers cards
@@ -427,7 +427,7 @@ export const CariocaProvider = ({ children }) => {
       })
       trioCount += 1
     } else if (
-      cardsAreAScala(cardsToCheck) &&
+      cardsAreAScala(cardsToCheck, player) &&
       contracts[contractNumber].scalas > scalaCount
     ) { //Play scala
       cardsToCheck.map((card) => {
@@ -568,30 +568,24 @@ export const CariocaProvider = ({ children }) => {
           singleCardsAccordingToSuit.push(lonelyCard[0])
         }
       }
-      console.log("Singles in suit", singleCardsAccordingToSuit)
       // Step 2: Try to find a throw-card amongst the singles
       if (singleCardsAccordingToSuit.length > 0) {
         if (contracts[contractNumber].trios > computer.triosReached) {
           // Trios is also a goal - compare single suit cards to all of hand to see if they are also singles in value
           const cardsLonelyInValueAndSuit = findSinglesInTwoSets(newHand, singleCardsAccordingToSuit)
-          console.log("CardsLonelyInValueAndSuit", cardsLonelyInValueAndSuit)
           if (cardsLonelyInValueAndSuit.length > 0) {
             // Some cards are lonely in both suit and value - throw away highest
             throwAwayCard = sortByValue(cardsLonelyInValueAndSuit)[cardsLonelyInValueAndSuit.length - 1]
-            console.log("Throw away(Lonely in value and suit):", throwAwayCard)
           }
         } else {
           // Trios is not a goal - throw away highest single
           throwAwayCard = singleCardsAccordingToSuit[singleCardsAccordingToSuit.length - 1]
-          console.log("Throw away(No trio goal):", throwAwayCard)
         }
       } 
       // Step 3: If no throw-card is set, find throw-card in onother way
       if (Object.keys(throwAwayCard).length === 0) {
-        console.log("No throw-away yet.")
         // Find cards with high value-gaps an put in maybe-pile
         const highestGap = findHighestValueGap(newHand)
-        console.log("Gap", highestGap)
         let cardsWeMightThrow = []
         newHand.forEach((card) => {
           const testHand = newHand.filter((c) => c != card)
@@ -599,30 +593,57 @@ export const CariocaProvider = ({ children }) => {
             cardsWeMightThrow.push(card)
           }
         })
-        console.log("Maybe-pile", cardsWeMightThrow)
         // Use maybe-pile to decide which card to throw
-        // Trios is also a goal - look at card value and find singles in value
         if (contracts[contractNumber].trios > computer.triosReached) {
+          // Trios is also a goal - look at card value and find singles in value
           const singlesAmongstMaybes = findSinglesInTwoSets(newHand, cardsWeMightThrow)
-          console.log("Singles in maybe", singlesAmongstMaybes)
           if (singlesAmongstMaybes.length > 0) {
             // Some maybe-cards are lonely in value - throw away highest
             throwAwayCard = sortByValue(singlesAmongstMaybes)[singlesAmongstMaybes.length - 1]
-            console.log("Throw away(Single in maybe):", throwAwayCard)
           } else {
             // No maybes are singles - throw away highest anyway
             throwAwayCard = sortByValue(cardsWeMightThrow)[cardsWeMightThrow.length - 1]
-            console.log("Throw away(No single maybes):", throwAwayCard)
           }
         } else {
           // Trio is not a goal - throw away highest maybe
           throwAwayCard = sortByValue(cardsWeMightThrow)[cardsWeMightThrow.length - 1]
-          console.log("Throw away(Highest of highest gap):", throwAwayCard)
         }
       }
 
       // Find cards to play
       // Step 1: Check each suit to see if there is at least four cards
+      let scalaContenders = []
+      for (const [key, value] of Object.entries(countCardsBySuit(newHand))) {
+        if (value >= 4) {
+          // If suit has min four cards push it as array to scalaContenders
+          const sameSuitCards = newHand.filter(
+            (card) => card.suit === key
+          )
+          scalaContenders.push(sameSuitCards)
+        }
+      }
+      // Step 2: Remove doubles from each suit
+      scalaContenders.forEach((suit) => {
+        for (const [key, value] of Object.entries(countCardsByValue(suit))) {
+          if (value >= 2) {
+            // If suit has min two cards of same value remove all but one from suit
+            const doubleCards = newHand.filter(
+              (card) => card.value === Number(key)
+            )
+            for (let i = 1; i < doubleCards.length; i++) {
+              suit.splice(suit.indexOf(doubleCards[i]), 1)
+            }
+          }
+        }
+        suit.sort((a, b) => b.value - a.value)
+        for (let i = 0; i < suit.length; i++) {
+          const testCards = suit.slice(i, i+4)
+          console.log("Testing", testCards)
+          if (cardsAreAScala(testCards)) {
+            console.log("Scala found", testCards)
+          }
+        }
+      })
     }
 
     // Trios are the only goal 
