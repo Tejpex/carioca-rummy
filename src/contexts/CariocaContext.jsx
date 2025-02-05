@@ -539,6 +539,7 @@ export const CariocaProvider = ({ children }) => {
     const newHand = [...computer.hand]
     const newTrioTable = [...computer.trioTable]
     const newScalaTable = [...computer.scalaTable]
+    let scalaCount = 0
 
     // Gamplay depending on goal
     // Scalas are a goal
@@ -624,6 +625,7 @@ export const CariocaProvider = ({ children }) => {
       }
       // Step 2: Remove doubles from each suit
       scalaContenders.forEach((suit) => {
+        let scalaPlayed = false
         for (const [key, value] of Object.entries(countCardsByValue(suit))) {
           if (value >= 2) {
             // If suit has min two cards of same value remove all but one from suit
@@ -641,8 +643,23 @@ export const CariocaProvider = ({ children }) => {
           console.log("Testing", testCards)
           if (cardsAreAScala(testCards)) {
             console.log("Scala found", testCards)
+            // Put cards in pile to play (but only if they're not already in there)
+            testCards.forEach((card) => {
+              if (!newScalaTable.includes(card)) {
+                newScalaTable.push(card)
+                newHand.splice(newHand.indexOf(card), 1)
+                console.log("Pushed", card)
+              }
+            })
+            scalaPlayed = true
           }
         }
+        console.log("Scala table", newScalaTable)
+        // Count number of scalas played
+        if (scalaPlayed) {
+          scalaCount ++
+        }
+        console.log("Scala count", scalaCount)
       })
     }
 
