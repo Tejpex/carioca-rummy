@@ -6,26 +6,43 @@ export const HandRow = ({person}) => {
     sortByValue,
     sortBySuit,
     toggleStaged,
-    setNewHand
+    setNewHand,
+    setSortingOn
   } = useCarioca()
 
   const hand = person.hand
-
-  const sortHandByValue = () => {
-    const cards = sortByValue(person.hand)
-    setNewHand(person, cards)
-  }
-
-  const sortHandByColor = () => {
-    const cards = sortBySuit(person.hand)
-    setNewHand(person, cards)
+  
+  const handleSorting = (value) => {
+    if (value === "value") {
+      const cards = sortByValue(person.hand)
+      setNewHand(person, cards)
+    } else if (value === "suit") {
+      const cards = sortBySuit(person.hand)
+      setNewHand(person, cards)
+    }
+    setSortingOn(value)
   }
 
   return (
     <CardRow>
       <ButtonBox>
-        <button onClick={() => sortHandByValue()}>Sortera efter värde</button>
-        <button onClick={() => sortHandByColor()}>Sortera efter färg</button>
+        <form onChange={() => handleSorting(event.target.value)}>
+          <legend>Sortera korten:</legend>
+          <div>
+            <input type="radio" id="sort-off" name="sorting" value="off" />
+            <label for="sort-off">Av</label>
+          </div>
+
+          <div>
+            <input type="radio" id="sort-value" name="sorting" value="value" />
+            <label for="sort-value">Värde</label>
+          </div>
+
+          <div>
+            <input type="radio" id="sort-suit" name="sorting" value="suit" />
+            <label for="sort-suit">Färg</label>
+          </div>
+        </form>
       </ButtonBox>
       {hand.map((card, index) => (
         <CardButton onClick={() => toggleStaged(person, card)} key={index}>

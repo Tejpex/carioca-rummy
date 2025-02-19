@@ -29,16 +29,18 @@ export const CariocaProvider = ({ children }) => {
     scalasReached: 0,
     score: null
   })
+
+  const [sortingOn, setSortingOn] = useState("off")
   
   const [discardPile, setDiscardPile] = useState([])
   const [stock, setStock] = useState([])
-  // ------------ !!!!! Changed for test-purpose! !!!! -------------
+  // ------------ !!!!! Change for test-purpose! !!!! -------------
   const contracts = [
     {
       index: 0,
       name: "2 triss",
-      trios: 1,
-      scalas: 2,
+      trios: 2,
+      scalas: 0,
     },
     {
       index: 1,
@@ -291,10 +293,14 @@ export const CariocaProvider = ({ children }) => {
   }
 
   //Helper functions to move around cards
-
-  const addCardsTogether = (oldCards, newCard) => {
-    const newCards = [...oldCards, newCard]
-    return newCards
+  const sortCards = (cards) => {
+    if (sortingOn === "value") {
+      return sortByValue(cards)
+    } else if (sortingOn === "suit") {
+      return sortBySuit(cards)
+    } else {
+      return cards
+    }
   }
 
   const dealCards = (pScore, cScore) => {
@@ -328,7 +334,7 @@ export const CariocaProvider = ({ children }) => {
 
     setPlayer({
       ...player,
-      hand: newPlayerCards,
+      hand: sortCards(newPlayerCards),
       trioTable: [],
       triosReached: 0,
       scalaTable: [],
@@ -337,7 +343,7 @@ export const CariocaProvider = ({ children }) => {
     })
     setComputer({
       ...computer,
-      hand: newComputerCards,
+      hand: sortCards(newComputerCards),
       trioTable: [],
       triosReached: 0,
       scalaTable: [],
@@ -365,8 +371,8 @@ export const CariocaProvider = ({ children }) => {
   }
 
   const moveCardsToHand = (person, card, pile) => {
-    const hand = person.hand
-    setNewHand(person, addCardsTogether(hand, card))
+    const newHand = [...person.hand, card]
+    setNewHand(person, sortCards(newHand))
 
     const newPile = [...pile]
     if (pile === discardPile) {
@@ -735,7 +741,7 @@ export const CariocaProvider = ({ children }) => {
   
   return (
     <CariocaContext.Provider
-      value={{ player, computer, discardPile, stock, gameStageIndex, contracts, contractNumber, startNewGame, sortByValue, sortBySuit, takeCard, toggleStaged, tryToPlayCards, throwCard, gameStages, setNewHand, message, setMessage }}
+      value={{ player, computer, discardPile, stock, gameStageIndex, contracts, contractNumber, startNewGame, sortByValue, sortBySuit, takeCard, toggleStaged, tryToPlayCards, throwCard, gameStages, setNewHand, message, setMessage, setSortingOn }}
     >
       {children}
     </CariocaContext.Provider>
