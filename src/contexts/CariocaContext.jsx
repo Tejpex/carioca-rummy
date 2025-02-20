@@ -545,7 +545,10 @@ export const CariocaProvider = ({ children }) => {
     const newHand = [...computer.hand]
     const newTrioTable = [...computer.trioTable]
     const newScalaTable = [...computer.scalaTable]
-    let scalaCount = 0
+    const newPlayerTrioTable = [...player.trioTable]
+    const newPlayerScalaTable = [...player.scalaTable]
+    let scalaCount = computer.scalasReached
+    let trioCount = computer.triosReached
 
     // Gamplay depending on goal
     // Scalas are a goal
@@ -696,6 +699,7 @@ export const CariocaProvider = ({ children }) => {
           trioCards.push(sameValueCards[0])
           trioCards.push(sameValueCards[1])
           trioCards.push(sameValueCards[2])
+          trioCount ++
         } else if (value === 1) {
           const lonelyCards = newHand.filter(
             (card) => card.value === Number(key)
@@ -722,6 +726,29 @@ export const CariocaProvider = ({ children }) => {
       }
     }
 
+    if ( // Goal is reached
+      trioCount >= contracts[contractNumber].trios &&
+      scalaCount >= contracts[contractNumber].scalas
+    ) {
+      newHand.map((card) => {
+        if (newTrioTable.some(c => c.value === card.value)) { // Matches own trios
+          newTrioTable.push(card)
+          newHand.splice(newHand.indexOf(card), 1)
+        } else if (newPlayerTrioTable.some((c) => c.value === card.value)) { // Matches player trios
+          newPlayerTrioTable.push(card)
+          newHand.splice(newHand.indexOf(card), 1)
+        } else if (cardMatchesAScala(card, newScalaTable)) { // Matches own scalas
+          newScalaTable.push(card)
+          newHand.splice(newHand.indexOf(card), 1)
+        } else if (cardMatchesAScala(card, newPlayerScalaTable)) { // Matches opponents scalas
+          newPlayerScalaTable.push(card)
+          newHand.splice(newHand.indexOf(card), 1)
+        }
+      })
+    }
+
+    // IF ALL GOALS ARE REACHED THERE ARE NO THROW-AWAY-CARD!!!!
+
     // Throw away throwAwayCard
     newHand.splice(newHand.indexOf(throwAwayCard), 1)
     newDiscardPile.push(throwAwayCard)
@@ -729,7 +756,21 @@ export const CariocaProvider = ({ children }) => {
     // Make all changes in hands, piles and on table
     setTimeout(() => setDiscardPile(newDiscardPile), 1500)
     setTimeout(
-      () => setComputer({ ...computer, hand: newHand, trioTable: newTrioTable, scalaTable: newScalaTable }),
+      () => {
+        setComputer({
+          ...computer,
+          hand: newHand,
+          trioTable: newTrioTable,
+          scalaTable: newScalaTable,
+          triosReached: trioCount,
+          scalasReached: scalaCount
+        })
+        setPlayer({
+          ...player,
+          trioTable: newPlayerTrioTable,
+          scalaTable: newPlayerScalaTable,
+        })
+      },
       2000
     )
     if (somebodyHasWon(newHand)) {
