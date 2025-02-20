@@ -19,8 +19,12 @@ export const Header = () => {
 
 const Title = styled.h1`
   margin: 0 10px;
-  font-size: 36px;
+  font-size: 46px;
   color: white;
+  font-family: "Quicksand", serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
 `
 
 const Info = styled.h2`
