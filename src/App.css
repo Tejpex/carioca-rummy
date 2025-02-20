@@ -1,4 +1,8 @@
 #root {
   margin: 0;
   text-align: center;
+  --primary: #690B22;
+  --primary-light: #E07A5F;
+  --secondary: #1B4D3E;
+  --light: #F1E3D3;
 }

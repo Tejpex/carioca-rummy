@@ -45,11 +45,11 @@ const ScoreDiv = styled.div`
 `
 
 const HeaderDiv = styled.div`
-  background-color: black;
+  background-color: var(--secondary);
   width: 100vw;
-  height: 80px; 
+  height: 80px;
   padding: 10px 30px;
   display: flex;
   align-items: center;
-  justify-content: space-between; 
+  justify-content: space-between;
 `
