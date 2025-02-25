@@ -292,6 +292,17 @@ export const CariocaProvider = ({ children }) => {
     }
   }
 
+  const cardMatchesSomethingOnTable = (card, ownTrios, opponentTrios, ownScalas, opponentScalas) => {
+    if (
+      ownTrios.some((c) => c.value === card.value) || //Matches own trios
+      opponentTrios.some((c) => c.value === card.value) || // Matches opponent trios
+      cardMatchesAScala(card, ownScalas) || // Matches own scalas
+      cardMatchesAScala(card, opponentScalas) // Matches opponent scalas
+    ) {
+      return true
+    }
+  }
+
   //Helper functions to move around cards
   const sortCards = (cards) => {
     if (sortingOn === "value") {
@@ -539,7 +550,6 @@ export const CariocaProvider = ({ children }) => {
 
     // Starting values
     const topOfTheStock = stock.slice(0)[0]
-    let cardPicked = {}
     let throwAwayCard = {}
     const newDiscardPile = [...discardPile]
     const newHand = [...computer.hand]
@@ -549,23 +559,39 @@ export const CariocaProvider = ({ children }) => {
     const newPlayerScalaTable = [...player.scalaTable]
     let scalaCount = computer.scalasReached
     let trioCount = computer.triosReached
-
+    
+    // Decide which card to pick and pick it
+    let cardPicked = {}
+    if (
+      contracts[contractNumber].scalas > scalaCount && // Scalas are a goal 
+      cardIsAlmostPartOfScala(lastCardThrown, computer.hand, 2)// Last card thrown matches scala on hand
+      ){
+      cardPicked = lastCardThrown
+    } else if (
+      contracts[contractNumber].scalas <= scalaCount && // Scalas are not a goal
+      contracts[contractNumber].trios > trioCount && //Trios are a goal
+      countCardsByValue(computer.hand)[lastCardThrown.value] >= 2 //Two cards in hand has same value as lastCardThrown
+      ){
+      cardPicked = lastCardThrown
+    } else if (
+      trioCount >= contracts[contractNumber].trios &&
+      scalaCount >= contracts[contractNumber].scalas && // All goals reached
+      cardMatchesSomethingOnTable(lastCardThrown, newTrioTable, newPlayerTrioTable, newScalaTable, newPlayerScalaTable) // Last card thrown matches something on table
+      ){
+      cardPicked = lastCardThrown
+    } else {
+      cardPicked = topOfTheStock
+      //Make sure lastCardThrown stays in discard pile
+      newDiscardPile.push(lastCardThrown)
+      //Remove top card from stock
+      const newStock = [...stock].toSpliced(0, 1)
+      setTimeout(() => setStock(newStock), 1500)
+    }
+    newHand.push(cardPicked)
+        
     // Gamplay depending on goal
     // Scalas are a goal
     if (contracts[contractNumber].scalas > computer.scalasReached) {
-      // Decide which card to pick and pick it
-      if (cardIsAlmostPartOfScala(lastCardThrown, computer.hand, 2)) {
-        cardPicked = lastCardThrown
-      } else {
-        cardPicked = topOfTheStock
-        //Make sure lastCardThrown stays in discard pile
-        newDiscardPile.push(lastCardThrown)
-        //Remove top card from stock
-        const newStock = [...stock].toSpliced(0, 1)
-        setTimeout(() => setStock(newStock), 1500)
-      }
-      newHand.push(cardPicked)
-
       // Decide which card to throw
       // Step 1: Find singles according to suit
       let singleCardsAccordingToSuit = []
@@ -678,19 +704,6 @@ export const CariocaProvider = ({ children }) => {
 
     // Trios are the only goal
     else if (contracts[contractNumber].trios > computer.triosReached) {
-      // Decide which card to pick and pick it
-      if (countCardsByValue(computer.hand)[lastCardThrown.value] >= 2) {
-        //Two cards in hand with same value as lastCardThrown
-        cardPicked = lastCardThrown
-      } else {
-        cardPicked = topOfTheStock
-        //Make sure lastCardThrown stays in discard pile
-        newDiscardPile.push(lastCardThrown)
-        //Remove top card from stock
-        const newStock = [...stock].toSpliced(0, 1)
-        setTimeout(() => setStock(newStock), 1500)
-      }
-      newHand.push(cardPicked)
 
       // Find all trios and all single cards according to value
       let trioCards = []
@@ -728,27 +741,6 @@ export const CariocaProvider = ({ children }) => {
         const highestValueCard = sortByValue(newHand).slice(-1)[0]
         throwAwayCard = highestValueCard
       }
-    }
-
-    // Goal has already been reached
-    // Pick up a card
-    else {
-      if (
-        newTrioTable.some((c) => c.value === lastCardThrown.value) || //Matches own trios
-        newPlayerTrioTable.some((c) => c.value === lastCardThrown.value) || // Matches player trios
-        cardMatchesAScala(lastCardThrown, newScalaTable) || // Matches own scalas
-        cardMatchesAScala(lastCardThrown, newPlayerScalaTable) // Matches player scalas
-      ) {
-        cardPicked = lastCardThrown
-      } else {
-        cardPicked = topOfTheStock
-        //Make sure lastCardThrown stays in discard pile
-        newDiscardPile.push(lastCardThrown)
-        //Remove top card from stock
-        const newStock = [...stock].toSpliced(0, 1)
-        setTimeout(() => setStock(newStock), 1500)
-      }
-      newHand.push(cardPicked)
     }
 
     // Goal has been reached before turn started or during turn
