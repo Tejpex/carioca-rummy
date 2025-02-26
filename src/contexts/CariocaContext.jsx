@@ -9,6 +9,7 @@ import { sortByValue, sortBySuit, countCardsBySuit, countCardsByValue, countPoin
 const CariocaContext = createContext()
 
 export const CariocaProvider = ({ children }) => {
+  const [testMode, setTestMode] = useState(false)
   const [message, setMessage] = useState()
   let error = "Inget fel"
 
@@ -805,7 +806,7 @@ export const CariocaProvider = ({ children }) => {
   
   return (
     <CariocaContext.Provider
-      value={{ player, computer, discardPile, stock, gameStageIndex, contracts, contractNumber, startNewGame, sortByValue, sortBySuit, takeCard, toggleStaged, tryToPlayCards, throwCard, gameStages, setNewHand, message, setMessage, setSortingOn }}
+      value={{ player, computer, discardPile, stock, gameStageIndex, contracts, contractNumber, startNewGame, sortByValue, sortBySuit, takeCard, toggleStaged, tryToPlayCards, throwCard, gameStages, setNewHand, message, setMessage, setSortingOn, testMode }}
     >
       {children}
     </CariocaContext.Provider>

@@ -22,7 +22,7 @@ export const Table = () => {
   }
 
   return (
-    <div>
+    <TableMidRow>
       {lastCardThrown && (
         <CardButton onClick={() => handleClick(lastCardThrown, discardPile)}>
           <CardImage src={lastCardThrown.img} />
@@ -31,9 +31,14 @@ export const Table = () => {
       <CardButton onClick={() => handleClick(topOfTheStock, stock)}>
         <CardImage src="/Baksida.png" alt="Card facing down" />
       </CardButton>
-    </div>
+    </TableMidRow>
   ) 
 }
+
+const TableMidRow = styled.div`
+  background-color: var(--primary);
+  height: 100px;
+`
 
 const CardButton = styled.button`
   background: none;

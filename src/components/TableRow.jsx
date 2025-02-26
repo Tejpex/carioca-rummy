@@ -42,7 +42,7 @@ export const TableRow = ({person}) => {
 }
 
 const TableCardRow = styled.div`
-  background-color: green;
+  background-color: var(--primary);
   height: 100px;
   padding: 15px;
   display: flex;

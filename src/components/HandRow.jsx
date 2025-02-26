@@ -7,7 +7,10 @@ export const HandRow = ({person}) => {
     sortBySuit,
     toggleStaged,
     setNewHand,
-    setSortingOn
+    setSortingOn,
+    player,
+    computer,
+    testMode
   } = useCarioca()
 
   const hand = person.hand
@@ -23,45 +26,67 @@ export const HandRow = ({person}) => {
     setSortingOn(value)
   }
 
-  return (
-    <CardRow>
-      <ButtonBox>
-        <form onChange={() => handleSorting(event.target.value)}>
-          <legend>Sortera korten:</legend>
-          <div>
-            <input type="radio" id="sort-off" name="sorting" value="off" />
-            <label for="sort-off">Av</label>
-          </div>
+  if (person === computer && !testMode) {
+    return (
+      <CardRow>
+        <div>
+          {hand.map((card, index) => (
+            <CardImage src="/Baksida.png" alt="Card facing down" key={index} />
+          ))}
+        </div>
+      </CardRow>
+    )
+  } else {
+    return (
+      <CardRow>
+        {person === player && (
+          <ButtonBox>
+            <form onChange={() => handleSorting(event.target.value)}>
+              <legend>Sortera korten:</legend>
+              <div>
+                <input type="radio" id="sort-off" name="sorting" value="off" />
+                <label htmlFor="sort-off">Av</label>
+              </div>
 
-          <div>
-            <input type="radio" id="sort-value" name="sorting" value="value" />
-            <label for="sort-value">Värde</label>
-          </div>
+              <div>
+                <input
+                  type="radio"
+                  id="sort-value"
+                  name="sorting"
+                  value="value"
+                />
+                <label htmlFor="sort-value">Värde</label>
+              </div>
 
-          <div>
-            <input type="radio" id="sort-suit" name="sorting" value="suit" />
-            <label for="sort-suit">Färg</label>
-          </div>
-        </form>
-      </ButtonBox>
-      {hand.map((card, index) => (
-        <CardButton onClick={() => toggleStaged(person, card)} key={index}>
-          {!card.staged && <CardImage src={card.img} alt={card.name} />}
-          {card.staged && <CardImageStaged src={card.img} alt={card.name} />}
-        </CardButton>
-      ))}
-    </CardRow>
-  )
+              <div>
+                <input type="radio" id="sort-suit" name="sorting" value="suit" />
+                <label htmlFor="sort-suit">Färg</label>
+              </div>
+            </form>
+          </ButtonBox>
+        )}
+        {hand.map((card, index) => (
+          <CardButton onClick={() => toggleStaged(person, card)} key={index}>
+            {!card.staged && <CardImage src={card.img} alt={card.name} />}
+            {card.staged && <CardImageStaged src={card.img} alt={card.name} />}
+          </CardButton>
+        ))}
+      </CardRow>
+    )
+  }
 }
 
 const ButtonBox = styled.div`
+  font-family: "Raleway", serif;
+  margin-right: 20px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  align-items: flex-start;
 `
 
 const CardRow = styled.div`
-  background-color: red;
+  background-color: var(--primary-light);
   padding: 15px;
   display: flex;
   justify-content: flex-start;

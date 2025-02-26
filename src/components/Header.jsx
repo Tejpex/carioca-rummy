@@ -50,14 +50,15 @@ const Title = styled.h1`
 `
 
 const ScoreDiv = styled.div`
+  align-self: center;
   display: flex;
   flex-direction: column;
   align-items: start;
-  align-self: center;
 `
 
 const Score = styled.p`
   font-family: "Raleway", serif;
   font-size: 14px;
   color: white;
+  margin: 0;
 `
