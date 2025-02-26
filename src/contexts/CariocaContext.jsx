@@ -9,7 +9,7 @@ import { sortByValue, sortBySuit, countCardsBySuit, countCardsByValue, countPoin
 const CariocaContext = createContext()
 
 export const CariocaProvider = ({ children }) => {
-  const [testMode, setTestMode] = useState(false)
+  const [testMode, setTestMode] = useState(true)
   const [message, setMessage] = useState()
   let error = "Inget fel"
 
@@ -551,36 +551,41 @@ export const CariocaProvider = ({ children }) => {
 
     // Starting values
     const topOfTheStock = stock.slice(0)[0]
-    let throwAwayCard = {}
     const newDiscardPile = [...discardPile]
     const newHand = [...computer.hand]
     const newTrioTable = [...computer.trioTable]
     const newScalaTable = [...computer.scalaTable]
-    const newPlayerTrioTable = [...player.trioTable]
-    const newPlayerScalaTable = [...player.scalaTable]
     let scalaCount = computer.scalasReached
     let trioCount = computer.triosReached
-    
+    const newPlayerTrioTable = [...player.trioTable]
+    const newPlayerScalaTable = [...player.scalaTable]
+
     // Decide which card to pick and pick it
     let cardPicked = {}
     if (
-      contracts[contractNumber].scalas > scalaCount && // Scalas are a goal 
-      cardIsAlmostPartOfScala(lastCardThrown, computer.hand, 2)// Last card thrown matches scala on hand
-      ){
+      contracts[contractNumber].scalas > scalaCount && // Scalas are a goal
+      cardIsAlmostPartOfScala(lastCardThrown, computer.hand, 2) // Last card thrown matches scala on hand
+    ) {
       cardPicked = lastCardThrown
     } else if (
       contracts[contractNumber].scalas <= scalaCount && // Scalas are not a goal
       contracts[contractNumber].trios > trioCount && //Trios are a goal
       countCardsByValue(computer.hand)[lastCardThrown.value] >= 2 //Two cards in hand has same value as lastCardThrown
-      ){
+    ) {
       cardPicked = lastCardThrown
     } else if (
       trioCount >= contracts[contractNumber].trios &&
       scalaCount >= contracts[contractNumber].scalas && // All goals reached
-      cardMatchesSomethingOnTable(lastCardThrown, newTrioTable, newPlayerTrioTable, newScalaTable, newPlayerScalaTable) // Last card thrown matches something on table
-      ){
+      cardMatchesSomethingOnTable(
+        lastCardThrown,
+        newTrioTable,
+        newPlayerTrioTable,
+        newScalaTable,
+        newPlayerScalaTable
+      ) // Last card thrown matches something on table
+    ) {
       cardPicked = lastCardThrown
-    } else {
+    } else { // Pick top card from stock
       cardPicked = topOfTheStock
       //Make sure lastCardThrown stays in discard pile
       newDiscardPile.push(lastCardThrown)
@@ -589,11 +594,117 @@ export const CariocaProvider = ({ children }) => {
       setTimeout(() => setStock(newStock), 1500)
     }
     newHand.push(cardPicked)
-        
-    // Gamplay depending on goal
+
+    // Find which cards to play and move them from hand to table
+    let trioCards = []
+    let singleCards = []
     // Scalas are a goal
     if (contracts[contractNumber].scalas > computer.scalasReached) {
-      // Decide which card to throw
+      // Step 1: Check each suit to see if there is at least four cards
+      let scalaContenders = []
+      for (const [key, value] of Object.entries(countCardsBySuit(newHand))) {
+        if (value >= 4) {
+          // If suit has min four cards push it as array to scalaContenders
+          const sameSuitCards = newHand.filter((card) => card.suit === key)
+          scalaContenders.push(sameSuitCards)
+        }
+      }
+      // Step 2: Go through each suit and find cards to play
+      scalaContenders.forEach((suit) => {
+        let scalaPlayed = false
+        // Remove cards of same value from suit
+        for (const [key, value] of Object.entries(countCardsByValue(suit))) {
+          if (value >= 2) {
+            const doubleCards = newHand.filter(
+              (card) => card.value === Number(key)
+            )
+            for (let i = 1; i < doubleCards.length; i++) {
+              suit.splice(suit.indexOf(doubleCards[i]), 1)
+            }
+          }
+        }
+        // Test each set of four cards in the suit to see if they are a scala
+        suit.sort((a, b) => b.value - a.value)
+        for (let i = 0; i < suit.length; i++) {
+          const testCards = suit.slice(i, i + 4)
+          // If cards are a scala, put them on table (but only if they're not already there)
+          if (cardsAreAScala(testCards)) {
+            testCards.forEach((card) => {
+              if (!newScalaTable.includes(card)) {
+                // Cards are not on table yet
+                newScalaTable.push(card)
+                newHand.splice(newHand.indexOf(card), 1)
+              }
+            })
+            scalaPlayed = true
+            // WHAT IF THERE ARE MORE THAN ONE SCALA IN THE SAME SUIT???
+          }
+        }
+        // Count number of scalas played
+        if (scalaPlayed) {
+          scalaCount++
+        }
+      })
+    }
+    // Trios are the only goal
+    else if (contracts[contractNumber].trios > computer.triosReached) {
+      // Find all trios and all single cards according to value
+      // Singles are used later in throw-away-process
+      for (const [key, value] of Object.entries(countCardsByValue(newHand))) {
+        if (value >= 3) {
+          const sameValueCards = newHand.filter(
+            (card) => card.value === Number(key)
+          )
+          // Push three cards with same value to trioCards
+          trioCards.push(sameValueCards[0])
+          trioCards.push(sameValueCards[1])
+          trioCards.push(sameValueCards[2])
+          trioCount++
+        } else if (value === 1) {
+          const lonelyCards = newHand.filter(
+            (card) => card.value === Number(key)
+          )
+          singleCards.push(lonelyCards[0]) //For use when throwing away cards
+        }
+      }
+
+      // Play trio cards
+      trioCards.map((card) => {
+        newTrioTable.push(card)
+        newHand.splice(newHand.indexOf(card), 1)
+      })
+    }
+    // Goal has been reached before turn started or during turn
+    if (
+      trioCount >= contracts[contractNumber].trios &&
+      scalaCount >= contracts[contractNumber].scalas
+    ) {
+      // Go through hand and play cards that match something on table
+      newHand.map((card) => {
+        if (newTrioTable.some((c) => c.value === card.value)) {
+          // Matches own trios
+          newTrioTable.push(card)
+          newHand.splice(newHand.indexOf(card), 1)
+        } else if (newPlayerTrioTable.some((c) => c.value === card.value)) {
+          // Matches player trios
+          newPlayerTrioTable.push(card)
+          newHand.splice(newHand.indexOf(card), 1)
+        } else if (cardMatchesAScala(card, newScalaTable)) {
+          // Matches own scalas
+          newScalaTable.push(card)
+          newHand.splice(newHand.indexOf(card), 1)
+        } else if (cardMatchesAScala(card, newPlayerScalaTable)) {
+          // Matches opponents scalas
+          newPlayerScalaTable.push(card)
+          newHand.splice(newHand.indexOf(card), 1)
+        }
+      })
+    }
+
+    // Decide which card to throw
+    let throwAwayCard = {}
+    // Scalas are a goal
+    if (contracts[contractNumber].scalas > scalaCount) {
       // Step 1: Find singles according to suit
       let singleCardsAccordingToSuit = []
       for (const [key, value] of Object.entries(countCardsBySuit(newHand))) {
@@ -625,7 +736,7 @@ export const CariocaProvider = ({ children }) => {
       // Step 3: If no throw-card is set, find throw-card in onother way
       if (Object.keys(throwAwayCard).length === 0) {
         // Find cards with high value-gaps an put in maybe-pile
-        const highestGap = findHighestValueGap(newHand)
+        const highestGap = findHighestValueGap(newHand) // Number that defines highest gap
         let cardsWeMightThrow = []
         newHand.forEach((card) => {
           const testHand = newHand.filter((c) => c != card)
@@ -650,132 +761,24 @@ export const CariocaProvider = ({ children }) => {
               sortByValue(cardsWeMightThrow)[cardsWeMightThrow.length - 1]
           }
         } else {
-          // Trio is not a goal - throw away highest maybe
+          // Trio is not a goal - throw away highest maybe-card
           throwAwayCard =
             sortByValue(cardsWeMightThrow)[cardsWeMightThrow.length - 1]
         }
       }
-
-      // Find cards to play
-      // Step 1: Check each suit to see if there is at least four cards
-      let scalaContenders = []
-      for (const [key, value] of Object.entries(countCardsBySuit(newHand))) {
-        if (value >= 4) {
-          // If suit has min four cards push it as array to scalaContenders
-          const sameSuitCards = newHand.filter((card) => card.suit === key)
-          scalaContenders.push(sameSuitCards)
-        }
-      }
-      // Step 2: Remove doubles from each suit
-      scalaContenders.forEach((suit) => {
-        let scalaPlayed = false
-        for (const [key, value] of Object.entries(countCardsByValue(suit))) {
-          if (value >= 2) {
-            // If suit has min two cards of same value remove all but one from suit
-            const doubleCards = newHand.filter(
-              (card) => card.value === Number(key)
-            )
-            for (let i = 1; i < doubleCards.length; i++) {
-              suit.splice(suit.indexOf(doubleCards[i]), 1)
-            }
-          }
-        }
-        // Step 3: Test each set of four cards in the suit to see if they are a scala
-        suit.sort((a, b) => b.value - a.value)
-        for (let i = 0; i < suit.length; i++) {
-          const testCards = suit.slice(i, i + 4)
-          // Step 4: If cards are a scala, put them on table (but only if they're not already there)
-          if (cardsAreAScala(testCards)) {
-            testCards.forEach((card) => {
-              if (!newScalaTable.includes(card)) {
-                // Cards are not on table yet
-                newScalaTable.push(card)
-                newHand.splice(newHand.indexOf(card), 1)
-              }
-            })
-            scalaPlayed = true
-          }
-        }
-        // Count number of scalas played
-        if (scalaPlayed) {
-          scalaCount++
-        }
-      })
     }
-
-    // Trios are the only goal
-    else if (contracts[contractNumber].trios > computer.triosReached) {
-
-      // Find all trios and all single cards according to value
-      let trioCards = []
-      let singleCards = []
-      for (const [key, value] of Object.entries(countCardsByValue(newHand))) {
-        if (value >= 3) {
-          const sameValueCards = newHand.filter(
-            (card) => card.value === Number(key)
-          )
-          trioCards.push(sameValueCards[0])
-          trioCards.push(sameValueCards[1])
-          trioCards.push(sameValueCards[2])
-          trioCount++
-        } else if (value === 1) {
-          const lonelyCards = newHand.filter(
-            (card) => card.value === Number(key)
-          )
-          singleCards.push(lonelyCards[0]) //For use when throwing away cards
-        }
-      }
-
-      // Play trio cards
-      trioCards.map((card) => {
-        newTrioTable.push(card)
-        newHand.splice(newHand.indexOf(card), 1)
-      })
-
-      // Decide which card to throw
-      if (singleCards.length > 0) {
-        // There are single cards - throw away highest single
-        const highestSingle = sortByValue(singleCards).slice(-1)[0]
-        throwAwayCard = highestSingle
-      } else {
-        // Computer has no singles - throw away highest of all cards
-        const highestValueCard = sortByValue(newHand).slice(-1)[0]
-        throwAwayCard = highestValueCard
-      }
-    }
-
-    // Goal has been reached before turn started or during turn
-    if (
-      trioCount >= contracts[contractNumber].trios &&
-      scalaCount >= contracts[contractNumber].scalas
-    ) {
-      newHand.map((card) => {
-        if (newTrioTable.some((c) => c.value === card.value)) {
-          // Matches own trios
-          newTrioTable.push(card)
-          newHand.splice(newHand.indexOf(card), 1)
-        } else if (newPlayerTrioTable.some((c) => c.value === card.value)) {
-          // Matches player trios
-          newPlayerTrioTable.push(card)
-          newHand.splice(newHand.indexOf(card), 1)
-        } else if (cardMatchesAScala(card, newScalaTable)) {
-          // Matches own scalas
-          newScalaTable.push(card)
-          newHand.splice(newHand.indexOf(card), 1)
-        } else if (cardMatchesAScala(card, newPlayerScalaTable)) {
-          // Matches opponents scalas
-          newPlayerScalaTable.push(card)
-          newHand.splice(newHand.indexOf(card), 1)
-        }
-      })
-    }
-
-    // If all goals are reached and there is no throw-away-card:
-    if (Object.keys(throwAwayCard).length === 0) {
+    // Trios are the only goal and there are single cards
+    else if (contracts[contractNumber].trios > trioCount && singleCards.length > 0) {
+      // Throw away highest single
+      const highestSingle = sortByValue(singleCards).slice(-1)[0]
+      throwAwayCard = highestSingle
+    } 
+    // Goal is reached or trios are the only goal and there are no single cards
+    else {
+      // Throw away highest card
       const highestValueCard = sortByValue(newHand).slice(-1)[0]
       throwAwayCard = highestValueCard
     }
-
     // Throw away throwAwayCard
     newHand.splice(newHand.indexOf(throwAwayCard), 1)
     newDiscardPile.push(throwAwayCard)
@@ -785,16 +788,16 @@ export const CariocaProvider = ({ children }) => {
     setTimeout(() => {
       setComputer({
         ...computer,
-        hand: newHand,
-        trioTable: newTrioTable,
-        scalaTable: newScalaTable,
+        hand: sortCards(newHand),
+        trioTable: sortByValue(newTrioTable),
+        scalaTable: sortBySuit(newScalaTable),
         triosReached: trioCount,
         scalasReached: scalaCount,
       })
       setPlayer({
         ...player,
-        trioTable: newPlayerTrioTable,
-        scalaTable: newPlayerScalaTable,
+        trioTable: sortByValue(newPlayerTrioTable),
+        scalaTable: sortBySuit(newPlayerScalaTable),
       })
     }, 2000)
     if (somebodyHasWon(newHand)) {
