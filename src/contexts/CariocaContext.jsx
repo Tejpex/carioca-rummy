@@ -4,12 +4,21 @@ import { createContext, useContext, useState } from "react"
 import cards from "../cards.json"
 import testCards from "../testCards.json"
 
-import { sortByValue, sortBySuit, countCardsBySuit, countCardsByValue, countPoints } from "../cardFunctions"
+import { 
+  sortByValue, 
+  sortBySuit, 
+  sortCards, 
+  countCardsBySuit, 
+  countCardsByValue, 
+  countPoints, 
+  dealCards 
+} from "../cardFunctions"
 
 const CariocaContext = createContext()
 
 export const CariocaProvider = ({ children }) => {
   const [testMode, setTestMode] = useState(true)
+  const cardsInUse = cards // Change between cards or testCards for testing
   const [message, setMessage] = useState()
   let error = "Inget fel"
 
@@ -317,67 +326,6 @@ export const CariocaProvider = ({ children }) => {
   }
 
   //Helper functions to move around cards
-  const sortCards = (cards) => {
-    if (sortingOn === "value") {
-      return sortByValue(cards)
-    } else if (sortingOn === "suit") {
-      return sortBySuit(cards)
-    } else {
-      return cards
-    }
-  }
-
-  const dealCards = (pScore, cScore) => {
-    const deckInPlay = [...testCards] // Cards for testing
-    //const deckInPlay = [...cards] //Make copy of all cards to use in play
-    const newPlayerCards = [] //Collects players cards
-    const newComputerCards = [] //Collects computers cards
-    const newDiscardPile = [] //Collects cards in discard pile
-    const newStock = [] //Collects cards in stock
-    let index = 0 //Counts how many cards have been dealt
-
-    while (index < cards.length) {
-      const card = deckInPlay[Math.floor(Math.random()*deckInPlay.length)]
-
-      if (index === 24) {
-        // Puts 25th card face up on table
-        newDiscardPile.push(card)
-      } else if (index > 24) {
-        // Puts last cards in the stock
-        newStock.push(card)
-      } else if (index % 2 === 0) {
-        // Deals 12 cards to player (even-number under 25)
-        newPlayerCards.push(card)
-      } else {
-        // Deals 12 cards to computer (odd-number under 25)
-        newComputerCards.push(card)
-      }
-      deckInPlay.splice(deckInPlay.indexOf(card), 1)
-      index ++
-    }
-
-    setPlayer({
-      ...player,
-      hand: sortCards(newPlayerCards),
-      trioTable: [],
-      triosReached: 0,
-      scalaTable: [],
-      scalasReached: 0,
-      score: pScore,
-    })
-    setComputer({
-      ...computer,
-      hand: sortCards(newComputerCards),
-      trioTable: [],
-      triosReached: 0,
-      scalaTable: [],
-      scalasReached: 0,
-      score: cScore,
-    })
-    setDiscardPile(newDiscardPile)
-    setStock(newStock)
-  }
-
   const setNewHand = (person, newHand) => {
     if (person === player) {
       setPlayer({ ...player, hand: newHand })
@@ -396,7 +344,7 @@ export const CariocaProvider = ({ children }) => {
 
   const moveCardsToHand = (person, card, pile) => {
     const newHand = [...person.hand, card]
-    setNewHand(person, sortCards(newHand))
+    setNewHand(person, sortCards(newHand, sortingOn))
 
     const newPile = [...pile]
     if (pile === discardPile) {
@@ -410,13 +358,53 @@ export const CariocaProvider = ({ children }) => {
 
   //Functions to handle gameplay
   const startNewGame = () => {
-    dealCards(0, 0)
+    const deal = dealCards(cardsInUse, 12)
+    setPlayer({
+      ...player,
+      hand: sortCards(deal.firstPlayerCards, sortingOn),
+      trioTable: [],
+      triosReached: 0,
+      scalaTable: [],
+      scalasReached: 0,
+      score: 0,
+    })      
+    setComputer({
+      ...computer,
+      hand: sortCards(deal.secondPlayerCards, sortingOn),
+      trioTable: [],
+      triosReached: 0,
+      scalaTable: [],
+      scalasReached: 0,
+      score: 0,
+    })
+    setDiscardPile(deal.discardPile)
+    setStock(deal.stock)
     setContractNumber(0)
     setGameStageIndex(1)
   }
 
   const nextContract = (pScore, cScore) => {
-    dealCards(pScore, cScore)
+    const deal = dealCards(cardsInUse, 12)
+    setPlayer({
+      ...player,
+      hand: sortCards(deal.firstPlayerCards, sortingOn),
+      trioTable: [],
+      triosReached: 0,
+      scalaTable: [],
+      scalasReached: 0,
+      score: pScore,
+    })
+    setComputer({
+      ...computer,
+      hand: sortCards(deal.secondPlayerCards, sortingOn),
+      trioTable: [],
+      triosReached: 0,
+      scalaTable: [],
+      scalasReached: 0,
+      score: cScore,
+    })
+    setDiscardPile(deal.discardPile)
+    setStock(deal.stock)
     setContractNumber(contractNumber + 1)
     setGameStageIndex(1)   
   }
@@ -800,7 +788,7 @@ export const CariocaProvider = ({ children }) => {
     setTimeout(() => {
       setComputer({
         ...computer,
-        hand: sortCards(newHand),
+        hand: sortCards(newHand, sortingOn),
         trioTable: sortByValue(newTrioTable),
         scalaTable: sortBySuit(newScalaTable),
         triosReached: trioCount,

@@ -24,6 +24,22 @@ export const sortBySuit = (cards) => {
 }
 
 /**
+ * Sort cards according to the sorting mode
+ * @param  {Array} cards The cards that need sorting
+ * @param  {String} sortingMode The mode of sorting that should be used "value" or "suit"
+ * @return {Array}      The cards in sorted order
+ */
+export const sortCards = (cards, sortingMode) => {
+  if (sortingMode === "value") {
+    return sortByValue(cards)
+  } else if (sortingMode === "suit") {
+    return sortBySuit(cards)
+  } else {
+    return cards
+  }
+}
+
+/**
  * Count how many cards there are of each value
  * @param  {Array} cards The cards that should be counted
  * @return {Object}      Object where keys are card-values and values are the count
@@ -68,4 +84,45 @@ export const countPoints = (person) => {
   let newPoint = 0
   person.hand.forEach((card) => (newPoint += card.value))
   return newPoint
+}
+
+// Deal cards
+/**
+ * Deal cards to two players, then put next card face up on the table
+ * and the rest in the stock
+ * @param  {Array} deck The deck of cards used in the game
+ * @param  {Number} numberOfCardsToEach How many cards each player should get
+ * @return {Object}      Object with firstPlayerCards, secondPlayerCards, discardPile and stock
+ */
+export const dealCards = (deck, numberOfCardsToEach) => {
+  const deckLength = deck.length
+  const deckInUse = [...deck]
+  const firstPlayerCards = [] //Collects first players cards
+  const secondPlayerCards = [] //Collects next players cards
+  const discardPile = [] //Collects cards in discard pile
+  const stock = [] //Collects cards in stock
+
+  let index = 0 //Counts how many cards have been dealt
+  while (index < deckLength) {
+    // Take cards in random order from deck
+    const card = deckInUse[Math.floor(Math.random() * deckInUse.length)]
+
+    if (index === numberOfCardsToEach * 2) {
+      // Puts card face up on table after dealing numberOfCardsToEach player
+      discardPile.push(card)
+    } else if (index > numberOfCardsToEach * 2) {
+      // Puts last cards in the stock
+      stock.push(card)
+    } else if (index % 2 === 0) {
+      // Deals every second card to first player (even-number under numberOfCardsToEach)
+      firstPlayerCards.push(card)
+    } else {
+      // Deals every other card to second player (odd-number under numberOfCardsToEach)
+      secondPlayerCards.push(card)
+    }
+    deckInUse.splice(deckInUse.indexOf(card), 1)
+    index++
+  }
+
+  return { firstPlayerCards, secondPlayerCards, discardPile, stock }
 }
