@@ -35,13 +35,13 @@ export const CariocaProvider = ({ children }) => {
   
   const [discardPile, setDiscardPile] = useState([])
   const [stock, setStock] = useState([])
-  // ------------ !!!!! Change for test-purpose! !!!! -------------
+  // ------------ !!!!! Changed for test-purpose! !!!! -------------
   const contracts = [
     {
       index: 0,
       name: "2 triss",
-      trios: 2,
-      scalas: 0,
+      trios: 0,
+      scalas: 1,
     },
     {
       index: 1,
@@ -186,33 +186,45 @@ export const CariocaProvider = ({ children }) => {
     }
   }
 
-  const cardMatchesAScala = (newCard, cardSet) => {
+  const cardMatchesAScala = (newCard, cardSet) => { 
+    cardSet = sortBySuit(cardSet)
+    console.log("Checking if", newCard, "matches scala", cardSet)
     if (cardSet.length === 0) { // No existing scalas
+      console.log("No existing scalas")
       return false
     } 
 
     let checkingValue = cardSet[0].value - 1 // Which value to check against
-    if (newCard.value === checkingValue) {
+    let checkingSuit = cardSet[0].suit // Which suit to check against
+    console.log("Checking value", checkingValue, "Checking suit", checkingSuit)
+    if (newCard.value === checkingValue && newCard.suit === checkingSuit) {
+      console.log("New card value one lower than first scala")
       return true // New card one lower than first scala, approved
     } else {
       cardSet.forEach((card) => {
-        if (card.value === checkingValue + 1) {
+        if (card.suit === checkingSuit && card.value === checkingValue + 1) {
           checkingValue = card.value // Card on table part of existing scala
-        } else if (newCard.value === checkingValue + 1) {
+          console.log("Checking value", checkingValue, "Checking suit", checkingSuit)
+        } else if (newCard.suit === checkingSuit && newCard.value === checkingValue + 1) {
+          console.log("New card value one higher than last scala")
           return true // New card one higher than scala on table, approved
         } else {
           checkingValue = card.value // Looking at next scala on table
-          if (newCard.value === checkingValue - 1) {
+          checkingSuit = card.suit
+          console.log("Checking new scala")
+          console.log("Checking value", checkingValue, "Checking suit", checkingSuit)
+          if (newCard.suit === checkingSuit && newCard.value === checkingValue - 1) {
+            console.log("New card value one lower than next scala")
             return true // New card one lower than next scala, approved
           }
         }
       })   
     }
 
-    if (newCard.value === checkingValue +1) {
+    if (newCard.suit === checkingSuit && newCard.value === checkingValue + 1) {
       return true // New card one higher than last scala on table, approved
     } else {
-      return false    
+      return false
     }
   }
 
@@ -316,8 +328,8 @@ export const CariocaProvider = ({ children }) => {
   }
 
   const dealCards = (pScore, cScore) => {
-    // const deckInPlay = [...testCards] // Cards for testing
-    const deckInPlay = [...cards] //Make copy of all cards to use in play
+    const deckInPlay = [...testCards] // Cards for testing
+    //const deckInPlay = [...cards] //Make copy of all cards to use in play
     const newPlayerCards = [] //Collects players cards
     const newComputerCards = [] //Collects computers cards
     const newDiscardPile = [] //Collects cards in discard pile
