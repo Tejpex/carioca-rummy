@@ -33,8 +33,12 @@ export const TableRow = ({person}) => {
         {trioTable.map((card, index) => (
           <CardImage src={card.img} key={index} alt={card.name} />
         ))}
-        {scalaTable.map((card, index) => (
-          <CardImage src={card.img} key={index} alt={card.name} />
+        {scalaTable.map((scala, index) => (
+          <div key={index}>
+            {scala.map((card, index) => (
+              <CardImage src={card.img} key={index} alt={card.name} />
+            ))}
+          </div>
         ))}
       </TableCardRow>
     </>

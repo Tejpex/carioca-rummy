@@ -18,7 +18,7 @@ const CariocaContext = createContext()
 
 export const CariocaProvider = ({ children }) => {
   const [testMode, setTestMode] = useState(true)
-  const cardsInUse = cards // Change between cards or testCards for testing
+  const cardsInUse = testCards // Change between cards or testCards for testing
   const [message, setMessage] = useState()
   let error = "Inget fel"
 
@@ -50,7 +50,7 @@ export const CariocaProvider = ({ children }) => {
       index: 0,
       name: "2 triss",
       trios: 0,
-      scalas: 1,
+      scalas: 2,
     },
     {
       index: 1,
@@ -335,11 +335,13 @@ export const CariocaProvider = ({ children }) => {
   }
   
   const toggleStaged = (person, card) => {
-    const hand = person.hand
-    const newHand = hand.map((oldCard) =>
-      oldCard === card ? { ...oldCard, staged: !oldCard.staged } : oldCard
-    )
-    setNewHand(person, newHand)
+    if (person !== computer) {
+      const hand = person.hand
+      const newHand = hand.map((oldCard) =>
+        oldCard === card ? { ...oldCard, staged: !oldCard.staged } : oldCard
+      )
+      setNewHand(person, newHand)
+    }
   }
 
   const moveCardsToHand = (person, card, pile) => {
@@ -448,11 +450,12 @@ export const CariocaProvider = ({ children }) => {
       cardsAreAScala(cardsToCheck, player) &&
       contracts[contractNumber].scalas > scalaCount
     ) { //Play scala
+      newOwnScalaTable.push(cardsToCheck)
       cardsToCheck.map((card) => {
-        newOwnScalaTable.push(card)
         newHand.splice(newHand.indexOf(card), 1)
       })
       scalaCount += 1
+      console.log("Scala played", newOwnScalaTable)
     } else if ( // Goal is reached
       person.triosReached >= contracts[contractNumber].trios &&
       person.scalasReached >= contracts[contractNumber].scalas
@@ -594,6 +597,7 @@ export const CariocaProvider = ({ children }) => {
       setTimeout(() => setStock(newStock), 1500)
     }
     newHand.push(cardPicked)
+    console.log("Computer picked", cardPicked)
 
     // Find which cards to play and move them from hand to table
     let trioCards = []
@@ -601,7 +605,7 @@ export const CariocaProvider = ({ children }) => {
     // Scalas are a goal
     if (contracts[contractNumber].scalas > computer.scalasReached) {
       // Step 1: Check each suit to see if there is at least four cards
-      let scalaContenders = []
+      const scalaContenders = []
       for (const [key, value] of Object.entries(countCardsBySuit(newHand))) {
         if (value >= 4) {
           // If suit has min four cards push it as array to scalaContenders
@@ -611,11 +615,10 @@ export const CariocaProvider = ({ children }) => {
       }
       // Step 2: Go through each suit and find cards to play
       scalaContenders.forEach((suit) => {
-        let scalaPlayed = false
         // Remove cards of same value from suit
         for (const [key, value] of Object.entries(countCardsByValue(suit))) {
           if (value >= 2) {
-            const doubleCards = newHand.filter(
+            const doubleCards = suit.filter(
               (card) => card.value === Number(key)
             )
             for (let i = 1; i < doubleCards.length; i++) {
@@ -625,25 +628,21 @@ export const CariocaProvider = ({ children }) => {
         }
         // Test each set of four cards in the suit to see if they are a scala
         suit.sort((a, b) => b.value - a.value)
-        for (let i = 0; i < suit.length; i++) {
-          const testCards = suit.slice(i, i + 4)
+        suit.forEach((c) => {
+          const testCards = suit.slice(0, 4)
           // If cards are a scala, put them on table (but only if they're not already there)
           if (cardsAreAScala(testCards)) {
+            newScalaTable.push(sortByValue(testCards))
             testCards.forEach((card) => {
-              if (!newScalaTable.includes(card)) {
-                // Cards are not on table yet
-                newScalaTable.push(card)
-                newHand.splice(newHand.indexOf(card), 1)
-              }
+              newHand.splice(newHand.indexOf(card), 1)
+              suit.splice(suit.indexOf(card), 1)
             })
-            scalaPlayed = true
-            // WHAT IF THERE ARE MORE THAN ONE SCALA IN THE SAME SUIT???
+            scalaCount++ // Count number of scalas played
+          } else {
+            // If cards are not a scala, remove the highest card and test again
+            suit.splice(0, 1)
           }
-        }
-        // Count number of scalas played
-        if (scalaPlayed) {
-          scalaCount++
-        }
+        })
       })
     }
     // Trios are the only goal
@@ -780,6 +779,7 @@ export const CariocaProvider = ({ children }) => {
       throwAwayCard = highestValueCard
     }
     // Throw away throwAwayCard
+    console.log("Computer throws", throwAwayCard)
     newHand.splice(newHand.indexOf(throwAwayCard), 1)
     newDiscardPile.push(throwAwayCard)
 
