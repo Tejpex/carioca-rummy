@@ -17,8 +17,8 @@ import {
 const CariocaContext = createContext()
 
 export const CariocaProvider = ({ children }) => {
-  const [testMode, setTestMode] = useState(true)
-  const cardsInUse = testCards // Change between cards or testCards for testing
+  const [testMode, setTestMode] = useState(false)
+  const cardsInUse = cards // Change between cards or testCards for testing
   const [message, setMessage] = useState()
   let error = "Inget fel"
 
@@ -49,8 +49,8 @@ export const CariocaProvider = ({ children }) => {
     {
       index: 0,
       name: "2 triss",
-      trios: 0,
-      scalas: 2,
+      trios: 2,
+      scalas: 0,
     },
     {
       index: 1,
