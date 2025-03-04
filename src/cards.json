@@ -1,6 +1,7 @@
 [
   {
     "suit": "Hearts",
+    "suitOrder": 1,
     "value": 1,
     "color": "red",
     "img": "/Hjarter-1.png",
@@ -8,6 +9,7 @@
     "name": "Ace of Hearts"
   },{
     "suit": "Hearts",
+    "suitOrder": 1,
     "value": 2,
     "color": "red",
     "img": "/Hjarter-2.png",
@@ -15,20 +17,23 @@
     "name": "Two of Hearts"
   },{
     "suit": "Hearts",
+    "suitOrder": 1,
     "value": 3,
     "color": "red",
     "img": "/Hjarter-3.png",
     "staged": false,
     "name": "Three of Hearts"
-    },
-  {"suit": "Hearts",
+  },{
+    "suit": "Hearts",
+    "suitOrder": 1, 
     "value": 4,
     "color": "red",
     "img": "/Hjarter-4.png",
     "staged": false,
     "name": "Four of Hearts"
-    },
-  {"suit": "Hearts",
+  },{
+    "suit": "Hearts",
+    "suitOrder": 1, 
     "value": 5,
     "color": "red",
     "img": "/Hjarter-5.png",
@@ -36,6 +41,7 @@
     "name": "Five of Hearts"
     },
   {"suit": "Hearts",
+    "suitOrder": 1, 
     "value": 6,
     "color": "red",
     "img": "/Hjarter-6.png",
@@ -43,6 +49,7 @@
     "name": "Six of Hearts"
     },
   {"suit": "Hearts",
+    "suitOrder": 1, 
     "value": 7,
     "color": "red",
     "img": "/Hjarter-7.png",
@@ -50,6 +57,7 @@
     "name": "Seven of Hearts"
     },
   {"suit": "Hearts",
+    "suitOrder": 1, 
     "value": 8,
     "color": "red",
     "img": "/Hjarter-8.png",
@@ -57,6 +65,7 @@
     "name": "Eight of Hearts"
     },
   {"suit": "Hearts",
+    "suitOrder": 1, 
     "value": 9,
     "color": "red",
     "img": "/Hjarter-9.png",
@@ -64,6 +73,7 @@
     "name": "Nine of Hearts"
     },
   {"suit": "Hearts",
+    "suitOrder": 1, 
     "value": 10,
     "color": "red",
     "img": "/Hjarter-10.png",
@@ -71,6 +81,7 @@
     "name": "Ten of Hearts"
     },
   {"suit": "Hearts",
+    "suitOrder": 1, 
     "value": 11,
     "color": "red",
     "img": "/Hjarter-Kn.png",
@@ -78,6 +89,7 @@
     "name": "Jack of Hearts"
     },
   {"suit": "Hearts",
+    "suitOrder": 1, 
     "value": 12,
     "color": "red",
     "img": "/Hjarter-D.png",
@@ -85,6 +97,7 @@
     "name": "Queen of Hearts"
     },
   {"suit": "Hearts",
+    "suitOrder": 1, 
     "value": 13,
     "color": "red",
     "img": "/Hjarter-K.png",
@@ -92,6 +105,7 @@
     "name": "King of Hearts"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 1,
     "color": "black",
     "img": "/Spader-1.png",
@@ -99,6 +113,7 @@
     "name": "Ace of Spades"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 2,
     "color": "black",
     "img": "/Spader-2.png",
@@ -106,6 +121,7 @@
     "name": "Two of Spades"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 3,
     "color": "black",
     "img": "/Spader-3.png",
@@ -113,6 +129,7 @@
     "name": "Three of Spades"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 4,
     "color": "black",
     "img": "/Spader-4.png",
@@ -120,6 +137,7 @@
     "name": "Four of Spades"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 5,
     "color": "black",
     "img": "/Spader-5.png",
@@ -127,6 +145,7 @@
     "name": "Five of Spades"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 6,
     "color": "black",
     "img": "/Spader-6.png",
@@ -134,6 +153,7 @@
     "name": "Six of Spades"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 7,
     "color": "black",
     "img": "/Spader-7.png",
@@ -141,6 +161,7 @@
     "name": "Seven of Spades"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 8,
     "color": "black",
     "img": "/Spader-8.png",
@@ -148,6 +169,7 @@
     "name": "Eight of Spades"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 9,
     "color": "black",
     "img": "/Spader-9.png",
@@ -155,6 +177,7 @@
     "name": "Nine of Spades"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 10,
     "color": "black",
     "img": "/Spader-10.png",
@@ -162,6 +185,7 @@
     "name": "Ten of Spades"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 11,
     "color": "black",
     "img": "/Spader-Kn.png",
@@ -169,6 +193,7 @@
     "name": "Jack of Spades"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 12,
     "color": "black",
     "img": "/Spader-D.png",
@@ -176,6 +201,7 @@
     "name": "Queen of Spades"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 13,
     "color": "black",
     "img": "/Spader-K.png",
@@ -183,6 +209,7 @@
     "name": "King of Spades"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 1,
     "color": "red",
     "img": "/Ruter-1.png",
@@ -190,6 +217,7 @@
     "name": "Ace"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 2,
     "color": "red",
     "img": "/Ruter-2.png",
@@ -197,6 +225,7 @@
     "name": "Two"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 3,
     "color": "red",
     "img": "/Ruter-3.png",
@@ -204,6 +233,7 @@
     "name": "Three"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 4,
     "color": "red",
     "img": "/Ruter-4.png",
@@ -211,6 +241,7 @@
     "name": "Four"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 5,
     "color": "red",
     "img": "/Ruter-5.png",
@@ -218,6 +249,7 @@
     "name": "Five"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 6,
     "color": "red",
     "img": "/Ruter-6.png",
@@ -225,6 +257,7 @@
     "name": "Six"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 7,
     "color": "red",
     "img": "/Ruter-7.png",
@@ -232,6 +265,7 @@
     "name": "Seven"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 8,
     "color": "red",
     "img": "/Ruter-8.png",
@@ -239,6 +273,7 @@
     "name": "Eight"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 9,
     "color": "red",
     "img": "/Ruter-9.png",
@@ -246,6 +281,7 @@
     "name": "Nine"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 10,
     "color": "red",
     "img": "/Ruter-10.png",
@@ -253,6 +289,7 @@
     "name": "Ten"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 11,
     "color": "red",
     "img": "/Ruter-Kn.png",
@@ -260,6 +297,7 @@
     "name": "Jack"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 12,
     "color": "red",
     "img": "/Ruter-D.png",
@@ -267,6 +305,7 @@
     "name": "Queen"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 13,
     "color": "red",
     "img": "/Ruter-K.png",
@@ -274,6 +313,7 @@
     "name": "King"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 1,
     "color": "black",
     "img": "/Klover-1.png",
@@ -281,6 +321,7 @@
     "name": "Ace"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 2,
     "color": "black",
     "img": "/Klover-2.png",
@@ -288,6 +329,7 @@
     "name": "Two"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 3,
     "color": "black",
     "img": "/Klover-3.png",
@@ -295,6 +337,7 @@
     "name": "Three"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 4,
     "color": "black",
     "img": "/Klover-4.png",
@@ -302,6 +345,7 @@
     "name": "Four"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 5,
     "color": "black",
     "img": "/Klover-5.png",
@@ -309,6 +353,7 @@
     "name": "Five"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 6,
     "color": "black",
     "img": "/Klover-6.png",
@@ -316,6 +361,7 @@
     "name": "Six"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 7,
     "color": "black",
     "img": "/Klover-7.png",
@@ -323,6 +369,7 @@
     "name": "Seven"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 8,
     "color": "black",
     "img": "/Klover-8.png",
@@ -330,6 +377,7 @@
     "name": "Eight"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 9,
     "color": "black",
     "img": "/Klover-9.png",
@@ -337,6 +385,7 @@
     "name": "Nine"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 10,
     "color": "black",
     "img": "/Klover-10.png",
@@ -344,6 +393,7 @@
     "name": "Ten"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 11,
     "color": "black",
     "img": "/Klover-Kn.png",
@@ -351,6 +401,7 @@
     "name": "Jack"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 12,
     "color": "black",
     "img": "/Klover-D.png",
@@ -358,6 +409,7 @@
     "name": "Queen"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 13,
     "color": "black",
     "img": "/Klover-K.png",
@@ -365,6 +417,7 @@
     "name": "King"
     },
   {"suit": "Hearts",
+    "suitOrder": 1, 
     "value": 1,
     "color": "red",
     "img": "/Hjarter-1.png",
@@ -372,6 +425,7 @@
     "name": "Ace of Hearts"
     },
   {"suit": "Hearts",
+    "suitOrder": 1, 
     "value": 2,
     "color": "red",
     "img": "/Hjarter-2.png",
@@ -379,6 +433,7 @@
     "name": "Two of Hearts"
     },
   {"suit": "Hearts",
+    "suitOrder": 1, 
     "value": 3,
     "color": "red",
     "img": "/Hjarter-3.png",
@@ -386,6 +441,7 @@
     "name": "Three of Hearts"
     },
   {"suit": "Hearts",
+    "suitOrder": 1, 
     "value": 4,
     "color": "red",
     "img": "/Hjarter-4.png",
@@ -393,6 +449,7 @@
     "name": "Four of Hearts"
     },
   {"suit": "Hearts",
+    "suitOrder": 1, 
     "value": 5,
     "color": "red",
     "img": "/Hjarter-5.png",
@@ -400,6 +457,7 @@
     "name": "Five of Hearts"
     },
   {"suit": "Hearts",
+    "suitOrder": 1, 
     "value": 6,
     "color": "red",
     "img": "/Hjarter-6.png",
@@ -407,6 +465,7 @@
     "name": "Six of Hearts"
     },
   {"suit": "Hearts",
+    "suitOrder": 1, 
     "value": 7,
     "color": "red",
     "img": "/Hjarter-7.png",
@@ -414,6 +473,7 @@
     "name": "Seven of Hearts"
     },
   {"suit": "Hearts",
+    "suitOrder": 1, 
     "value": 8,
     "color": "red",
     "img": "/Hjarter-8.png",
@@ -421,6 +481,7 @@
     "name": "Eight of Hearts"
     },
   {"suit": "Hearts",
+    "suitOrder": 1, 
     "value": 9,
     "color": "red",
     "img": "/Hjarter-9.png",
@@ -428,6 +489,7 @@
     "name": "Nine of Hearts"
     },
   {"suit": "Hearts",
+    "suitOrder": 1, 
     "value": 10,
     "color": "red",
     "img": "/Hjarter-10.png",
@@ -435,6 +497,7 @@
     "name": "Ten of Hearts"
     },
   {"suit": "Hearts",
+    "suitOrder": 1, 
     "value": 11,
     "color": "red",
     "img": "/Hjarter-Kn.png",
@@ -442,6 +505,7 @@
     "name": "Jack of Hearts"
     },
   {"suit": "Hearts",
+    "suitOrder": 1, 
     "value": 12,
     "color": "red",
     "img": "/Hjarter-D.png",
@@ -449,6 +513,7 @@
     "name": "Queen of Hearts"
     },
   {"suit": "Hearts",
+    "suitOrder": 1, 
     "value": 13,
     "color": "red",
     "img": "/Hjarter-K.png",
@@ -456,6 +521,7 @@
     "name": "King of Hearts"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 1,
     "color": "black",
     "img": "/Spader-1.png",
@@ -463,6 +529,7 @@
     "name": "Ace of Spades"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 2,
     "color": "black",
     "img": "/Spader-2.png",
@@ -470,6 +537,7 @@
     "name": "Two of Spades"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 3,
     "color": "black",
     "img": "/Spader-3.png",
@@ -477,6 +545,7 @@
     "name": "Three of Spades"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 4,
     "color": "black",
     "img": "/Spader-4.png",
@@ -484,6 +553,7 @@
     "name": "Four of Spades"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 5,
     "color": "black",
     "img": "/Spader-5.png",
@@ -491,6 +561,7 @@
     "name": "Five of Spades"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 6,
     "color": "black",
     "img": "/Spader-6.png",
@@ -498,6 +569,7 @@
     "name": "Six of Spades"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 7,
     "color": "black",
     "img": "/Spader-7.png",
@@ -505,6 +577,7 @@
     "name": "Seven of Spades"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 8,
     "color": "black",
     "img": "/Spader-8.png",
@@ -512,6 +585,7 @@
     "name": "Eight of Spades"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 9,
     "color": "black",
     "img": "/Spader-9.png",
@@ -519,6 +593,7 @@
     "name": "Nine of Spades"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 10,
     "color": "black",
     "img": "/Spader-10.png",
@@ -526,6 +601,7 @@
     "name": "Ten of Spades"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 11,
     "color": "black",
     "img": "/Spader-Kn.png",
@@ -533,6 +609,7 @@
     "name": "Jack of Spades"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 12,
     "color": "black",
     "img": "/Spader-D.png",
@@ -540,6 +617,7 @@
     "name": "Queen of Spades"
     },
   {"suit": "Spades",
+    "suitOrder": 2, 
     "value": 13,
     "color": "black",
     "img": "/Spader-K.png",
@@ -547,6 +625,7 @@
     "name": "King of Spades"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 1,
     "color": "red",
     "img": "/Ruter-1.png",
@@ -554,6 +633,7 @@
     "name": "Ace"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 2,
     "color": "red",
     "img": "/Ruter-2.png",
@@ -561,6 +641,7 @@
     "name": "Two"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 3,
     "color": "red",
     "img": "/Ruter-3.png",
@@ -568,6 +649,7 @@
     "name": "Three"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 4,
     "color": "red",
     "img": "/Ruter-4.png",
@@ -575,6 +657,7 @@
     "name": "Four"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 5,
     "color": "red",
     "img": "/Ruter-5.png",
@@ -582,6 +665,7 @@
     "name": "Five"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 6,
     "color": "red",
     "img": "/Ruter-6.png",
@@ -589,6 +673,7 @@
     "name": "Six"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 7,
     "color": "red",
     "img": "/Ruter-7.png",
@@ -596,6 +681,7 @@
     "name": "Seven"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 8,
     "color": "red",
     "img": "/Ruter-8.png",
@@ -603,6 +689,7 @@
     "name": "Eight"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 9,
     "color": "red",
     "img": "/Ruter-9.png",
@@ -610,6 +697,7 @@
     "name": "Nine"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 10,
     "color": "red",
     "img": "/Ruter-10.png",
@@ -617,6 +705,7 @@
     "name": "Ten"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 11,
     "color": "red",
     "img": "/Ruter-Kn.png",
@@ -624,6 +713,7 @@
     "name": "Jack"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 12,
     "color": "red",
     "img": "/Ruter-D.png",
@@ -631,6 +721,7 @@
     "name": "Queen"
     },
   {"suit": "Diamonds",
+    "suitOrder": 3, 
     "value": 13,
     "color": "red",
     "img": "/Ruter-K.png",
@@ -638,6 +729,7 @@
     "name": "King"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 1,
     "color": "black",
     "img": "/Klover-1.png",
@@ -645,6 +737,7 @@
     "name": "Ace"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 2,
     "color": "black",
     "img": "/Klover-2.png",
@@ -652,6 +745,7 @@
     "name": "Two"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 3,
     "color": "black",
     "img": "/Klover-3.png",
@@ -659,6 +753,7 @@
     "name": "Three"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 4,
     "color": "black",
     "img": "/Klover-4.png",
@@ -666,6 +761,7 @@
     "name": "Four"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 5,
     "color": "black",
     "img": "/Klover-5.png",
@@ -673,6 +769,7 @@
     "name": "Five"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 6,
     "color": "black",
     "img": "/Klover-6.png",
@@ -680,6 +777,7 @@
     "name": "Six"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 7,
     "color": "black",
     "img": "/Klover-7.png",
@@ -687,6 +785,7 @@
     "name": "Seven"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 8,
     "color": "black",
     "img": "/Klover-8.png",
@@ -694,6 +793,7 @@
     "name": "Eight"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 9,
     "color": "black",
     "img": "/Klover-9.png",
@@ -701,6 +801,7 @@
     "name": "Nine"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 10,
     "color": "black",
     "img": "/Klover-10.png",
@@ -708,6 +809,7 @@
     "name": "Ten"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 11,
     "color": "black",
     "img": "/Klover-Kn.png",
@@ -715,6 +817,7 @@
     "name": "Jack"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 12,
     "color": "black",
     "img": "/Klover-D.png",
@@ -722,6 +825,7 @@
     "name": "Queen"
     },
   {"suit": "Clubs",
+    "suitOrder": 4, 
     "value": 13,
     "color": "black",
     "img": "/Klover-K.png",

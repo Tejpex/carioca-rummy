@@ -3,7 +3,7 @@ import { useEffect } from "react"
 import { useCarioca } from "../contexts/CariocaContext"
 
 export const Table = () => {
-  const { player, discardPile, stock, startNewGame, takeCard, gameStageIndex } = useCarioca()
+  const { player, discardPile, stock, startNewGame, takeCard, gameStageIndex, setMessage } = useCarioca()
 
   useEffect(() => {
     startNewGame()

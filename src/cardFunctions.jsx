@@ -19,7 +19,7 @@ export const sortByValue = (cards) => {
 export const sortBySuit = (cards) => {
   const sortedCards = [...cards]
   sortedCards.sort((a, b) => a.value - b.value)
-  sortedCards.sort((a, b) => (a.suit > b.suit ? 1 : b.suit > a.suit ? -1 : 0))
+  sortedCards.sort((a, b) => (a.suitOrder > b.suitOrder ? 1 : b.suitOrder > a.suitOrder ? -1 : 0))
   return sortedCards
 }
 
