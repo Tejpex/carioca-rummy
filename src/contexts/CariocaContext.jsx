@@ -692,12 +692,14 @@ export const CariocaProvider = ({ children }) => {
           )
           if (cardsLonelyInValueAndSuit.length > 0) {
             // Some cards are lonely in both suit and value - throw away highest
+            console.log("Lonely in both suit and value", cardsLonelyInValueAndSuit)
             throwAwayCard = sortByValue(cardsLonelyInValueAndSuit)[
               cardsLonelyInValueAndSuit.length - 1
             ]
           }
         } else {
           // Trios is not a goal - throw away highest single
+          console.log("Lonely in suit", singleCardsAccordingToSuit)
           throwAwayCard =
             singleCardsAccordingToSuit[singleCardsAccordingToSuit.length - 1]
         }
@@ -722,15 +724,18 @@ export const CariocaProvider = ({ children }) => {
           )
           if (singlesAmongstMaybes.length > 0) {
             // Some maybe-cards are lonely in value - throw away highest
+            console.log("Maybe-cards lonely in value", singlesAmongstMaybes)
             throwAwayCard =
               sortByValue(singlesAmongstMaybes)[singlesAmongstMaybes.length - 1]
           } else {
             // No maybes are singles - throw away highest anyway
+            console.log("Highest amongst maybes, no singles", cardsWeMightThrow)
             throwAwayCard =
               sortByValue(cardsWeMightThrow)[cardsWeMightThrow.length - 1]
           }
         } else {
           // Trio is not a goal - throw away highest maybe-card
+          console.log("Highest amongst maybes, no trio-goal", cardsWeMightThrow)
           throwAwayCard =
             sortByValue(cardsWeMightThrow)[cardsWeMightThrow.length - 1]
         }
@@ -740,15 +745,18 @@ export const CariocaProvider = ({ children }) => {
     else if (contracts[contractNumber].trios > trioCount && singleCards.length > 0) {
       // Throw away highest single
       const highestSingle = sortByValue(singleCards).slice(-1)[0]
+      console.log("Trios only goal, throwing away highest single", singleCards)
       throwAwayCard = highestSingle
     } 
-    // Goal is reached or trios are the only goal and there are no single cards
-    else {
+    // Still no throw-away-card? 
+    if (!throwAwayCard || Object.keys(throwAwayCard).length === 0) {
       // Throw away highest card
       const highestValueCard = sortByValue(newHand).slice(-1)[0]
       throwAwayCard = highestValueCard
     }
+    
     // Throw away throwAwayCard
+    console.log("Throwing away", throwAwayCard)
     newHand.splice(newHand.indexOf(throwAwayCard), 1)
     newDiscardPile.push(throwAwayCard)
 
