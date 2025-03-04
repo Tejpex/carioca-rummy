@@ -17,7 +17,8 @@ export const Table = () => {
     if (gameStageIndex === 1) {
       takeCard(player, card, pile)
     } else {
-      alert("Not your turn to pick a card.")
+      setMessage("Det är inte din tur att ta ett kort.")
+      setTimeout(() => setMessage(""), 3000)
     }
   }
 

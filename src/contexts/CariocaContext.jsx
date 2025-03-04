@@ -11,14 +11,15 @@ import {
   countCardsBySuit, 
   countCardsByValue, 
   countPoints, 
-  dealCards 
+  dealCards,
+  makeAScala 
 } from "../cardFunctions"
 
 const CariocaContext = createContext()
 
 export const CariocaProvider = ({ children }) => {
-  const [testMode, setTestMode] = useState(true)
-  const cardsInUse = testCards // Change between cards or testCards for testing
+  const [testMode, setTestMode] = useState(false)
+  const cardsInUse = cards // Change between cards or testCards for testing
   const [message, setMessage] = useState()
   let error = "Inget fel"
 
@@ -49,8 +50,8 @@ export const CariocaProvider = ({ children }) => {
     {
       index: 0,
       name: "2 triss",
-      trios: 0,
-      scalas: 2,
+      trios: 2,
+      scalas: 0,
     },
     {
       index: 1,
@@ -156,84 +157,45 @@ export const CariocaProvider = ({ children }) => {
 
   const cardsAreAScala = (cards, person) => {
     const giveScalaErrors = contracts[contractNumber].scalas > player.scalasReached && person === player
-    const sortedCards = sortByValue(cards)
-    const equalSuit = (cardSet) => {
-      return cardSet.every((card) => card.suit === cardSet[0].suit)
-    }
-    const valuesIncreaseByOne = (cardSet) => {
-      let checkingValue = cardSet[0].value - 1 // Which value to check against
-      let gapCount = 0 // How many gaps are there (one allowed with ace+king)
-      cardSet.forEach((card) => {
-        if (card.value === checkingValue + 1) {
-          checkingValue = card.value // Value approved, increase checking value
-        } else {
-          if (cardSet[0].value === 1 && cardSet[cardSet.length - 1].value === 13 && gapCount === 0) {
-            gapCount += 1
-            checkingValue = card.value
-          } else {
-            return false
-          }
-        }
-      })
-      
-      if (checkingValue === cardSet[cardSet.length - 1].value) {
-        return true // Last checking value is same as last card
-      }     
-    }
-
-    if (cards.length < 4) {
-      error = giveScalaErrors ? "Det behövs minst fyra kort för att spela en stege." : error
-      return false
-    } else if (!equalSuit(sortedCards)) {
-      error = giveScalaErrors ? "Korten har inte samma färg." : error
-      return false
-    } else if (!valuesIncreaseByOne(sortedCards)) {
-      error = giveScalaErrors ? "Korten bildar inte en stege." : error
-      return false
+    
+    const result = makeAScala(cards)
+    if (!result.success) {
+      const errorsTranslated = {
+        1: "Det behövs minst fyra kort för att spela en stege.",
+        2: "Korten har inte samma färg.",
+        3: "Korten bildar inte en stege.",
+        4: "Korten bildar inte en stege.",
+      }
+      error = giveScalaErrors ? errorsTranslated[result.errorCode] : error
+      return { success: false }
     } else {
-      return true
+      return { success: true, scala: result.scala }
     }
   }
 
-  const cardMatchesAScala = (newCard, cardSet) => { 
-    cardSet = sortBySuit(cardSet)
-    console.log("Checking if", newCard, "matches scala", cardSet)
-    if (cardSet.length === 0) { // No existing scalas
-      console.log("No existing scalas")
-      return false
+  const cardMatchesAScala = (newCard, scalaTable) => {
+    if (scalaTable.length === 0) { // Nothing to check against
+      return { success: false }
     } 
-
-    let checkingValue = cardSet[0].value - 1 // Which value to check against
-    let checkingSuit = cardSet[0].suit // Which suit to check against
-    console.log("Checking value", checkingValue, "Checking suit", checkingSuit)
-    if (newCard.value === checkingValue && newCard.suit === checkingSuit) {
-      console.log("New card value one lower than first scala")
-      return true // New card one lower than first scala, approved
-    } else {
-      cardSet.forEach((card) => {
-        if (card.suit === checkingSuit && card.value === checkingValue + 1) {
-          checkingValue = card.value // Card on table part of existing scala
-          console.log("Checking value", checkingValue, "Checking suit", checkingSuit)
-        } else if (newCard.suit === checkingSuit && newCard.value === checkingValue + 1) {
-          console.log("New card value one higher than last scala")
-          return true // New card one higher than scala on table, approved
-        } else {
-          checkingValue = card.value // Looking at next scala on table
-          checkingSuit = card.suit
-          console.log("Checking new scala")
-          console.log("Checking value", checkingValue, "Checking suit", checkingSuit)
-          if (newCard.suit === checkingSuit && newCard.value === checkingValue - 1) {
-            console.log("New card value one lower than next scala")
-            return true // New card one lower than next scala, approved
-          }
-        }
-      })   
+    
+    let newScala = []
+    let index = scalaTable.length
+      
+    for (let i = 0; i < scalaTable.length; i++) {
+      const result = makeAScala([...scalaTable[i], newCard])
+      if (result.success) {
+        newScala = result.scala
+        index = i
+        break
+      }
     }
 
-    if (newCard.suit === checkingSuit && newCard.value === checkingValue + 1) {
-      return true // New card one higher than last scala on table, approved
+    if (index === scalaTable.length) {
+      return { success: false }
     } else {
-      return false
+      const newScalaTable = [...scalaTable]
+      newScalaTable[index] = newScala
+      return { success: true, table: newScalaTable }
     }
   }
 
@@ -318,8 +280,8 @@ export const CariocaProvider = ({ children }) => {
     if (
       ownTrios.some((c) => c.value === card.value) || //Matches own trios
       opponentTrios.some((c) => c.value === card.value) || // Matches opponent trios
-      cardMatchesAScala(card, ownScalas) || // Matches own scalas
-      cardMatchesAScala(card, opponentScalas) // Matches opponent scalas
+      cardMatchesAScala(card, ownScalas).success || // Matches own scalas
+      cardMatchesAScala(card, opponentScalas).success // Matches opponent scalas
     ) {
       return true
     }
@@ -428,9 +390,9 @@ export const CariocaProvider = ({ children }) => {
     // New card sets
     const newHand = [...hand]
     const newOwnTrioTable = [...ownTrioTable]
-    const newOwnScalaTable = [...ownScalaTable]
+    let newOwnScalaTable = [...ownScalaTable]
     const newOpponentTrioTable = [...opponentTrioTable]
-    const newOpponentScalaTable = [...opponentScalaTable]
+    let newOpponentScalaTable = [...opponentScalaTable]
 
     // Keep track of goals
     let trioCount = person.triosReached
@@ -447,31 +409,38 @@ export const CariocaProvider = ({ children }) => {
       })
       trioCount += 1
     } else if (
-      cardsAreAScala(cardsToCheck, player) &&
+      cardsAreAScala(cardsToCheck, player).success &&
       contracts[contractNumber].scalas > scalaCount
     ) { //Play scala
-      newOwnScalaTable.push(cardsToCheck)
+      newOwnScalaTable.push(cardsAreAScala(cardsToCheck, player).scala)
       cardsToCheck.map((card) => {
         newHand.splice(newHand.indexOf(card), 1)
       })
       scalaCount += 1
-      console.log("Scala played", newOwnScalaTable)
     } else if ( // Goal is reached
       person.triosReached >= contracts[contractNumber].trios &&
       person.scalasReached >= contracts[contractNumber].scalas
     ) {
       cardsToCheck.map((card) => {
-        if (ownTrioTable.some(c => c.value === card.value)) { // Matches own trios
+        let cardIsAMatch = false
+        
+        // Check for match with trios
+        if (newOwnTrioTable.some(c => c.value === card.value)) { // Matches own trios
           newOwnTrioTable.push(card)
-          newHand.splice(newHand.indexOf(card), 1)
-        } else if (opponentTrioTable.some((c) => c.value === card.value)) { // Matches opponents trios
+          cardIsAMatch = true
+        } else if (newOpponentTrioTable.some((c) => c.value === card.value)) { // Matches opponents trios
           newOpponentTrioTable.push(card)
-          newHand.splice(newHand.indexOf(card), 1)
-        } else if (cardMatchesAScala(card, ownScalaTable)) { // Matches own scalas
-          newOwnScalaTable.push(card)
-          newHand.splice(newHand.indexOf(card), 1)
-        } else if (cardMatchesAScala(card, opponentScalaTable)) { // Matches opponents scalas
-          newOpponentScalaTable.push(card)
+          cardIsAMatch = true
+        } else if (cardMatchesAScala(card, newOwnScalaTable).success) { // Matches own scalas
+          newOwnScalaTable = cardMatchesAScala(card, newOwnScalaTable).table
+          cardIsAMatch = true
+        } else if (cardMatchesAScala(card, newOpponentScalaTable).success) { // Matches opponents scalas
+          newOpponentScalaTable = cardMatchesAScala(card, newOpponentScalaTable).table
+          cardIsAMatch = true
+        }
+        
+        // If card is a match, remove it from hand
+        if (cardIsAMatch) {
           newHand.splice(newHand.indexOf(card), 1)
         } else {
           setMessage("Korten matchar inte något på bordet.")
@@ -489,13 +458,13 @@ export const CariocaProvider = ({ children }) => {
         hand: newHand,
         trioTable: sortByValue(newOwnTrioTable),
         triosReached: trioCount,
-        scalaTable: sortBySuit(newOwnScalaTable),
+        scalaTable: newOwnScalaTable,
         scalasReached: scalaCount
       })
       setComputer({
         ...computer,
         trioTable: sortByValue(newOpponentTrioTable),
-        scalaTable: sortBySuit(newOpponentScalaTable),
+        scalaTable: newOpponentScalaTable,
       })
     } else {
       setComputer({
@@ -503,13 +472,13 @@ export const CariocaProvider = ({ children }) => {
         hand: newHand,
         trioTable: sortByValue(newOwnTrioTable),
         triosReached: trioCount,
-        scalaTable: sortBySuit(newOwnScalaTable),
+        scalaTable: newOwnScalaTable,
         scalasReached: scalaCount,
       })
       setPlayer({
         ...player,
         trioTable: sortByValue(newOpponentTrioTable),
-        scalaTable: sortBySuit(newOpponentScalaTable),
+        scalaTable: newOpponentScalaTable,
       })
     }
   }
@@ -529,7 +498,8 @@ export const CariocaProvider = ({ children }) => {
         computerPlay(cardsToThrow[0])
       }   
     } else {
-      alert("Välj ett kort att slänga.")
+      setMessage("Välj ett kort att slänga.")
+      setTimeout(() => setMessage(""), 3000)
     }
   }
 
@@ -557,11 +527,11 @@ export const CariocaProvider = ({ children }) => {
     const newDiscardPile = [...discardPile]
     const newHand = [...computer.hand]
     const newTrioTable = [...computer.trioTable]
-    const newScalaTable = [...computer.scalaTable]
+    let newScalaTable = [...computer.scalaTable]
     let scalaCount = computer.scalasReached
     let trioCount = computer.triosReached
     const newPlayerTrioTable = [...player.trioTable]
-    const newPlayerScalaTable = [...player.scalaTable]
+    let newPlayerScalaTable = [...player.scalaTable]
 
     // Decide which card to pick and pick it
     let cardPicked = {}
@@ -597,7 +567,6 @@ export const CariocaProvider = ({ children }) => {
       setTimeout(() => setStock(newStock), 1500)
     }
     newHand.push(cardPicked)
-    console.log("Computer picked", cardPicked)
 
     // Find which cards to play and move them from hand to table
     let trioCards = []
@@ -631,8 +600,9 @@ export const CariocaProvider = ({ children }) => {
         suit.forEach((c) => {
           const testCards = suit.slice(0, 4)
           // If cards are a scala, put them on table (but only if they're not already there)
-          if (cardsAreAScala(testCards)) {
-            newScalaTable.push(sortByValue(testCards))
+          const result = cardsAreAScala(testCards)
+          if (result.success) {
+            newScalaTable.push(result.scala)
             testCards.forEach((card) => {
               newHand.splice(newHand.indexOf(card), 1)
               suit.splice(suit.indexOf(card), 1)
@@ -688,13 +658,13 @@ export const CariocaProvider = ({ children }) => {
           // Matches player trios
           newPlayerTrioTable.push(card)
           newHand.splice(newHand.indexOf(card), 1)
-        } else if (cardMatchesAScala(card, newScalaTable)) {
+        } else if (cardMatchesAScala(card, newScalaTable).success) {
           // Matches own scalas
-          newScalaTable.push(card)
+          newScalaTable = cardMatchesAScala(card, newScalaTable).table
           newHand.splice(newHand.indexOf(card), 1)
-        } else if (cardMatchesAScala(card, newPlayerScalaTable)) {
+        } else if (cardMatchesAScala(card, newPlayerScalaTable).success) {
           // Matches opponents scalas
-          newPlayerScalaTable.push(card)
+          newPlayerScalaTable = cardMatchesAScala(card, newPlayerScalaTable).table
           newHand.splice(newHand.indexOf(card), 1)
         }
       })
@@ -779,7 +749,6 @@ export const CariocaProvider = ({ children }) => {
       throwAwayCard = highestValueCard
     }
     // Throw away throwAwayCard
-    console.log("Computer throws", throwAwayCard)
     newHand.splice(newHand.indexOf(throwAwayCard), 1)
     newDiscardPile.push(throwAwayCard)
 
@@ -790,14 +759,14 @@ export const CariocaProvider = ({ children }) => {
         ...computer,
         hand: sortCards(newHand, sortingOn),
         trioTable: sortByValue(newTrioTable),
-        scalaTable: sortBySuit(newScalaTable),
+        scalaTable: newScalaTable,
         triosReached: trioCount,
         scalasReached: scalaCount,
       })
       setPlayer({
         ...player,
         trioTable: sortByValue(newPlayerTrioTable),
-        scalaTable: sortBySuit(newPlayerScalaTable),
+        scalaTable: newPlayerScalaTable,
       })
     }, 2000)
     if (somebodyHasWon(newHand)) {
