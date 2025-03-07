@@ -2,14 +2,21 @@ import styled from "styled-components"
 import { useCarioca } from "../contexts/CariocaContext"
 
 export const Header = () => {
-  const { gameStages, contracts, contractNumber, gameStageIndex, player, computer } = useCarioca()
+  const { gameStages, contracts, contractNumber, gameStageIndex, player, computer, showRules, setShowRules } = useCarioca()
 
   return (
     <HeaderDiv>
-      
-        <Title>Carioca Rummy</Title>
-        <Info>Mål: {contracts[contractNumber].name} <br/>Att göra: {gameStages[gameStageIndex]}</Info>
-
+      <Title>Carioca Rummy</Title>
+      <InfoDiv>
+        <TextDiv>
+          <InfoText $size="22px">Kontrakt {contractNumber + 1}</InfoText>
+          <InfoText $size="18px">Mål: {contracts[contractNumber].name}</InfoText>
+          <InfoText $size="18px">Att göra: {gameStages[gameStageIndex]}</InfoText>
+        </TextDiv>
+        <button onClick={() => setShowRules(!showRules)}>
+          {showRules ? "Dölj reglerna" : "Visa reglerna"}
+        </button>
+      </InfoDiv>
       <ScoreDiv>
         <Score>Dina poäng: {player.score}</Score>
         <Score>Datorns poäng: {computer.score}</Score>
@@ -18,17 +25,27 @@ export const Header = () => {
   )
 }
 
-const Info = styled.h2`
+const TextDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+`
+
+const InfoDiv = styled.div`
   margin: 0 10px;
-  font-size: 22px;
+  align-self: center;
+  display: flex;
+  gap: 10px;
+`
+
+const InfoText = styled.p`
+  font-size: ${(props) => props.$size};
   color: white;
   font-family: "Raleway", serif;
   font-weight: 400;
   font-style: normal;
   text-align: left;
-  align-self: center;
+  margin: 0;
 `
-
 
 const HeaderDiv = styled.div`
   background-color: var(--secondary);

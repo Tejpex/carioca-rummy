@@ -20,6 +20,7 @@ const CariocaContext = createContext()
 export const CariocaProvider = ({ children }) => {
   const [testMode, setTestMode] = useState(false)
   const cardsInUse = cards // Change between cards or testCards for testing
+  const [showRules, setShowRules] = useState(false)
   const [message, setMessage] = useState()
   let error = "Inget fel"
 
@@ -45,7 +46,7 @@ export const CariocaProvider = ({ children }) => {
   
   const [discardPile, setDiscardPile] = useState([])
   const [stock, setStock] = useState([])
-  // ------------ !!!!! Changed for test-purpose! !!!! -------------
+  
   const contracts = [
     {
       index: 0,
@@ -786,7 +787,7 @@ export const CariocaProvider = ({ children }) => {
   
   return (
     <CariocaContext.Provider
-      value={{ player, computer, discardPile, stock, gameStageIndex, contracts, contractNumber, startNewGame, sortByValue, sortBySuit, takeCard, toggleStaged, tryToPlayCards, throwCard, gameStages, setNewHand, message, setMessage, setSortingOn, testMode, setTestMode }}
+      value={{ player, computer, discardPile, stock, gameStageIndex, contracts, contractNumber, startNewGame, sortByValue, sortBySuit, takeCard, toggleStaged, tryToPlayCards, throwCard, gameStages, setNewHand, message, setMessage, setSortingOn, testMode, setTestMode, showRules, setShowRules }}
     >
       {children}
     </CariocaContext.Provider>
