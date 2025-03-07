@@ -10,7 +10,8 @@ export const HandRow = ({person}) => {
     setSortingOn,
     player,
     computer,
-    testMode
+    testMode,
+    setTestMode
   } = useCarioca()
 
   const hand = person.hand
@@ -34,6 +35,9 @@ export const HandRow = ({person}) => {
             <CardImage src="/Baksida.png" alt="Card facing down" key={index} />
           ))}
         </div>
+        <ButtonBox>
+          <button onClick={() => setTestMode(!testMode)}>Visa korten</button>
+        </ButtonBox>
       </CardRow>
     )
   } else {
@@ -59,7 +63,12 @@ export const HandRow = ({person}) => {
               </div>
 
               <div>
-                <input type="radio" id="sort-suit" name="sorting" value="suit" />
+                <input
+                  type="radio"
+                  id="sort-suit"
+                  name="sorting"
+                  value="suit"
+                />
                 <label htmlFor="sort-suit">Färg</label>
               </div>
             </form>
@@ -71,6 +80,11 @@ export const HandRow = ({person}) => {
             {card.staged && <CardImageStaged src={card.img} alt={card.name} />}
           </CardButton>
         ))}
+        {person === computer && (
+          <ButtonBox>
+            <button onClick={() => setTestMode(!testMode)}>Dölj korten</button>
+          </ButtonBox>
+        )}
       </CardRow>
     )
   }
