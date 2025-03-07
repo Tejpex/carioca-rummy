@@ -1,4 +1,5 @@
 import styled from "styled-components"
+import { Button } from "./Button"
 import { useCarioca } from "../contexts/CariocaContext"
 
 export const TableRow = ({person}) => {
@@ -26,8 +27,8 @@ export const TableRow = ({person}) => {
       <TableCardRow>
         {person === player && (
           <ButtonBox>
-            <button onClick={() => handleClick("play")}>Spela kort</button>
-            <button onClick={() => handleClick("throw")}>Släng kort</button>
+            <Button text="Spela kort" func={() => handleClick("play")} />
+            <Button text="Släng kort" func={() => handleClick("throw")} />
           </ButtonBox>
         )}
         {trioTable.map((card, index) => (
@@ -57,6 +58,7 @@ const ButtonBox = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-right: 20px;
 `
 
 const CardImage = styled.img`

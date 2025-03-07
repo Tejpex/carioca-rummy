@@ -1,4 +1,5 @@
 import styled from "styled-components"
+import { Button } from "./Button"
 import { useCarioca } from "../contexts/CariocaContext"
 
 export const HandRow = ({person}) => {
@@ -36,7 +37,7 @@ export const HandRow = ({person}) => {
           ))}
         </div>
         <ButtonBox>
-          <button onClick={() => setTestMode(!testMode)}>Visa korten</button>
+          <Button text="Visa korten" func={() => setTestMode(!testMode)} />
         </ButtonBox>
       </CardRow>
     )
@@ -82,7 +83,7 @@ export const HandRow = ({person}) => {
         ))}
         {person === computer && (
           <ButtonBox>
-            <button onClick={() => setTestMode(!testMode)}>Dölj korten</button>
+            <Button text="Dölj korten" func={() => setTestMode(!testMode)} />
           </ButtonBox>
         )}
       </CardRow>
@@ -91,6 +92,7 @@ export const HandRow = ({person}) => {
 }
 
 const ButtonBox = styled.div`
+  margin: 0 10px;
   font-family: "Raleway", serif;
   margin-right: 20px;
   display: flex;

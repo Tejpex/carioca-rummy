@@ -1,4 +1,5 @@
 import styled from "styled-components"
+import { Button } from "./Button"
 import { useCarioca } from "../contexts/CariocaContext"
 
 export const Header = () => {
@@ -13,9 +14,7 @@ export const Header = () => {
           <InfoText $size="18px">Mål: {contracts[contractNumber].name}</InfoText>
           <InfoText $size="18px">Att göra: {gameStages[gameStageIndex]}</InfoText>
         </TextDiv>
-        <button onClick={() => setShowRules(!showRules)}>
-          {showRules ? "Dölj reglerna" : "Visa reglerna"}
-        </button>
+        <Button text={showRules ? "Dölj reglerna" : "Visa reglerna"} func={() => setShowRules(!showRules)}/>
       </InfoDiv>
       <ScoreDiv>
         <Score>Dina poäng: {player.score}</Score>
@@ -24,28 +23,6 @@ export const Header = () => {
     </HeaderDiv>
   )
 }
-
-const TextDiv = styled.div`
-  display: flex;
-  flex-direction: column;
-`
-
-const InfoDiv = styled.div`
-  margin: 0 10px;
-  align-self: center;
-  display: flex;
-  gap: 10px;
-`
-
-const InfoText = styled.p`
-  font-size: ${(props) => props.$size};
-  color: white;
-  font-family: "Raleway", serif;
-  font-weight: 400;
-  font-style: normal;
-  text-align: left;
-  margin: 0;
-`
 
 const HeaderDiv = styled.div`
   background-color: var(--secondary);
@@ -65,6 +42,33 @@ const Title = styled.h1`
   font-style: normal;
   align-self: center;
 `
+
+const InfoDiv = styled.div`
+margin: 0 10px;
+padding: 0 50px 0 10px;
+align-self: center;
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 10px;
+`
+
+const TextDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+`
+
+const InfoText = styled.p`
+  font-size: ${(props) => props.$size};
+  color: white;
+  font-family: "Raleway", serif;
+  font-weight: 400;
+  font-style: normal;
+  text-align: left;
+  margin: 0;
+`
+
+
 
 const ScoreDiv = styled.div`
   align-self: center;
