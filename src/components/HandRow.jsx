@@ -12,10 +12,20 @@ export const HandRow = ({person}) => {
     player,
     computer,
     testMode,
-    setTestMode
+    setTestMode, 
+    tryToPlayCards, 
+    throwCard, 
+    gameStageIndex, 
+    setMessage
   } = useCarioca()
 
   const hand = person.hand
+  const messages = [
+    "Delar ut kort...",
+    "Börja med att ta ett kort.",
+    "Din tur.",
+    "Det är datorns tur.",
+  ]
   
   const handleSorting = (value) => {
     if (value === "value") {
@@ -26,6 +36,19 @@ export const HandRow = ({person}) => {
       setNewHand(person, cards)
     }
     setSortingOn(value)
+  }
+
+  const handleClick = (command) => {
+    if (gameStageIndex === 2) {
+      if (command === "play") {
+        tryToPlayCards(person)
+      } else if (command === "throw") {
+        throwCard(person)
+      }
+    } else {
+      setMessage(messages[gameStageIndex])
+      setTimeout(() => setMessage(""), 2000)
+    }
   }
 
   if (person === computer && !testMode) {
@@ -45,7 +68,7 @@ export const HandRow = ({person}) => {
     return (
       <CardRow>
         {person === player && (
-          <ButtonBox>
+          <RadioButtonBox>
             <form onChange={() => handleSorting(event.target.value)}>
               <legend>Sortera korten:</legend>
               <div>
@@ -73,6 +96,12 @@ export const HandRow = ({person}) => {
                 <label htmlFor="sort-suit">Färg</label>
               </div>
             </form>
+          </RadioButtonBox>
+        )}
+        {person === player && (
+          <ButtonBox>
+            <Button text="Spela kort" func={() => handleClick("play")} />
+            <Button text="Släng kort" func={() => handleClick("throw")} />
           </ButtonBox>
         )}
         {hand.map((card, index) => (
@@ -91,7 +120,7 @@ export const HandRow = ({person}) => {
   }
 }
 
-const ButtonBox = styled.div`
+const RadioButtonBox = styled.div`
   margin: 0 10px;
   font-family: "Raleway", serif;
   margin-right: 20px;
@@ -99,6 +128,13 @@ const ButtonBox = styled.div`
   flex-direction: column;
   gap: 10px;
   align-items: flex-start;
+`
+
+const ButtonBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-right: 20px;
 `
 
 const CardRow = styled.div`
