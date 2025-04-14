@@ -1,4 +1,5 @@
 import styled from "styled-components"
+import { useState } from "react"
 import { Button } from "./Button"
 import { useCarioca } from "../contexts/CariocaContext"
 
@@ -10,14 +11,14 @@ export const HandRow = ({person}) => {
     setNewHand,
     setSortingOn,
     player,
-    computer,
-    testMode,
-    setTestMode, 
+    computer, 
     tryToPlayCards, 
     throwCard, 
     gameStageIndex, 
     setMessage
   } = useCarioca()
+
+  const [openCards, setOpenCards] = useState(false)
 
   const hand = person.hand
   const messages = [
@@ -51,7 +52,7 @@ export const HandRow = ({person}) => {
     }
   }
 
-  if (person === computer && !testMode) {
+  if (person === computer && !openCards) {
     return (
       <CardRow>
         <div>
@@ -60,7 +61,7 @@ export const HandRow = ({person}) => {
           ))}
         </div>
         <ButtonBox>
-          <Button text="Visa korten" func={() => setTestMode(!testMode)} />
+          <Button text="Visa korten" func={() => setOpenCards(!openCards)} />
         </ButtonBox>
       </CardRow>
     )
@@ -112,7 +113,7 @@ export const HandRow = ({person}) => {
         ))}
         {person === computer && (
           <ButtonBox>
-            <Button text="Dölj korten" func={() => setTestMode(!testMode)} />
+            <Button text="Dölj korten" func={() => setOpenCards(!openCards)} />
           </ButtonBox>
         )}
       </CardRow>

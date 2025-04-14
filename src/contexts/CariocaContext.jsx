@@ -8,6 +8,7 @@ import {
   sortByValue, 
   sortBySuit, 
   sortCards, 
+  groupBySuit,
   countCardsBySuit, 
   countCardsByValue, 
   countPoints, 
@@ -18,7 +19,6 @@ import {
 const CariocaContext = createContext()
 
 export const CariocaProvider = ({ children }) => {
-  const [testMode, setTestMode] = useState(false)
   const cardsInUse = cards // Change between cards or testCards for testing
   const [showRules, setShowRules] = useState(false)
   const [message, setMessage] = useState()
@@ -47,12 +47,13 @@ export const CariocaProvider = ({ children }) => {
   const [discardPile, setDiscardPile] = useState([])
   const [stock, setStock] = useState([])
   
+  // --------------- Changed for test-purposes!!! --------------
   const contracts = [
     {
       index: 0,
       name: "2 triss",
-      trios: 2,
-      scalas: 0,
+      trios: 1,
+      scalas: 1,
     },
     {
       index: 1,
@@ -215,7 +216,6 @@ export const CariocaProvider = ({ children }) => {
     }
 
     cardSetSorted.forEach((card) => { 
-      // console.log("Testing new", cardToCheck, "against old", card, "Suit", checkingSuit, "Value",checkingValue)
       if (card.suit === checkingSuit) { // Card in set still on same suit
         if (card.value - checkingValue <= 1) { 
           checkingValue = card.value // Card in set doesn't need new card
@@ -574,46 +574,34 @@ export const CariocaProvider = ({ children }) => {
     let singleCards = []
     // Scalas are a goal
     if (contracts[contractNumber].scalas > computer.scalasReached) {
-      // Step 1: Check each suit to see if there is at least four cards
-      const scalaContenders = []
-      for (const [key, value] of Object.entries(countCardsBySuit(newHand))) {
-        if (value >= 4) {
-          // If suit has min four cards push it as array to scalaContenders
-          const sameSuitCards = newHand.filter((card) => card.suit === key)
-          scalaContenders.push(sameSuitCards)
-        }
-      }
-      // Step 2: Go through each suit and find cards to play
-      scalaContenders.forEach((suit) => {
-        // Remove cards of same value from suit
-        for (const [key, value] of Object.entries(countCardsByValue(suit))) {
-          if (value >= 2) {
-            const doubleCards = suit.filter(
-              (card) => card.value === Number(key)
-            )
-            for (let i = 1; i < doubleCards.length; i++) {
-              suit.splice(suit.indexOf(doubleCards[i]), 1)
+      // Check each suit individually
+      const cardsDividedIntoSuits = groupBySuit(newHand)
+      cardsDividedIntoSuits.forEach((suit) => {
+        // Check for possible scalas
+        const result = makeAScala(suit)
+        console.log(result)
+        if (result.success) {
+          // The entire suit forms a singe scala - play it
+          newScalaTable.push(result.scala)
+          scalaCount++
+        } else if (result.possibleScalas && result.possibleScalas.scalas.length > 0) {
+          // Take the last scala from the list and play it
+          const scalas = result.possibleScalas.scalas.reverse()
+          while (scalas.length > 0) {
+            if (contracts[contractNumber].scalas > scalaCount) {
+              // Play only four cards and keep the rest
+              // Reverse to prioritize higher value cards
+              const scala = scalas.shift().reverse().slice(0, 4) 
+              newScalaTable.push(scala.reverse())
+              scala.forEach((card) => {
+                newHand.splice(newHand.indexOf(card), 1)
+              })
+              scalaCount++
+            } else {
+              break
             }
           }
         }
-        // Test each set of four cards in the suit to see if they are a scala
-        suit.sort((a, b) => b.value - a.value)
-        suit.forEach((c) => {
-          const testCards = suit.slice(0, 4)
-          // If cards are a scala, put them on table (but only if they're not already there)
-          const result = cardsAreAScala(testCards)
-          if (result.success) {
-            newScalaTable.push(result.scala)
-            testCards.forEach((card) => {
-              newHand.splice(newHand.indexOf(card), 1)
-              suit.splice(suit.indexOf(card), 1)
-            })
-            scalaCount++ // Count number of scalas played
-          } else {
-            // If cards are not a scala, remove the highest card and test again
-            suit.splice(0, 1)
-          }
-        })
       })
     }
     // Trios are the only goal
@@ -639,6 +627,7 @@ export const CariocaProvider = ({ children }) => {
       }
 
       // Play trio cards
+      // MAKE SURE TO ONLY PLAY TRIOS WHEN TRIO GOAL ISN'T MET!!!!!!!!!!!!!!!!!!!!
       trioCards.map((card) => {
         newTrioTable.push(card)
         newHand.splice(newHand.indexOf(card), 1)
@@ -787,7 +776,7 @@ export const CariocaProvider = ({ children }) => {
   
   return (
     <CariocaContext.Provider
-      value={{ player, computer, discardPile, stock, gameStageIndex, contracts, contractNumber, startNewGame, sortByValue, sortBySuit, takeCard, toggleStaged, tryToPlayCards, throwCard, gameStages, setNewHand, message, setMessage, setSortingOn, testMode, setTestMode, showRules, setShowRules }}
+      value={{ player, computer, discardPile, stock, gameStageIndex, contracts, contractNumber, startNewGame, sortByValue, sortBySuit, takeCard, toggleStaged, tryToPlayCards, throwCard, gameStages, setNewHand, message, setMessage, setSortingOn, showRules, setShowRules }}
     >
       {children}
     </CariocaContext.Provider>
