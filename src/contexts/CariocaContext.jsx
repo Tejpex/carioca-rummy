@@ -52,8 +52,8 @@ export const CariocaProvider = ({ children }) => {
     {
       index: 0,
       name: "2 triss",
-      trios: 1,
-      scalas: 1,
+      trios: 2,
+      scalas: 0,
     },
     {
       index: 1,
