@@ -68,8 +68,6 @@ const InfoText = styled.p`
   margin: 0;
 `
 
-
-
 const ScoreDiv = styled.div`
   align-self: center;
   display: flex;

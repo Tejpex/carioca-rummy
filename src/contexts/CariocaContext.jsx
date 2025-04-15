@@ -102,6 +102,7 @@ export const CariocaProvider = ({ children }) => {
 
   const gameStages = ["Dela ut kort", "Ta ett kort", "Spela kort eller släng ett kort", "Datorn spelar"]
   const [gameStageIndex, setGameStageIndex] = useState(0)
+  const [gameOver, setGameOver] = useState(false)
 
   //Helper functions to calculate things
   const findHighestValueGap = (cardSet) => {
@@ -349,29 +350,41 @@ export const CariocaProvider = ({ children }) => {
   }
 
   const nextContract = (pScore, cScore) => {
-    const deal = dealCards(cardsInUse, 12)
-    setPlayer({
-      ...player,
-      hand: sortCards(deal.firstPlayerCards, sortingOn),
-      trioTable: [],
-      triosReached: 0,
-      scalaTable: [],
-      scalasReached: 0,
-      score: pScore,
-    })
-    setComputer({
-      ...computer,
-      hand: sortCards(deal.secondPlayerCards, sortingOn),
-      trioTable: [],
-      triosReached: 0,
-      scalaTable: [],
-      scalasReached: 0,
-      score: cScore,
-    })
-    setDiscardPile(deal.discardPile)
-    setStock(deal.stock)
     setContractNumber(contractNumber + 1)
-    setGameStageIndex(1)   
+    if (contractNumber >= contracts.length - 1) {
+      setPlayer({
+        ...player,
+        score: pScore,
+      })
+      setComputer({
+        ...computer,
+        score: cScore,
+      })
+      setGameOver(true)
+    } else {
+      const deal = dealCards(cardsInUse, 12)
+      setPlayer({
+        ...player,
+        hand: sortCards(deal.firstPlayerCards, sortingOn),
+        trioTable: [],
+        triosReached: 0,
+        scalaTable: [],
+        scalasReached: 0,
+        score: pScore,
+      })
+      setComputer({
+        ...computer,
+        hand: sortCards(deal.secondPlayerCards, sortingOn),
+        trioTable: [],
+        triosReached: 0,
+        scalaTable: [],
+        scalasReached: 0,
+        score: cScore,
+      })
+      setDiscardPile(deal.discardPile)
+      setStock(deal.stock)
+      setGameStageIndex(1)   
+    }
   }
 
   const takeCard = (person, card, pile) => {
@@ -773,7 +786,7 @@ export const CariocaProvider = ({ children }) => {
   
   return (
     <CariocaContext.Provider
-      value={{ player, computer, discardPile, stock, gameStageIndex, contracts, contractNumber, startNewGame, sortByValue, sortBySuit, takeCard, toggleStaged, tryToPlayCards, throwCard, gameStages, setNewHand, message, setMessage, sortingOn, setSortingOn, showRules, setShowRules }}
+      value={{ player, computer, discardPile, stock, gameStageIndex, contracts, contractNumber, startNewGame, sortByValue, sortBySuit, takeCard, toggleStaged, tryToPlayCards, throwCard, gameStages, setNewHand, message, setMessage, sortingOn, setSortingOn, showRules, setShowRules, gameOver, setGameOver }}
     >
       {children}
     </CariocaContext.Provider>
