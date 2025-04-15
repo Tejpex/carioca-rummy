@@ -576,13 +576,16 @@ export const CariocaProvider = ({ children }) => {
     if (contracts[contractNumber].scalas > computer.scalasReached) {
       // Check each suit individually
       const cardsDividedIntoSuits = groupBySuit(newHand)
-      cardsDividedIntoSuits.forEach((suit) => {
-        // Check for possible scalas
+      cardsDividedIntoSuits.filter((suit) => suit.length >= 4).forEach((suit) => {
+        // Check for possible scalas when length is 4 or more
         const result = makeAScala(suit)
         console.log(result)
         if (result.success) {
           // The entire suit forms a singe scala - play it
           newScalaTable.push(result.scala)
+          result.scala.forEach((card) => {
+            newHand.splice(newHand.indexOf(card), 1)
+          })
           scalaCount++
         } else if (result.possibleScalas && result.possibleScalas.scalas.length > 0) {
           // Take the last scala from the list and play it
@@ -613,11 +616,13 @@ export const CariocaProvider = ({ children }) => {
           const sameValueCards = newHand.filter(
             (card) => card.value === Number(key)
           )
-          // Push three cards with same value to trioCards
-          trioCards.push(sameValueCards[0])
-          trioCards.push(sameValueCards[1])
-          trioCards.push(sameValueCards[2])
-          trioCount++
+          if (contracts[contractNumber].trios > trioCount) {
+            // Push three cards with same value to trioCards
+            trioCards.push(sameValueCards[0])
+            trioCards.push(sameValueCards[1])
+            trioCards.push(sameValueCards[2])
+            trioCount++
+          }
         } else if (value === 1) {
           const lonelyCards = newHand.filter(
             (card) => card.value === Number(key)
@@ -627,7 +632,6 @@ export const CariocaProvider = ({ children }) => {
       }
 
       // Play trio cards
-      // MAKE SURE TO ONLY PLAY TRIOS WHEN TRIO GOAL ISN'T MET!!!!!!!!!!!!!!!!!!!!
       trioCards.map((card) => {
         newTrioTable.push(card)
         newHand.splice(newHand.indexOf(card), 1)
@@ -682,14 +686,12 @@ export const CariocaProvider = ({ children }) => {
           )
           if (cardsLonelyInValueAndSuit.length > 0) {
             // Some cards are lonely in both suit and value - throw away highest
-            console.log("Lonely in both suit and value", cardsLonelyInValueAndSuit)
             throwAwayCard = sortByValue(cardsLonelyInValueAndSuit)[
               cardsLonelyInValueAndSuit.length - 1
             ]
           }
         } else {
           // Trios is not a goal - throw away highest single
-          console.log("Lonely in suit", singleCardsAccordingToSuit)
           throwAwayCard =
             singleCardsAccordingToSuit[singleCardsAccordingToSuit.length - 1]
         }
@@ -714,18 +716,15 @@ export const CariocaProvider = ({ children }) => {
           )
           if (singlesAmongstMaybes.length > 0) {
             // Some maybe-cards are lonely in value - throw away highest
-            console.log("Maybe-cards lonely in value", singlesAmongstMaybes)
             throwAwayCard =
               sortByValue(singlesAmongstMaybes)[singlesAmongstMaybes.length - 1]
           } else {
             // No maybes are singles - throw away highest anyway
-            console.log("Highest amongst maybes, no singles", cardsWeMightThrow)
             throwAwayCard =
               sortByValue(cardsWeMightThrow)[cardsWeMightThrow.length - 1]
           }
         } else {
           // Trio is not a goal - throw away highest maybe-card
-          console.log("Highest amongst maybes, no trio-goal", cardsWeMightThrow)
           throwAwayCard =
             sortByValue(cardsWeMightThrow)[cardsWeMightThrow.length - 1]
         }
@@ -735,7 +734,6 @@ export const CariocaProvider = ({ children }) => {
     else if (contracts[contractNumber].trios > trioCount && singleCards.length > 0) {
       // Throw away highest single
       const highestSingle = sortByValue(singleCards).slice(-1)[0]
-      console.log("Trios only goal, throwing away highest single", singleCards)
       throwAwayCard = highestSingle
     } 
     // Still no throw-away-card? 
@@ -746,7 +744,6 @@ export const CariocaProvider = ({ children }) => {
     }
     
     // Throw away throwAwayCard
-    console.log("Throwing away", throwAwayCard)
     newHand.splice(newHand.indexOf(throwAwayCard), 1)
     newDiscardPile.push(throwAwayCard)
 

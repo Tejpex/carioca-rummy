@@ -278,7 +278,7 @@ export const makeAScala = (cards) => {
           scala: newScala,
         }
       } else {
-        firstSequence = newScala
+        sequencedCards[0] = newScala
         sequencedCards.pop() // Remove last sequence (with king)
       }
     } 
