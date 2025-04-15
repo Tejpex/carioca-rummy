@@ -9,6 +9,7 @@ export const HandRow = ({person}) => {
     sortBySuit,
     toggleStaged,
     setNewHand,
+    sortingOn,
     setSortingOn,
     player,
     computer, 
@@ -73,16 +74,22 @@ export const HandRow = ({person}) => {
             <form onChange={() => handleSorting(event.target.value)}>
               <legend>Sortera korten:</legend>
               <div>
-                <input type="radio" id="sort-off" name="sorting" value="off" />
+                <input
+                  type="radio"
+                  id="sort-off"
+                  name="sorting"
+                  value="off"
+                  defaultChecked={sortingOn === "off"}
+                />
                 <label htmlFor="sort-off">Av</label>
               </div>
-
               <div>
                 <input
                   type="radio"
                   id="sort-value"
                   name="sorting"
                   value="value"
+                  defaultChecked={sortingOn === "value"}
                 />
                 <label htmlFor="sort-value">Värde</label>
               </div>
@@ -93,6 +100,7 @@ export const HandRow = ({person}) => {
                   id="sort-suit"
                   name="sorting"
                   value="suit"
+                  defaultChecked={sortingOn === "suit"}
                 />
                 <label htmlFor="sort-suit">Färg</label>
               </div>

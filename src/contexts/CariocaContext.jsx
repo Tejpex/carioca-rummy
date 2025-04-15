@@ -47,7 +47,7 @@ export const CariocaProvider = ({ children }) => {
   const [discardPile, setDiscardPile] = useState([])
   const [stock, setStock] = useState([])
   
-  // --------------- Changed for test-purposes!!! --------------
+  // --------------- Change for test-purposes!!! --------------
   const contracts = [
     {
       index: 0,
@@ -773,7 +773,7 @@ export const CariocaProvider = ({ children }) => {
   
   return (
     <CariocaContext.Provider
-      value={{ player, computer, discardPile, stock, gameStageIndex, contracts, contractNumber, startNewGame, sortByValue, sortBySuit, takeCard, toggleStaged, tryToPlayCards, throwCard, gameStages, setNewHand, message, setMessage, setSortingOn, showRules, setShowRules }}
+      value={{ player, computer, discardPile, stock, gameStageIndex, contracts, contractNumber, startNewGame, sortByValue, sortBySuit, takeCard, toggleStaged, tryToPlayCards, throwCard, gameStages, setNewHand, message, setMessage, sortingOn, setSortingOn, showRules, setShowRules }}
     >
       {children}
     </CariocaContext.Provider>
