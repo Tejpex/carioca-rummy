@@ -10,14 +10,22 @@ export const Header = () => {
       <Title>Carioca Rummy</Title>
       <InfoDiv>
         {gameOver && <InfoText $size="22px">Spelet är över</InfoText>}
-        {!gameOver &&         
+        {!gameOver && (
           <TextDiv>
             <InfoText $size="22px">Kontrakt {contractNumber + 1}</InfoText>
-            <InfoText $size="18px">Mål: {contracts[contractNumber].name}</InfoText>
-            <InfoText $size="18px">Att göra: {gameStages[gameStageIndex]}</InfoText>
+            <InfoText $size="18px">
+              Mål: {contracts[contractNumber].name}
+            </InfoText>
+            <InfoText $size="18px">
+              Att göra: {gameStages[gameStageIndex]}
+            </InfoText>
           </TextDiv>
-        }
-        <Button text={showRules ? "Dölj reglerna" : "Visa reglerna"} func={() => setShowRules(!showRules)}/>
+        )}
+        <Button
+          text={showRules ? "Dölj reglerna" : "Visa reglerna"}
+          func={() => setShowRules(!showRules)}
+          color="var(--secondary-light)"
+        />
       </InfoDiv>
       <ScoreDiv>
         <Score>Dina poäng: {player.score}</Score>

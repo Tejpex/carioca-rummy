@@ -1,8 +1,8 @@
 import styled from "styled-components"
 
-export const Button = ({text, func}) => {
+export const Button = ({text, func, color}) => {
   return (
-    <MyButton onClick={func}>
+    <MyButton onClick={func} color={color}>
       {text}
     </MyButton>
   )
@@ -22,6 +22,6 @@ const MyButton = styled.button`
   font-style: normal;
   text-align: center;
   &:hover {
-    background-color: var(--primary-light);
+    background-color:${(props) => props.color || "var(--primary-light)"};
   }
 `

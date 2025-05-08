@@ -58,7 +58,7 @@ export const RulesInfo = () => {
         <Text>
           Efter att en spelare plockat upp ett kort har denne möjlighet att
           spela ut kort. Det går bara att spela de kombinationer som finns i
-          pågående kontrakt. Efter att kontraktets mål är uppnått, kan spelaren
+          pågående kontrakt. Efter att kontraktets mål är uppnått kan spelaren
           fortsätta spela ut enstaka kort genom att fylla på de triss och/eller
           stegar som finns på bordet. Det är tillåtet att fylla på triss/stegar
           på både den egna sidan och på motståndarens sida. Man får spela ut så

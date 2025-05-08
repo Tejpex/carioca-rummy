@@ -62,7 +62,11 @@ export const HandRow = ({person}) => {
           ))}
         </div>
         <ButtonBox>
-          <Button text="Visa korten" func={() => setOpenCards(!openCards)} />
+          <Button
+            text="Visa korten"
+            func={() => setOpenCards(!openCards)}
+            color="var(--light-shadow)"
+          />
         </ButtonBox>
       </CardRow>
     )
@@ -109,8 +113,16 @@ export const HandRow = ({person}) => {
         )}
         {person === player && (
           <ButtonBox>
-            <Button text="Spela kort" func={() => handleClick("play")} />
-            <Button text="Släng kort" func={() => handleClick("throw")} />
+            <Button
+              text="Spela kort"
+              func={() => handleClick("play")}
+              color="var(--secondary-light)"
+            />
+            <Button
+              text="Släng kort"
+              func={() => handleClick("throw")}
+              color="var(--light-shadow)"
+            />
           </ButtonBox>
         )}
         {hand.map((card, index) => (
@@ -121,7 +133,11 @@ export const HandRow = ({person}) => {
         ))}
         {person === computer && (
           <ButtonBox>
-            <Button text="Dölj korten" func={() => setOpenCards(!openCards)} />
+            <Button
+              text="Dölj korten"
+              func={() => setOpenCards(!openCards)}
+              color="var(--light-shadow)"
+            />
           </ButtonBox>
         )}
       </CardRow>
@@ -132,7 +148,6 @@ export const HandRow = ({person}) => {
 const RadioButtonBox = styled.div`
   margin: 0 10px;
   font-family: "Raleway", serif;
-  margin-right: 20px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -143,7 +158,7 @@ const ButtonBox = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-right: 20px;
+  margin: 0 20px 0 10px;
 `
 
 const CardRow = styled.div`
