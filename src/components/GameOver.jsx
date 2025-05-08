@@ -3,7 +3,7 @@ import { useCarioca } from "../contexts/CariocaContext"
 import { Button } from "./Button"
 
 export const GameOver = () => {
-  const { setGameOver, player, computer } = useCarioca()
+  const { player, computer, startNewGame } = useCarioca()
   return (
     <Table>
       <TextDiv>
@@ -13,7 +13,7 @@ export const GameOver = () => {
       </TextDiv>
       <Button
         text="Nytt spel"
-        func={() => setGameOver(false)}
+        func={() => startNewGame()}
       />
     </Table>
   )

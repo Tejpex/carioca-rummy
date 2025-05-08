@@ -324,6 +324,7 @@ export const CariocaProvider = ({ children }) => {
 
   //Functions to handle gameplay
   const startNewGame = () => {
+    setGameOver(false)
     const deal = dealCards(cardsInUse, 12)
     setPlayer({
       ...player,

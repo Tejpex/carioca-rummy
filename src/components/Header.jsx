@@ -3,17 +3,20 @@ import { Button } from "./Button"
 import { useCarioca } from "../contexts/CariocaContext"
 
 export const Header = () => {
-  const { gameStages, contracts, contractNumber, gameStageIndex, player, computer, showRules, setShowRules } = useCarioca()
+  const { gameStages, contracts, contractNumber, gameStageIndex, player, computer, showRules, setShowRules, gameOver } = useCarioca()
 
   return (
     <HeaderDiv>
       <Title>Carioca Rummy</Title>
       <InfoDiv>
-        <TextDiv>
-          <InfoText $size="22px">Kontrakt {contractNumber + 1}</InfoText>
-          <InfoText $size="18px">Mål: {contracts[contractNumber].name}</InfoText>
-          <InfoText $size="18px">Att göra: {gameStages[gameStageIndex]}</InfoText>
-        </TextDiv>
+        {gameOver && <InfoText $size="22px">Spelet är över</InfoText>}
+        {!gameOver &&         
+          <TextDiv>
+            <InfoText $size="22px">Kontrakt {contractNumber + 1}</InfoText>
+            <InfoText $size="18px">Mål: {contracts[contractNumber].name}</InfoText>
+            <InfoText $size="18px">Att göra: {gameStages[gameStageIndex]}</InfoText>
+          </TextDiv>
+        }
         <Button text={showRules ? "Dölj reglerna" : "Visa reglerna"} func={() => setShowRules(!showRules)}/>
       </InfoDiv>
       <ScoreDiv>
