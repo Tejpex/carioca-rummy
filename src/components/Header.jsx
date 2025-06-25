@@ -39,29 +39,42 @@ const HeaderDiv = styled.div`
   background-color: var(--secondary);
   width: 100vw;
   padding: 10px 30px;
-  display: grid;
-  grid-template-columns: 2fr 2fr 1fr;
+  display: flex;
+  flex-direction: column;
+
+  @media (min-width: 500px) {
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr;
+  }
 `
 
 const Title = styled.h1`
   margin: 0 10px;
   text-align: left;
-  font-size: 46px;
+  font-size: 28px;
   color: white;
   font-family: "Quicksand", serif;
   font-weight: 700;
   font-style: normal;
   align-self: center;
+
+  @media (min-width: 500px) {
+    font-size: 46px;
+  }
 `
 
 const InfoDiv = styled.div`
-margin: 0 10px;
-padding: 0 50px 0 10px;
-align-self: center;
-display: flex;
-align-items: center;
-justify-content: space-between;
-gap: 10px;
+  margin: 0 10px;
+  padding: 0 50px 0 10px;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  @media (min-width: 500px) {
+    justify-content: space-between;
+  }
 `
 
 const TextDiv = styled.div`
@@ -70,13 +83,17 @@ const TextDiv = styled.div`
 `
 
 const InfoText = styled.p`
-  font-size: ${(props) => props.$size};
+  font-size: ${(props) => props.$size - 10};
   color: white;
   font-family: "Raleway", serif;
   font-weight: 400;
   font-style: normal;
   text-align: left;
   margin: 0;
+
+  @media (min-width: 500px) {
+    font-size: ${(props) => props.$size}
+  }
 `
 
 const ScoreDiv = styled.div`
