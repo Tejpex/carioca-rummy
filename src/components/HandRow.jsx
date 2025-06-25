@@ -1,7 +1,8 @@
 import styled from "styled-components"
 import { useState } from "react"
-import { Button } from "./Button"
 import { useCarioca } from "../contexts/CariocaContext"
+import { RadioButtonBox } from "./RadioButtonBox"
+import { Button } from "./Button"
 
 export const HandRow = ({person}) => {
   const {
@@ -28,17 +29,6 @@ export const HandRow = ({person}) => {
     "Din tur.",
     "Det är datorns tur.",
   ]
-  
-  const handleSorting = (value) => {
-    if (value === "value") {
-      const cards = sortByValue(person.hand)
-      setNewHand(person, cards)
-    } else if (value === "suit") {
-      const cards = sortBySuit(person.hand)
-      setNewHand(person, cards)
-    }
-    setSortingOn(value)
-  }
 
   const handleClick = (command) => {
     if (gameStageIndex === 2) {
@@ -74,42 +64,7 @@ export const HandRow = ({person}) => {
     return (
       <CardRow>
         {person === player && (
-          <RadioButtonBox>
-            <form onChange={() => handleSorting(event.target.value)}>
-              <legend>Sortera korten:</legend>
-              <div>
-                <input
-                  type="radio"
-                  id="sort-off"
-                  name="sorting"
-                  value="off"
-                  defaultChecked={sortingOn === "off"}
-                />
-                <label htmlFor="sort-off">Av</label>
-              </div>
-              <div>
-                <input
-                  type="radio"
-                  id="sort-value"
-                  name="sorting"
-                  value="value"
-                  defaultChecked={sortingOn === "value"}
-                />
-                <label htmlFor="sort-value">Värde</label>
-              </div>
-
-              <div>
-                <input
-                  type="radio"
-                  id="sort-suit"
-                  name="sorting"
-                  value="suit"
-                  defaultChecked={sortingOn === "suit"}
-                />
-                <label htmlFor="sort-suit">Färg</label>
-              </div>
-            </form>
-          </RadioButtonBox>
+          <RadioButtonBox person={person}/>
         )}
         {person === player && (
           <ButtonBox>
@@ -145,18 +100,10 @@ export const HandRow = ({person}) => {
   }
 }
 
-const RadioButtonBox = styled.div`
-  margin: 0 10px;
-  font-family: "Raleway", serif;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: flex-start;
-`
-
 const ButtonBox = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 10px;
   margin: 0 20px 0 10px;
 `
