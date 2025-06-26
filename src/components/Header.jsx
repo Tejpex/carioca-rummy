@@ -37,7 +37,7 @@ export const Header = () => {
 
 const HeaderDiv = styled.div`
   background-color: var(--secondary);
-  width: 100vw;
+  width: 100%;
   padding: 10px 30px;
   display: flex;
   flex-direction: column;

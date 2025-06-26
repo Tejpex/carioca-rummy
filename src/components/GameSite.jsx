@@ -1,3 +1,4 @@
+import styled from "styled-components"
 import { Table } from "./Table"
 import { HandRow } from "./HandRow"
 import { TableRow } from "./TableRow"
@@ -16,7 +17,7 @@ export const GameSite = () => {
   } = useCarioca()
   
   return (
-    <div>
+    <MainWindow>
       {showRules && <RulesInfo/>}
       {gameOver && <GameOver/>}
       {!gameOver && (
@@ -29,6 +30,10 @@ export const GameSite = () => {
           <HandRow person={computer}/>
         </div>
       )}
-    </div>
+    </MainWindow>
   ) 
 }
+
+const MainWindow = styled.div`
+  width: 100%;
+`

@@ -6,12 +6,7 @@ import { Button } from "./Button"
 
 export const HandRow = ({person}) => {
   const {
-    sortByValue,
-    sortBySuit,
     toggleStaged,
-    setNewHand,
-    sortingOn,
-    setSortingOn,
     player,
     computer, 
     tryToPlayCards, 
@@ -45,12 +40,12 @@ export const HandRow = ({person}) => {
 
   if (person === computer && !openCards) {
     return (
-      <CardRow>
-        <div>
+      <RowSection>
+        <CardSection>
           {hand.map((card, index) => (
             <CardImage src="/Baksida.png" alt="Card facing down" key={index} />
           ))}
-        </div>
+        </CardSection>
         <ButtonBox>
           <Button
             text="Visa korten"
@@ -58,34 +53,38 @@ export const HandRow = ({person}) => {
             color="var(--light-shadow)"
           />
         </ButtonBox>
-      </CardRow>
+      </RowSection>
     )
   } else {
     return (
-      <CardRow>
-        {person === player && (
-          <RadioButtonBox person={person}/>
-        )}
-        {person === player && (
-          <ButtonBox>
-            <Button
-              text="Spela kort"
-              func={() => handleClick("play")}
-              color="var(--secondary-light)"
-            />
-            <Button
-              text="Släng kort"
-              func={() => handleClick("throw")}
-              color="var(--light-shadow)"
-            />
-          </ButtonBox>
-        )}
-        {hand.map((card, index) => (
-          <CardButton onClick={() => toggleStaged(person, card)} key={index}>
-            {!card.staged && <CardImage src={card.img} alt={card.name} />}
-            {card.staged && <CardImageStaged src={card.img} alt={card.name} />}
-          </CardButton>
-        ))}
+      <RowSection>
+        <ButtonSection>
+          {person === player && <RadioButtonBox person={person} />}
+          {person === player && (
+            <ButtonBox>
+              <Button
+                text="Spela kort"
+                func={() => handleClick("play")}
+                color="var(--secondary-light)"
+              />
+              <Button
+                text="Släng kort"
+                func={() => handleClick("throw")}
+                color="var(--light-shadow)"
+              />
+            </ButtonBox>
+          )}
+        </ButtonSection>
+        <CardSection>
+          {hand.map((card, index) => (
+            <CardButton onClick={() => toggleStaged(person, card)} key={index}>
+              {!card.staged && <CardImage src={card.img} alt={card.name} />}
+              {card.staged && (
+                <CardImageStaged src={card.img} alt={card.name} />
+              )}
+            </CardButton>
+          ))}
+        </CardSection>
         {person === computer && (
           <ButtonBox>
             <Button
@@ -95,10 +94,28 @@ export const HandRow = ({person}) => {
             />
           </ButtonBox>
         )}
-      </CardRow>
+      </RowSection>
     )
   }
 }
+
+const RowSection= styled.div`
+  background-color: var(--primary-light);
+  width: 100%;
+  padding: 15px 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  @media (min-width: 800px) {
+    flex-direction: row;
+  }
+`
+
+const ButtonSection = styled.div`
+  display: flex;
+  justify-content: center;
+`
 
 const ButtonBox = styled.div`
   display: flex;
@@ -108,11 +125,14 @@ const ButtonBox = styled.div`
   margin: 0 20px 0 10px;
 `
 
-const CardRow = styled.div`
-  background-color: var(--primary-light);
-  padding: 15px;
+const CardSection = styled.div`
   display: flex;
-  justify-content: flex-start;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  @media (min-width: 800px) {
+    justify-content: flex-start;
+  }
 `
 
 const CardButton = styled.button`
@@ -122,11 +142,19 @@ const CardButton = styled.button`
 `
 
 const CardImage = styled.img`
-  height: 90px;
+  height: 60px;
+
+  @media (min-width: 500px) {
+    height: 90px; 
+  }
 `
 
 const CardImageStaged = styled.img`
-  height: 90px;
+  height: 60px;
   position: relative;
   top: 10px;
+
+  @media (min-width: 500px) {
+    height: 90px;
+  }
 `
