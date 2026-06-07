@@ -12,7 +12,7 @@ export const Header = () => {
         {gameOver && <InfoText $size="22px">Spelet är över</InfoText>}
         {!gameOver && (
           <TextDiv>
-            <InfoText $size="22px">Kontrakt {contractNumber + 1}</InfoText>
+            <InfoText $size="22px">Kontrakt {contractNumber + 1} av 8</InfoText>
             <InfoText $size="18px">
               Mål: {contracts[contractNumber].name}
             </InfoText>
@@ -42,14 +42,23 @@ const HeaderDiv = styled.div`
   display: flex;
   flex-direction: column;
 
-  @media (min-width: 500px) {
+  @media (min-width: 690px) {
     display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+  }
+
+  @media (min-width: 900px) {
     grid-template-columns: 2fr 2fr 1fr;
+  }
+
+  @media (min-width: 1500px) {
+    grid-template-columns: 1fr 2fr 1fr;
+    padding: 20px 50px;
   }
 `
 
 const Title = styled.h1`
-  margin: 0 10px;
+  margin: 20px 10px;
   text-align: left;
   font-size: 28px;
   color: white;
@@ -61,29 +70,46 @@ const Title = styled.h1`
   @media (min-width: 500px) {
     font-size: 46px;
   }
+
+  @media (min-width: 690px) {
+    margin: 0 10px;
+  }
 `
 
 const InfoDiv = styled.div`
   margin: 0 10px;
-  padding: 0 50px 0 10px;
-  align-self: center;
+  padding: 0 10px;
+  
   display: flex;
-  align-items: center;
+  flex-direction: column-reverse;
+  align-items: left;
   justify-content: center;
   gap: 10px;
 
   @media (min-width: 500px) {
     justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  @media (min-width: 800px) {
+    padding: 0 50px 0 10px;
   }
 `
 
 const TextDiv = styled.div`
   display: flex;
   flex-direction: column;
+
+  @media (min-width: 1500px) {
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+  }
 `
 
 const InfoText = styled.p`
-  font-size: ${(props) => props.$size - 10};
+  font-size: ${(props) => props.$size - 20};
   color: white;
   font-family: "Raleway", serif;
   font-weight: 400;
