@@ -24,7 +24,6 @@ export const TableRow = ({person}) => {
 
 const TableCardRow = styled.div`
   width: 100%;
-  padding: 0 30px;
   display: flex;
   justify-content: flex-start;
 `

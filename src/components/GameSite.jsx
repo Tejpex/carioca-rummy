@@ -13,7 +13,6 @@ export const GameSite = () => {
     computer,
     message,
     showRules,
-    setShowRules,
     gameOver
   } = useCarioca()
   
@@ -22,16 +21,14 @@ export const GameSite = () => {
       {showRules && <RulesInfo />}
       {gameOver && <GameOver />}
       {!gameOver && (
-        <div>
+        <Container>
           <HandRow person={player} />
           <TableRow person={player} />
           {message && <MessageBox message={message} />}
           <Table />
-          <LowerRow>
-            <TableRow person={computer} />
-            <HandRow person={computer} />
-          </LowerRow>
-        </div>
+          <TableRow person={computer} />
+          <HandRow person={computer} />
+        </Container>
       )}
     </MainWindow>
   ) 
@@ -43,8 +40,10 @@ const MainWindow = styled.div`
   background-color: var(--primary);
 `
 
-const LowerRow = styled.div`
-  position: absolute;
-  bottom: 0;
+const Container = styled.div`
   width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 `

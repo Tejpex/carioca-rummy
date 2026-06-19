@@ -101,8 +101,8 @@ export const HandRow = ({person}) => {
 
 const RowSection= styled.div`
   background-color: var(--primary-light);
-  width: 100%;
-  padding: 15px 30px;
+  width: 100vw;
+  padding: 15px 0;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;

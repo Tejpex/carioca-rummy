@@ -22,26 +22,27 @@ export const Header = () => {
           </TextDiv>
         )}
         <Button
-          text={showRules ? "Dölj reglerna" : "Visa reglerna"}
-          func={(e) => {
-            e.stopPropagation()
-            setShowRules(!showRules)
-          }}
-          color="var(--secondary-light)"
-        />
-      </InfoDiv>
+        text={showRules ? "Dölj reglerna" : "Visa reglerna"}
+        func={(e) => {
+          e.stopPropagation()
+          setShowRules(!showRules)
+        }}
+        color="var(--secondary-light)"
+      />
       <ScoreDiv>
         <Score>Dina poäng: {player.score}</Score>
         <Score>Datorns poäng: {computer.score}</Score>
       </ScoreDiv>
+      </InfoDiv>
+      
     </HeaderDiv>
   )
 }
 
 const HeaderDiv = styled.div`
   background-color: var(--secondary);
-  width: 100%;
-  padding: 20px 30px;
+  width: 100vw;
+  padding: 20px 0;
   display: flex;
   flex-direction: column;
 
@@ -50,18 +51,18 @@ const HeaderDiv = styled.div`
     grid-template-columns: 1fr 2fr 1fr;
   }
 
-  @media (min-width: 930px) {
+  @media (min-width: 1005px) {
     grid-template-columns: 2fr 2fr 1fr;
   }
 
   @media (min-width: 1500px) {
     grid-template-columns: 1fr 2fr 1fr;
-    padding: 30px 50px;
+    padding: 30px 0;
   }
 `
 
 const Title = styled.h1`
-  margin: 20px 10px;
+  margin: 20px 10px 20px 40px;
   text-align: left;
   font-size: 28px;
   color: white;
@@ -76,7 +77,11 @@ const Title = styled.h1`
   }
 
   @media (min-width: 690px) {
-    margin: 0 10px;
+    margin-left: 40px;
+  }
+
+  @media (min-width: 1500px) {
+    margin-left: 90px;
   }
 `
 
@@ -105,7 +110,7 @@ const TextDiv = styled.div`
   display: flex;
   flex-direction: column;
 
-  @media (min-width: 1500px) {
+  @media (min-width: 1300px) {
     flex-direction: row;
     align-items: center;
     gap: 20px;
