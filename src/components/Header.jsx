@@ -23,7 +23,10 @@ export const Header = () => {
         )}
         <Button
           text={showRules ? "Dölj reglerna" : "Visa reglerna"}
-          func={() => setShowRules(!showRules)}
+          func={(e) => {
+            e.stopPropagation()
+            setShowRules(!showRules)
+          }}
           color="var(--secondary-light)"
         />
       </InfoDiv>

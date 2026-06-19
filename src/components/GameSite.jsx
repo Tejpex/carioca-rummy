@@ -19,7 +19,7 @@ export const GameSite = () => {
   
   return (
     <MainWindow>
-      <RulesInfo isOpen={showRules} onClose={() => setShowRules(false)} />
+      {showRules && <RulesInfo />}
       {gameOver && <GameOver />}
       {!gameOver && (
         <div>

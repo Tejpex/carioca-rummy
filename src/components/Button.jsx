@@ -1,8 +1,8 @@
 import styled from "styled-components"
 
-export const Button = ({text, func, color}) => {
+export const Button = ({text, func, color, disabled}) => {
   return (
-    <MyButton onClick={func} color={color}>
+    <MyButton onClick={(e) => func(e)} color={color} disabled={disabled}>
       {text}
     </MyButton>
   )

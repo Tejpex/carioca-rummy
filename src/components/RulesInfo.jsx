@@ -1,39 +1,31 @@
 import styled from "styled-components"
-import { useEffect, useRef } from "react"
+import { useEffect } from "react"
 import { useCarioca } from "../contexts/CariocaContext"
 
-export const RulesInfo = ({ isOpen, onClose }) => {
-  const { showRules } = useCarioca()
-  const panelRef = useRef(null)
+export const RulesInfo = () => {
+  const { showRules, setShowRules } = useCarioca()
+
+  if (!showRules) return null
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      const target = event.target
+    if (!showRules) return
 
-      if (panelRef.current && !panelRef.current.contains(target)) {
-        onClose()
+    const handleEsc = (e) => {
+      if (e.key === "Escape") {
+        setShowRules(false)
       }
     }
 
-    if (isOpen) {
-      document.body.style.overflow = "hidden"
-      document.addEventListener("mousedown", handleClickOutside)
-    } else {
-      document.body.style.overflow = "unset"
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
+    document.addEventListener("keydown", handleEsc)
 
     return () => {
-      document.body.style.overflow = "unset"
-      document.removeEventListener("mousedown", handleClickOutside)
+      document.removeEventListener("keydown", handleEsc)
     }
-  }, [isOpen, onClose])
-
-  if (!isOpen) return null
+  }, [showRules])
 
   return (
-    <Box isOpen={isOpen} ref={panelRef}>
-      <RulesBox>
+    <Overlay onClick={() => setShowRules(false)}>
+      <RulesBox onClick={(e) => e.stopPropagation()}>
         <Title>Regler</Title>
         <ParagraphTitle>Spelets mål</ParagraphTitle>
         <Text>
@@ -117,26 +109,30 @@ export const RulesInfo = ({ isOpen, onClose }) => {
           blandas och varje spelare tilldelas tolv kort.
         </Text>
       </RulesBox>
-    </Box>
+    </Overlay>
   )
 }
 
-const Box = styled.div`
-  width: 100wv;
+const Overlay = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center;
+  align-items: center;
+  z-index: 100;
 `
 
 const RulesBox = styled.div`
-  position: absolute;
-  z-index: 1;
   max-width: 700px;
   max-height: 500px;
   overflow-y: scroll;
-  margin: 10px;
+  margin: 175px 0 10px;
   padding: 20px 40px 40px;
   border-radius: 40px;
   background-color: var(--light);
+  position: relative;
+  z-index: 101;
 `
 
 const Title = styled.h2`
@@ -146,8 +142,8 @@ const Title = styled.h2`
   color: black;
   font-family: "Quicksand", serif;
   font-weight: 700;
-  font-style: normal;
   align-self: center;
+  font-style: normal;
 `
 
 const ParagraphTitle = styled.h3`
