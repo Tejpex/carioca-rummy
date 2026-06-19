@@ -5,22 +5,26 @@
 
   color-scheme: light dark;
   color: rgb(26, 26, 26);
-  background-color: #cbcbcb;
+  background-color: var(--primary);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  margin: 0;
+  text-align: center;
+  --primary: #690B22;
+  --primary-light: #E07A5F;
+  --secondary: #1B4D3E;
+  --secondary-light: #CFE4C6;
+  --light: #F1E3D3;
+  --light-shadow: #C4B29E;
 }
 
 body {
   margin: 0;
   width: 100vw;
   height: 100vh;
-  overflow-x: hidden;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+  overflow: hidden;
 }

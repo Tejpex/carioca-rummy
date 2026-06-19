@@ -1,8 +1,38 @@
 import styled from "styled-components"
+import { useEffect, useRef } from "react"
+import { useCarioca } from "../contexts/CariocaContext"
 
-export const RulesInfo = () => {
+export const RulesInfo = ({ isOpen, onClose }) => {
+  const { showRules } = useCarioca()
+  const panelRef = useRef(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const target = event.target
+
+      if (panelRef.current && !panelRef.current.contains(target)) {
+        onClose()
+      }
+    }
+
+    if (isOpen) {
+      document.body.style.overflow = "hidden"
+      document.addEventListener("mousedown", handleClickOutside)
+    } else {
+      document.body.style.overflow = "unset"
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+
+    return () => {
+      document.body.style.overflow = "unset"
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [isOpen, onClose])
+
+  if (!isOpen) return null
+
   return (
-    <Box>
+    <Box isOpen={isOpen} ref={panelRef}>
       <RulesBox>
         <Title>Regler</Title>
         <ParagraphTitle>Spelets mål</ParagraphTitle>
