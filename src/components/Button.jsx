@@ -1,8 +1,8 @@
 import styled from "styled-components"
 
-export const Button = ({text, func, color, disabled}) => {
+export const Button = ({text, func, color, disabled, size}) => {
   return (
-    <MyButton onClick={(e) => func(e)} color={color} disabled={disabled}>
+    <MyButton onClick={(e) => func(e)} color={color} disabled={disabled} size={size}>
       {text}
     </MyButton>
   )
@@ -21,6 +21,7 @@ const MyButton = styled.button`
   font-weight: 500;
   font-style: normal;
   text-align: center;
+  width: ${(props) => (props.size === "wide" ? "200px" : "fit-content")};
 
   &:hover {
     background-color:${(props) => props.color || "var(--primary-light)"};
@@ -31,5 +32,4 @@ const MyButton = styled.button`
     padding: 5px;
     font-size: 14px;
   }
-
 `
