@@ -144,7 +144,7 @@ const CardButton = styled.button`
 const CardImage = styled.img`
   height: 60px;
 
-  @media (min-width: 500px) {
+  @media (min-width: 690px) {
     height: 90px; 
   }
 `

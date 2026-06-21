@@ -29,5 +29,9 @@ const TableCardRow = styled.div`
 `
 
 const CardImage = styled.img`
-  height: 90px;
+  height: 60px;
+
+  @media (min-width: 690px) {
+    height: 90px;
+  }
 `
