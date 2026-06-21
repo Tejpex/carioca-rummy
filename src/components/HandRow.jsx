@@ -119,10 +119,13 @@ const ButtonSection = styled.div`
 
 const ButtonBox = styled.div`
   display: flex;
-  flex-direction: column;
   justify-content: center;
   gap: 10px;
   margin: 0 20px 0 10px;
+
+  @media (min-width: 690px) {
+    flex-direction: column;
+  }
 `
 
 const CardSection = styled.div`

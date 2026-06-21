@@ -23,7 +23,7 @@ export const RadioButtonBox = ({person}) => {
 
   return (
     <Box>
-      <form onChange={() => handleSorting(event.target.value)}>
+      <SortForm onChange={() => handleSorting(event.target.value)}>
         <legend>Sortera korten:</legend>
         <ButtonDiv>
           <CheckboxField>
@@ -64,7 +64,7 @@ export const RadioButtonBox = ({person}) => {
             Färg
           </CheckboxField>
         </ButtonDiv>
-      </form>
+      </SortForm>
     </Box>
   )
 }
@@ -72,8 +72,14 @@ export const RadioButtonBox = ({person}) => {
 const Box = styled.div`
   margin: -7px 10px 0;
   font-family: "Raleway", serif;
+`
+const SortForm = styled.form`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+
+  @media (min-width: 690px) {
+    flex-direction: column;
+  }
 `
 
 const ButtonDiv = styled.div`
