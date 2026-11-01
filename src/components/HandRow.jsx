@@ -114,17 +114,28 @@ const RowSection= styled.div`
 
 const ButtonSection = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
+
+  @media (min-width: 500px) {
+    flex-direction: row;
+    justify-content: flex-start;
+    margin-left: 30px;
+  }
 `
 
 const ButtonBox = styled.div`
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin: 0 20px 0 10px;
+  gap: 5px;
+  margin: 10px 0;
 
   @media (min-width: 690px) {
     flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 0 20px 0 10px;
   }
 `
 

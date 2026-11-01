@@ -72,20 +72,29 @@ export const RadioButtonBox = ({person}) => {
 const Box = styled.div`
   margin: -7px 10px 0;
   font-family: "Raleway", serif;
+
+  @media (max-width: 690px) {
+    font-size: 12px;
+  }
 `
 const SortForm = styled.form`
   display: flex;
   flex-direction: row;
 
-  @media (min-width: 690px) {
+  @media (min-width: 500px) {
     flex-direction: column;
+    gap: 5px;
+    margin-bottom: 10px;
   }
 `
 
 const ButtonDiv = styled.div`
   display: flex;
   align-items: center;
-  padding-left: 10px;
+
+  @media (min-width: 690px) {
+    padding-left: 10px;
+  }
 `
 
 const CheckboxField = styled.label`
@@ -101,7 +110,12 @@ const HiddenInput = styled.input`
   cursor: pointer;
   height: 35px;
   width: 25px;
-  margin: -10px 5px;
+  margin: -10px 2px;
+
+  @media (min-width: 690px) {
+    margin: -10px 5px;
+  }
+
 `
 
 const Checkmark = styled.span`
